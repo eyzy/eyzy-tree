@@ -1,0 +1,81 @@
+@import "../variables.scss";
+
+.eyzy-theme-red {
+  position: relative;
+
+  &.eyzy-tree {
+    padding: 0 $node-el-margin-right;
+  }
+
+  .tree-node {
+    &.selected {
+      > .node-content:before {
+        background: transparent;
+      }
+    } 
+  }
+
+  .node-content {
+    &:hover {
+      &.node-text {
+        background-color: transparent;
+      }
+
+      &:before {
+        transition: background-color .1s;
+        background: $node-selected-bg-hover;
+      }
+    }
+
+    &.selected {
+      &:before {
+        background: $node-selected-bg;
+      }
+
+      > .node-text {
+        background: transparent;
+      }
+    }
+
+    &.checked {
+      > .node-checkbox {
+        background-color: $eyzy-theme-red-checkbox-checked-bg-color;
+        border-color: $eyzy-theme-red-checkbox-border-color;
+      }
+    }
+
+    .node-text,
+    .node-arrow,
+    .node-checkbox {
+      z-index: 2;
+    }
+
+    .node-arrow {
+      transition: transform .1s;
+    }
+
+    .node-text {
+      flex-grow: 1;
+      cursor: pointer;
+    }
+
+    .node-text:hover {
+      background: transparent;
+    }
+
+    .node-checkbox {
+      &:hover {
+        border-color: $eyzy-theme-red-checkbox-border-color-hover;
+      }
+    }
+
+    &:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 32px;
+      z-index: 1;
+    }
+  }
+}

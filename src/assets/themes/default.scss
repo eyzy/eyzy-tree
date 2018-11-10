@@ -1,0 +1,60 @@
+@import "../variables.scss";
+
+.eyzy-theme {
+  position: relative;
+
+  &.eyzy-tree {
+    padding: 0 $node-el-margin-right;
+  }
+
+  .node-content {
+    &:hover {
+      &.node-text {
+        background-color: transparent;
+      }
+
+      &:before {
+        transition: background-color .1s;
+        background: $eyzy-theme-node-bg-hover;
+      }
+    }
+
+    &.selected {
+      &:before {
+        background: $eyzy-theme-node-bg-selected;
+      }
+
+      > .node-text {
+        background: transparent;
+      }
+    }
+
+    .node-text,
+    .node-arrow,
+    .node-checkbox {
+      z-index: 2;
+    }
+
+    .node-arrow {
+      transition: transform .1s;
+    }
+
+    .node-text {
+      flex-grow: 1;
+      cursor: pointer;
+    }
+
+    .node-text:hover {
+      background: transparent;
+    }
+
+    &:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 32px;
+      z-index: 1;
+    }
+  }
+}

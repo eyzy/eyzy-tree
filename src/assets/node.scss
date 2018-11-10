@@ -1,0 +1,119 @@
+@import "./variables.scss";
+
+.eyzy-tree {
+  .tree-node {
+    margin: 0;
+    list-style: none;
+  }
+
+  .node-content {
+    white-space: nowrap;
+    outline: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    > span {
+      margin-right: $node-el-margin-right;
+    }
+
+    &.checked {
+      > .node-checkbox {
+        background-color: $checkbox-checked-bg-color;
+        border-color: $checkbox-checked-bg-color;
+
+        &:after {
+          transform: rotate(45deg) scale(1);
+          border: 2px solid $checkbox-checked-color;
+          border-top: 0;
+          border-left: 0;
+          transition: opacity .2s;
+          opacity: 1;    
+          left: 6.1px;
+          top: 2.2px;
+          width: 4px;
+          height: 10px;
+        }
+      }
+    }
+
+    &.selected {
+      > .node-text {
+        background: $node-selected-bg;  
+      }
+    }
+
+    &.expanded {
+      > .node-arrow {
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  .node-noop {
+    width: $node-el-width;
+    height: $node-el-width;
+  }
+
+  .node-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1px solid $checkbox-border-color;
+    border-radius: 2px;
+    background-color: $checkbox-bg-color;
+    transition: border-color 0.3s;
+    position: relative;
+
+    &:after {
+      opacity: 0;
+      content: "";
+      position: absolute;
+      display: block;
+    }
+
+    &:hover {
+      border-color: $checkbox-border-color-hover;
+    }
+
+    &-overrided {
+      z-index: 2;
+    }
+  }
+
+  .node-text {
+    padding: 4px 7px;
+    line-height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &:hover {
+      background: $node-selected-bg-hover;
+    }
+  }
+
+  .node-child {
+    list-style: none;
+    padding: 0 0 0 20px;
+    flex-basis: 100%;
+    flex-wrap: wrap;
+  }
+
+  .node-arrow {
+    width: $node-el-width;
+    height: $node-el-width;
+
+    &-extended {
+      z-index: 2;
+    }
+
+    &:before {
+      content: '';
+      display: block;
+      cursor: pointer;
+      height: 100%;
+      background: url(./icon/arrow.png) no-repeat 50% 50%;
+    }
+  }
+}
