@@ -1,9 +1,16 @@
 {
   "name": "eyzy-tree",
   "version": "0.1.0",
+  "author": "Kostiantyn <phlyze@gmail.com>",
   "dependencies": {
-    "webpack": "^4.25.1"
+    "rollup-plugin-scss": "^0.4.0",
+    "rollup-plugin-typescript": "^1.0.0",
+    "rollup-plugin-uglify": "^6.0.0",
+    "tslib": "^1.9.3"
   },
+  "library": "EyzyTree",
+  "module": "dist/eyzy-tree.esm.js",
+  "main": "dist/eyzy-tree.umd.js",
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
