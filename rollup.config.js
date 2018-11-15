@@ -1,16 +1,17 @@
 import pkg from './package.json'
-import uglify from 'rollup-plugin-uglify'
+import uglify from 'rollup-plugin-uglify-es'
 import typescript from 'rollup-plugin-typescript'
 import scss from 'rollup-plugin-scss'
+import serve from 'rollup-plugin-serve'
 
 const path = require('path')
 
-const sourcemap = false
+const sourcemap = 'production' !== process.env.NODE_ENV
 
 const version = pkg.version
 const banner = `
 /*!
- * LiquorTree v${version}
+ * ${pkg.library} v${version}
  * (c) ${new Date().getFullYear()} amsik
  * Released under the MIT License.
  */
@@ -29,7 +30,10 @@ const config = {
       format: 'umd',
       name: pkg.library,
       sourcemap,
-      banner
+      banner,
+      globals: {
+        react: 'React'
+      }
     }
   ],
   cache: false,
@@ -41,15 +45,14 @@ const config = {
   ]
 }
 
-if ('production' == process.env.NODE_ENV) {
-  config.output.forEach(c => (c.sourcemap = false))
+if ('production' === process.env.NODE_ENV) {
   config.plugins.push(uglify({
     output: {
       comments: function(node, comment) {
           var text = comment.value;
           var type = comment.type;
           if (type == "comment2") {
-              return /license/i.test(text);
+              return new RegExp(pkg.library, 'i').test(text);
           }
       }
     }
@@ -58,7 +61,7 @@ if ('production' == process.env.NODE_ENV) {
 
 if ('development' == process.env.NODE_ENV) {
   config.plugins.push(serve({
-    contentBase: ['dist', 'demo'],
+    contentBase: ['dist', 'examples'],
     port: 8081,
     open: true
   }))
