@@ -4,4 +4,5 @@
 - - [ ] Expand/collapse on Item click
 - - [ ] Check node on Item click
 - - [ ] Select node which has child (prevent expanding)
+- [ ] Add node states (disabled, selectable, disabledCheckbox and so on)
 - [ ] Basic documentation (README will be enought)
