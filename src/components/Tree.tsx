@@ -126,7 +126,7 @@ export default class EyzyTree extends React.Component<Tree, State> {
     const treeClass = 'theme' in props 
       ? 'eyzy-tree ' + props.theme
       : 'eyzy-tree eyzy-theme'
-
+    
     return (
       <ul className={treeClass}>
         { this.state.data.map(this.renderNode) }

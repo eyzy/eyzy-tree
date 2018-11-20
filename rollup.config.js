@@ -4,8 +4,6 @@ import typescript from 'rollup-plugin-typescript'
 import scss from 'rollup-plugin-scss'
 import serve from 'rollup-plugin-serve'
 
-const path = require('path')
-
 const sourcemap = 'production' !== process.env.NODE_ENV
 
 const version = pkg.version
@@ -19,6 +17,7 @@ const banner = `
 
 const config = {
   input: 'src/index.ts',
+  external: ['react'],
   output: [
     {
       file: pkg.module,
@@ -30,17 +29,14 @@ const config = {
       format: 'umd',
       name: pkg.library,
       sourcemap,
-      banner,
-      globals: {
-        react: 'React'
-      }
+      banner
     }
   ],
   cache: false,
   plugins: [
     typescript(),
     scss({
-      output: 'dist/style.css',
+      output: 'dist/style.css'
     })
   ]
 }
@@ -49,11 +45,9 @@ if ('production' === process.env.NODE_ENV) {
   config.plugins.push(uglify({
     output: {
       comments: function(node, comment) {
-          var text = comment.value;
-          var type = comment.type;
-          if (type == "comment2") {
-              return new RegExp(pkg.library, 'i').test(text);
-          }
+        if (comment.type == "comment2") {
+          return new RegExp(pkg.library, 'i').test(comment.value);
+        }
       }
     }
   }))

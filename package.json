@@ -1,6 +1,6 @@
 {
   "name": "eyzy-tree",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "author": "Kostiantyn <phlyze@gmail.com>",
   "dependencies": {
     "cross-env": "^5.2.0",
@@ -18,7 +18,7 @@
   "main": "dist/eyzy-tree.umd.js",
   "scripts": {
     "build": "cross-env NODE_ENV=production rollup -c",
-    "start": "cross-env NODE_ENV=development rollup -c"
+    "start": "cross-env NODE_ENV=development rollup -cw"
   },
   "devDependencies": {
     "@types/jest": "^23.3.1",
