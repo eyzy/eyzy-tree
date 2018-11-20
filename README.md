@@ -1,10 +1,7 @@
 ## Version 0.0.1
 
-- [x] Checkable (single node)
-- [x] Selectable
-- [x] Expandable (widthout an animation)
-- [x] Checkbox, text, arrow are able to customize
-- [x] Callbacks
-- [x] Change theme colors
-- [ ] Configure workflow
-- [x] Think over styles
+- [ ] Extend tree options
+- - [ ] Expand/collapse on Item click
+- - [ ] Check node on Item click
+- - [ ] Select node which has child (prevent expanding)
+- [ ] Basic documentation (README will be enought)
