@@ -5,6 +5,8 @@ export interface Tree {
   arrowRenderer?: any
   textRenderer?: any
   checkable?: boolean
+  selectOnExpand?: boolean
+  expandOnSelect?: boolean
   theme?: string
   data: Node[]
   onSelect?: (node: Node) => void;

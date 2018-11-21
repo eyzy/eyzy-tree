@@ -51,13 +51,21 @@ export default class EyzyTree extends React.Component<Tree, State> {
     }
   }
 
-  handleSelect = (node: Node) => {
+  select = (node: Node, ignoreEvent: boolean = false) => {
     this.setState({
       selectedNodes: [node.id]
     })
 
-    if (this.props.onSelect) {
+    if (false !== ignoreEvent && this.props.onSelect) {
       this.props.onSelect(node)
+    }
+  }
+
+  handleSelect = (node: Node) => {
+    this.select(node)
+
+    if (this.props.expandOnSelect !== false) {
+      this.handleExpand(node)
     }
   }
 
@@ -91,6 +99,10 @@ export default class EyzyTree extends React.Component<Tree, State> {
       this.setState({
         expandedNodes: [...this.state.expandedNodes, id]
       })
+    }
+
+    if (this.props.selectOnExpand !== false && !node.selected) {
+      this.select(node)
     }
   }
 
