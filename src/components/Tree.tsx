@@ -61,15 +61,7 @@ export default class EyzyTree extends React.Component<Tree, State> {
     }
   }
 
-  handleSelect = (node: Node) => {
-    this.select(node)
-
-    if (this.props.expandOnSelect !== false) {
-      this.handleExpand(node)
-    }
-  }
-
-  handleCheck = (node: Node) => {
+  check = (node: Node) => {
     const id = node.id
     const isChecked = this.state.checkedNodes.indexOf(id) === -1
 
@@ -86,6 +78,20 @@ export default class EyzyTree extends React.Component<Tree, State> {
     if (this.props.onCheck) {
       this.props.onCheck(node)
     }
+  };
+
+  handleSelect = (node: Node) => {
+    this.select(node)
+
+    if (this.props.checkOnSelect) {
+      this.check(node)
+    } else if (this.props.expandOnSelect !== false) {
+      this.handleExpand(node)
+    }
+  }
+
+  handleCheck = (node: Node) => {
+    this.check(node)
   }
 
   handleExpand = (node: Node) => {
