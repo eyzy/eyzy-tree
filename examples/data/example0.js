@@ -15,18 +15,19 @@ var data = [
   },
   {
     "text": "Angular.js",
+    "expanded": true,
     "child": [
       {
         "text": "Angular.js 1.6"
       },
       {
-        "text": "Angular.js 1.5"
+        "text": "Angular.js 1.5", "disabled": true
       },
       {
-        "text": "Angular.js 1.4"
+        "text": "Angular.js 1.4", "disabled": true
       },
       {
-        "text": "Angular.js 1.3"
+        "text": "Angular.js 1.3", "disabledCheckbox": true
       },
       {
         "text": "Angular.js 1.2"

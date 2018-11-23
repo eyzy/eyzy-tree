@@ -19,6 +19,13 @@
       }
     }
 
+    &.disabled:hover {
+      &:before {
+        transition: transparent;
+        background: transparent;
+      }
+    }
+
     &.selected {
       &:before {
         background: $eyzy-theme-node-bg-selected;

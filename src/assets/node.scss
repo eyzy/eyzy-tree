@@ -48,6 +48,16 @@
         transform: rotate(90deg);
       }
     }
+
+    &.disabled {
+      opacity: .3;
+    }
+
+    &.disabled-checkbox {
+      > .node-checkbox {
+        opacity: .3;
+      }
+    }
   }
 
   .node-noop {

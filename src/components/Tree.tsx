@@ -47,7 +47,7 @@ export default class EyzyTree extends React.Component<Tree, State> {
       data,
       selectedNodes,
       checkedNodes,
-      expandedNodes: []
+      expandedNodes
     }
   }
 
@@ -117,6 +117,7 @@ export default class EyzyTree extends React.Component<Tree, State> {
     const isChecked = this.state.checkedNodes.indexOf(node.id) !== -1
     const isExpanded = node.child && node.child.length > 0 && this.state.expandedNodes.indexOf(node.id) !== -1
 
+    
     return (
       <TreeNode
         id={node.id}
@@ -128,6 +129,8 @@ export default class EyzyTree extends React.Component<Tree, State> {
         selected={isSelected}
         checked={isChecked}
         expanded={isExpanded}
+        disabled={node.disabled}
+        disabledCheckbox={node.disabledCheckbox}
         checkboxRenderer={this.props.checkboxRenderer}
         textRenderer={this.props.textRenderer}
         arrowRenderer={this.props.arrowRenderer}

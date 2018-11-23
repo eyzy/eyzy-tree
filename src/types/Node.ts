@@ -10,6 +10,8 @@ export interface Node {
   selected?: boolean
   expanded?: boolean
   checked?: boolean
+  disabled?: boolean
+  disabledCheckbox?: boolean
   onSelect?: (node: Node) => void
   onCheck?: (node: Node) => void
   onExpand?: (node: Node) => void
