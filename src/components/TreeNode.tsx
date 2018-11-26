@@ -27,12 +27,20 @@ export default class TreeNode extends React.PureComponent<Node> {
   }
 
   handleSelect = () => {
+    if (this.props.disabled) {
+      return
+    }
+
     if (this.props.onSelect) {
       this.props.onSelect(this.getNode())
     }
   }
 
   handleCheck = () => {
+    if (this.props.disabled || this.props.disabledCheckbox) {
+      return
+    }
+
     if (this.props.onCheck) {
       this.props.onCheck(this.getNode())
     }

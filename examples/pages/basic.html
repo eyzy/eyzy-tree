@@ -25,8 +25,9 @@
       ReactDOM.render(
         React.createElement(EyzyTree, {
           data: data,
-          checkable: true,
-          checkOnSelect: 1
+          checkable: 0,
+          checkOnSelect: 1,
+          expandOnSelect: 1
         }),
         document.getElementById('example0')
       )

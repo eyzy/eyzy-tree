@@ -78,24 +78,14 @@ export default class EyzyTree extends React.Component<Tree, State> {
     if (this.props.onCheck) {
       this.props.onCheck(node)
     }
-  };
-
-  handleSelect = (node: Node) => {
-    this.select(node)
-
-    if (this.props.checkOnSelect) {
-      this.check(node)
-    } else if (this.props.expandOnSelect !== false) {
-      this.handleExpand(node)
-    }
   }
 
-  handleCheck = (node: Node) => {
-    this.check(node)
-  }
-
-  handleExpand = (node: Node) => {
+  expand = (node: Node) => {
     const id = node.id
+
+    if (node.child && !node.child.length) {
+      return
+    }
 
     if (node.expanded) {
       this.setState({
@@ -112,12 +102,31 @@ export default class EyzyTree extends React.Component<Tree, State> {
     }
   }
 
+  handleSelect = (node: Node) => {
+    this.select(node)
+
+    const { checkOnSelect, expandOnSelect, checkable } = this.props
+
+    if (checkable && checkOnSelect && !node.disabledCheckbox) {
+      this.check(node)
+    } else if (expandOnSelect !== false) {
+      this.handleExpand(node)
+    }
+  }
+
+  handleCheck = (node: Node) => {
+    this.check(node)
+  }
+
+  handleExpand = (node: Node) => {
+    this.expand(node)
+  }
+
   renderNode = (node: Node): ReactElement<Node> => {
     const isSelected = this.state.selectedNodes.indexOf(node.id) !== -1
     const isChecked = this.state.checkedNodes.indexOf(node.id) !== -1
     const isExpanded = node.child && node.child.length > 0 && this.state.expandedNodes.indexOf(node.id) !== -1
 
-    
     return (
       <TreeNode
         id={node.id}
