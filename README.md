@@ -87,11 +87,11 @@ export default class Tree extends Component {
 ### Node Props
 
 | Property | Type |    Description     |
-|:---------|:--------|:-----------------------|
+|:---------|:--------|:-----------------------------------------|
 | `text` (required) | string | Node text |
 | `child` | array | List of child nodes |
 | `selected` | boolean | Whether to select a node |
 | `expanded` | boolean | Whether to expand a node |
-| `checked` | boolean | Whether to check a node |
+| `checked` | boolean | Whether to check a node (if tree is checkable) |
 | `disabled` | boolean | Whether to disable a node |
 | `disabledCheckbox` | boolean | Whether to disable a node's checkbox |
