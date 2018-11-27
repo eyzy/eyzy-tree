@@ -10,6 +10,7 @@ export interface Tree {
   checkOnSelect?: boolean
   theme?: string
   data: Node[]
-  onSelect?: (node: Node) => void;
-  onCheck?: (node: Node) => void;
+  onSelect?: (node: Node) => void
+  onCheck?: (node: Node) => void
+  onExpand?: (node: Node, isExpanded: boolean) => void
 }

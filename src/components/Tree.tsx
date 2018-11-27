@@ -97,8 +97,12 @@ export default class EyzyTree extends React.Component<Tree, State> {
       })
     }
 
-    if (this.props.selectOnExpand !== false && !node.selected) {
+    if (this.props.selectOnExpand && !node.selected) {
       this.select(node)
+    }
+
+    if (this.props.onExpand) {
+      this.props.onExpand(node, !!node.expanded)
     }
   }
 
@@ -109,7 +113,7 @@ export default class EyzyTree extends React.Component<Tree, State> {
 
     if (checkable && checkOnSelect && !node.disabledCheckbox) {
       this.check(node)
-    } else if (expandOnSelect !== false) {
+    } else if (expandOnSelect) {
       this.handleExpand(node)
     }
   }
