@@ -11,6 +11,7 @@
 - [Usage](#usage)
 - [Themes](#themes)
 - [Tree Props](#tree-props)
+- [Node Props](#node-props)
 
 ### Getting Started
 
@@ -82,3 +83,15 @@ export default class Tree extends Component {
 | `onSelect` | function | Calls every time when node is selected. | 
 | `onCheck` | function | Calls every time when node is checked. | 
 | `onExpand` | function | Calls every time when node is expanded. | 
+
+### Node Props
+
+| Property | Type |    Description     |
+|:---------|:--------|:-----------------------|
+| `text` (required) | string | Node text |
+| `child` | array | List of child nodes |
+| `selected` | boolean | Whether to select a node |
+| `expanded` | boolean | Whether to expand a node |
+| `checked` | boolean | Whether to check a node |
+| `disabled` | boolean | Whether to disable a node |
+| `disabledCheckbox` | boolean | Whether to disable a node's checkbox |
