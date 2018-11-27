@@ -70,7 +70,7 @@ export default class Tree extends Component {
 
 | Property | Type | Description | Default |
 |:---------|:--------|:-----------------|:-----|
-| `data` (required) | array | . Specifies the tree nodes ||
+| `data` (required) | array | Specifies the tree nodes ||
 | `theme` | string | Additional class for tree container. | eyzy-theme |
 | `checkable` | boolean | Adds a **checkbox** before the tree nodes | false |
 | `checkOnSelect` | boolean | Selects a node and changes the state of the checkbox. | false |
