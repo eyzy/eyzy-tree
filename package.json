@@ -2,6 +2,7 @@
   "name": "eyzy-tree",
   "version": "0.0.1",
   "author": "Kostiantyn <phlyze@gmail.com>",
+  "description": "React tree component",
   "dependencies": {
     "cross-env": "^5.2.0",
     "react": "^16.6.3",
@@ -27,6 +28,24 @@
     "@types/react-dom": "^16.0.7",
     "typescript": "^3.0.1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eyzy/eyzy-tree.git"
+  },
+  "keywords": [
+    "react",
+    "tree",
+    "component",
+    "react-tree",
+    "treeview",
+    "structure",
+    "tree-component"
+  ],
+  "homepage": "https://github.com/eyzy/eyzy-tree",
+  "files": [
+    "src",
+    "dist"
+  ],
   "babel": {
     "presets": [
       "react-app"
