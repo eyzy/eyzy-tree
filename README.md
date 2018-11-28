@@ -66,6 +66,7 @@ export default class Tree extends Component {
 ```
 
 ### Themes
+Here is an example with all possible themes: https://jsfiddle.net/amsik/wkqdtoa4/
 
 ### Tree Props
 
