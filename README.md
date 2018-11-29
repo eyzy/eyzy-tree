@@ -84,6 +84,7 @@ Here is an example with all possible themes: https://jsfiddle.net/amsik/wkqdtoa4
 | `onSelect` | function | Calls every time when node is selected. | 
 | `onCheck` | function | Calls every time when node is checked. | 
 | `onExpand` | function | Calls every time when node is expanded. | 
+| `onDoubleClick` | function | Calls every time when user do double click on the node. Works only when `expandOnSelect` is not defined or false | 
 
 ### Node Props
 
