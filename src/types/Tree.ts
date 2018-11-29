@@ -13,4 +13,5 @@ export interface Tree {
   onSelect?: (node: Node) => void
   onCheck?: (node: Node) => void
   onExpand?: (node: Node, isExpanded: boolean) => void
+  onDoubleClick?: (node: Node) => void
 }

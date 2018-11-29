@@ -106,6 +106,18 @@ export default class EyzyTree extends React.Component<Tree, State> {
     }
   }
 
+  handleDoubleClick = (node: Node) => {
+    if (node.disabled || node.child && !node.child.length || this.props.expandOnSelect) {
+      return
+    }
+
+    this.expand(node)
+
+    if (this.props.onDoubleClick) {
+      this.props.onDoubleClick(node)
+    }
+  }
+
   handleSelect = (node: Node) => {
     this.select(node)
 
@@ -114,16 +126,8 @@ export default class EyzyTree extends React.Component<Tree, State> {
     if (checkable && checkOnSelect && !node.disabledCheckbox) {
       this.check(node)
     } else if (expandOnSelect) {
-      this.handleExpand(node)
+      this.expand(node)
     }
-  }
-
-  handleCheck = (node: Node) => {
-    this.check(node)
-  }
-
-  handleExpand = (node: Node) => {
-    this.expand(node)
   }
 
   renderNode = (node: Node): ReactElement<Node> => {
@@ -137,8 +141,9 @@ export default class EyzyTree extends React.Component<Tree, State> {
         text={node.text}
         child={node.child}
         onSelect={this.handleSelect}
-        onCheck={this.handleCheck}
-        onExpand={this.handleExpand}
+        onDoubleClick={this.handleDoubleClick}
+        onCheck={this.check}
+        onExpand={this.expand}
         selected={isSelected}
         checked={isChecked}
         expanded={isExpanded}

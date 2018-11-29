@@ -15,4 +15,5 @@ export interface Node {
   onSelect?: (node: Node) => void
   onCheck?: (node: Node) => void
   onExpand?: (node: Node) => void
+  onDoubleClick?: (node: Node) => void
 }

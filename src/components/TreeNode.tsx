@@ -3,6 +3,10 @@ import { Node } from '../types/Node'
 
 import cn from '../utils/cn'
 
+const hasChild = (node: Node): boolean => {
+  return Array.isArray(node.child) && node.child.length > 0
+}
+
 export default class TreeNode extends React.PureComponent<Node> {
   getNode(): Node {
     const {
@@ -52,6 +56,12 @@ export default class TreeNode extends React.PureComponent<Node> {
     }
   }
 
+  handleDoubleClick = (e: any) => {
+    if (this.props.onDoubleClick) {
+      this.props.onDoubleClick(this.getNode())
+    }
+  }
+
   renderCheckbox = () => {
     if (!this.props.checkable) {
       return null
@@ -71,14 +81,9 @@ export default class TreeNode extends React.PureComponent<Node> {
   }
 
   renderArrow = () => {
-    const {
-      child,
-      arrowRenderer: ArrowRenderer 
-    } = this.props
+    const ArrowRenderer = this.props.arrowRenderer
 
-    const hasChild = Array.isArray(child) && child.length > 0
-
-    if (!hasChild) {
+    if (!hasChild(this.props)) {
       return <span className="node-noop" />
     }
 
@@ -98,18 +103,16 @@ export default class TreeNode extends React.PureComponent<Node> {
       checked,
       selected,
       children,
-      child,
       expanded,
       disabled,
       disabledCheckbox,
       textRenderer: TextRenderer
     } = this.props
 
-    const hasChild = Array.isArray(child) && child.length > 0
     const text = this.props.text
-
-    const nodeClass = cn({
+    const nodeContentClass = cn({
       'node-content': true,
+      'has-child': hasChild(this.props),
       'selected': selected,
       'checked': checked,
       'expanded': expanded,
@@ -119,17 +122,17 @@ export default class TreeNode extends React.PureComponent<Node> {
 
     return (
       <li className="tree-node">
-        <div className={nodeClass}>
+        <div className={nodeContentClass}>
 
           { this.renderArrow() }
           { this.renderCheckbox() }
 
-          <span className="node-text" onMouseUp={this.handleSelect}>
+          <span className="node-text" onMouseUp={this.handleSelect} onDoubleClick={this.handleDoubleClick}>
             { TextRenderer ? <TextRenderer node={this.getNode()} /> : text }
           </span>
         </div>
 
-        { hasChild &&
+        { hasChild(this.props) &&
           <ul className="node-child">{ children }</ul>
         }
       </li>
