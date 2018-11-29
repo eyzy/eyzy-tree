@@ -2,6 +2,7 @@
 
 .eyzy-theme-red {
   position: relative;
+  user-select: none;
 
   &.eyzy-tree {
     padding: 0 $node-el-margin-right;
