@@ -17,3 +17,17 @@ export function recurseDown(obj: Node | Node[], fn: (obj: Node) => any, excludeS
 
   return res
 }
+
+export function traverseUp(obj: Node, fn: (obj: Node) => any): any {
+  let node = obj.parent
+
+  while (node) {
+    fn(node)
+
+    if (!node.parent) {
+      return
+    }
+
+    node = node.parent
+  }
+}

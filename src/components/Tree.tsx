@@ -10,7 +10,7 @@ import { Tree } from '../types/Tree'
 
 import { copyArray } from '../utils'
 import { parseNode } from '../utils/parser'
-import { recurseDown } from '../utils/traveler'
+import { recurseDown, traverseUp } from '../utils/traveler'
 
 interface State {
   data: Node[]
@@ -27,9 +27,11 @@ export default class EyzyTree extends React.Component<Tree, State> {
     super(props)
 
     const data = parseNode(props.data)
+
     const checkedNodes: string[] = []
     const selectedNodes: string[] = []
     const expandedNodes: string[] = []
+    const indeterminateNodes: string[] = []
 
     recurseDown(data, (node: Node) => {
       if (node.checked) {
@@ -49,15 +51,22 @@ export default class EyzyTree extends React.Component<Tree, State> {
       data,
       selectedNodes,
       checkedNodes,
-      expandedNodes
+      expandedNodes,
+      indeterminateNodes
     }
   }
 
   refreshIndeterminateState = (node: Node, isChecked: boolean) => {
     let checkedNodes: string[] = copyArray(this.state.checkedNodes)
+    let indeterminateNodes = copyArray(this.state.indeterminateNodes)
+
     const childIds: string[] = []
 
-    recurseDown(node, (child: Node) => childIds.push(child.id))
+    recurseDown(node, (child: Node) => {
+      if (!child.disabled && !child.disabledCheckbox) {
+        childIds.push(child.id)
+      }
+    })
 
     if (isChecked) {
       checkedNodes.push(...childIds)
@@ -65,11 +74,16 @@ export default class EyzyTree extends React.Component<Tree, State> {
       checkedNodes = checkedNodes.filter(nodeId => !~childIds.indexOf(nodeId))
     }
 
-    this.setState({
-      checkedNodes
+    traverseUp(node, (obj) => {
+      console.log(obj.text)
     })
 
-    console.log(checkedNodes)
+    indeterminateNodes = indeterminateNodes.filter(nodeId => !~checkedNodes.indexOf(nodeId))
+
+    this.setState({
+      checkedNodes,
+      indeterminateNodes
+    })
   }
 
   select = (node: Node, ignoreEvent: boolean = false) => {
