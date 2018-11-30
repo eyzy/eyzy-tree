@@ -2,6 +2,12 @@
 
 > Most expected React tree component.
 
+![NPM version](https://img.shields.io/npm/v/eyzy-tree.svg?style=flat)
+![NPM license](https://img.shields.io/npm/l/eyzy-tree.svg?style=flat)
+[![NPM total downloads](https://img.shields.io/npm/dt/eyzy-tree.svg?style=flat)](https://npmcharts.com/compare/eyzy-tree?minimal=true)
+[![NPM monthly downloads](https://img.shields.io/npm/dm/eyzy-tree.svg?style=flat)](https://npmcharts.com/compare/eyzy-tree?minimal=true)
+
+
 ### Features
 - flexible
 - customizable
@@ -76,6 +82,7 @@ Here is an example with all possible themes: https://jsfiddle.net/amsik/wkqdtoa4
 | `theme` | string | Additional class for tree container. | eyzy-theme |
 | `checkable` | boolean | Adds a **checkbox** before the tree nodes | false |
 | `checkOnSelect` | boolean | Selects a node and changes the state of the checkbox. | false |
+| `autoCheckChildren` | boolean | Whether to apply checkbox state to child nodes recursively. | true |
 | `expandOnSelect` | boolean | Whether to expand a node if it has children | false |
 | `selectOnExpand` | boolean | Whether to select a node if it has children | false | 
 | `textRenderer` | ReactNode | Overrides `text container`. Gets the `Node` by argument. || 

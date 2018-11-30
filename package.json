@@ -3,6 +3,7 @@
   "version": "0.0.2",
   "author": "Kostiantyn <phlyze@gmail.com>",
   "description": "React tree component",
+  "license": "MIT",
   "dependencies": {
     "cross-env": "^5.2.0",
     "react": "^16.6.3",
