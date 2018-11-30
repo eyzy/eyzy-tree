@@ -97,3 +97,4 @@ Here is an example with all possible themes: https://jsfiddle.net/amsik/wkqdtoa4
 | `checked` | boolean | Whether to check a node (if tree is checkable) |
 | `disabled` | boolean | Whether to disable a node |
 | `disabledCheckbox` | boolean | Whether to disable a node's checkbox |
+| `hidenCheckbox` | boolean | Whether to hide a node's checkbox |

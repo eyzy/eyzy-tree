@@ -5,6 +5,7 @@ export interface Tree {
   arrowRenderer?: any
   textRenderer?: any
   checkable?: boolean
+  autoCheckChildren?: boolean
   selectOnExpand?: boolean
   expandOnSelect?: boolean
   checkOnSelect?: boolean

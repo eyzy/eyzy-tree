@@ -25,7 +25,7 @@
     <div id="example1"></div>
 
     <script>
-      const withoutChecboxes = data.map(item => {
+      const withoutChecboxes = JSON.parse(JSON.stringify(data)).map(item => {
         if (item.child && item.child.length) {
           item.hidenCheckbox = 1
         }
@@ -33,20 +33,21 @@
         return item
       })
 
-      ReactDOM.render(
-        React.createElement(EyzyTree, {
-          data: data,
-          theme: "",
-          checkable: 1,
-          expandOnSelect: true
-        }),
-        document.getElementById('example0')
-      )
+      // ReactDOM.render(
+      //   React.createElement(EyzyTree, {
+      //     data: withoutChecboxes,
+      //     theme: "",
+      //     checkable: 1,
+      //     expandOnSelect: true
+      //   }),
+      //   document.getElementById('example0')
+      // )
 
       
       ReactDOM.render(
         React.createElement(EyzyTree, {
           data: data,
+          checkable: 1,
         }),
         document.getElementById('example1')
       )

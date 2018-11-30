@@ -1,19 +1,5 @@
 var data = [
   {
-    "text": "Angular",
-    "child": [
-      {
-        "text": "Angular"
-      },
-      {
-        "text": "Angular 4"
-      },
-      {
-        "text": "Angular 2"
-      }
-    ]
-  },
-  {
     "text": "Angular.js",
     "expanded": true,
     "child": [
@@ -27,7 +13,8 @@ var data = [
         "text": "Angular.js 1.4", "disabled": true, "checked": true
       },
       {
-        "text": "Angular.js 1.3", "disabledCheckbox": true
+        "text": "Angular.js 1.3", "disabledCheckbox": true,
+        "child": ["Angular.js 1.3.1", "Angular.js 1.3.2", "Angular.js 1.3.3"]
       },
       {
         "text": "Angular.js 1.2", "disabledCheckbox": true, "checked": true
@@ -50,7 +37,7 @@ var data = [
         "text": "Apache Pig 0.16"
       },
       {
-        "text": "Apache Pig 0.15"
+        "text": "Apache Pig 0.15", "child": ["Apache Pig 0.15.1", "Apache Pig 0.15.2"]
       },
       {
         "text": "Apache Pig 0.14"

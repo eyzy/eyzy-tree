@@ -2,11 +2,12 @@
 export interface Node {
   id: string
   text: string
+  child: Node[]
+  parent?: Node | null
   checkable?: boolean
   checkboxRenderer?: any
   arrowRenderer?: any
   textRenderer?: any
-  child?: Node[]
   selected?: boolean
   expanded?: boolean
   checked?: boolean

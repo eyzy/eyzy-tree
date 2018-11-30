@@ -16,18 +16,28 @@ export default class TreeNode extends React.PureComponent<Node> {
       text,
       child,
       expanded,
-      disabled
+      disabled,
+      parent
     } = this.props
 
-    return {
+    const node: Node = {
       id,
       checked,
       selected,
       text,
       child,
-      expanded,
-      disabled
+      parent
+    } 
+
+    if (void 0 !== expanded) {
+      node.expanded = expanded
     }
+
+    if (void 0 !== disabled) {
+      node.disabled = disabled
+    }
+
+    return node
   }
 
   handleSelect = () => {

@@ -8,6 +8,7 @@ import TreeNode from './TreeNode'
 import { Node } from '../types/Node'
 import { Tree } from '../types/Tree'
 
+import { copyArray } from '../utils'
 import { parseNode } from '../utils/parser'
 import { recurseDown } from '../utils/traveler'
 
@@ -16,6 +17,7 @@ interface State {
   selectedNodes: string[]
   checkedNodes: string[]
   expandedNodes: string[]
+  indeterminateNodes: string[]
 }
 
 export default class EyzyTree extends React.Component<Tree, State> {
@@ -51,6 +53,25 @@ export default class EyzyTree extends React.Component<Tree, State> {
     }
   }
 
+  refreshIndeterminateState = (node: Node, isChecked: boolean) => {
+    let checkedNodes: string[] = copyArray(this.state.checkedNodes)
+    const childIds: string[] = []
+
+    recurseDown(node, (child: Node) => childIds.push(child.id))
+
+    if (isChecked) {
+      checkedNodes.push(...childIds)
+    } else {
+      checkedNodes = checkedNodes.filter(nodeId => !~childIds.indexOf(nodeId))
+    }
+
+    this.setState({
+      checkedNodes
+    })
+
+    console.log(checkedNodes)
+  }
+
   select = (node: Node, ignoreEvent: boolean = false) => {
     this.setState({
       selectedNodes: [node.id]
@@ -64,15 +85,19 @@ export default class EyzyTree extends React.Component<Tree, State> {
   check = (node: Node) => {
     const id = node.id
     const isChecked = this.state.checkedNodes.indexOf(id) === -1
+    
+    let checkedNodes;
 
     if (isChecked) {
-      this.setState({
-        checkedNodes: [...this.state.checkedNodes, id]
-      })
+      checkedNodes = [...this.state.checkedNodes, id]
     } else {
-      this.setState({
-        checkedNodes: this.state.checkedNodes.filter((checkedId: string) => id !== checkedId)
-      })
+      checkedNodes = this.state.checkedNodes.filter((checkedId: string) => id !== checkedId)
+    }
+    
+    if (this.props.autoCheckChildren !== false) {
+      this.refreshIndeterminateState(node, isChecked)
+    } else {
+      this.setState({checkedNodes})
     }
 
     if (this.props.onCheck) {
@@ -83,7 +108,7 @@ export default class EyzyTree extends React.Component<Tree, State> {
   expand = (node: Node) => {
     const id = node.id
 
-    if (node.child && !node.child.length) {
+    if (!node.child.length) {
       return
     }
 
@@ -107,7 +132,7 @@ export default class EyzyTree extends React.Component<Tree, State> {
   }
 
   handleDoubleClick = (node: Node) => {
-    if (node.disabled || node.child && !node.child.length || this.props.expandOnSelect) {
+    if (node.disabled || !node.child.length || this.props.expandOnSelect) {
       return
     }
 
@@ -133,7 +158,7 @@ export default class EyzyTree extends React.Component<Tree, State> {
   renderNode = (node: Node): ReactElement<Node> => {
     const isSelected = this.state.selectedNodes.indexOf(node.id) !== -1
     const isChecked = this.state.checkedNodes.indexOf(node.id) !== -1
-    const isExpanded = node.child && node.child.length > 0 && this.state.expandedNodes.indexOf(node.id) !== -1
+    const isExpanded = node.child.length > 0 && this.state.expandedNodes.indexOf(node.id) !== -1
 
     return (
       <TreeNode
@@ -141,6 +166,7 @@ export default class EyzyTree extends React.Component<Tree, State> {
         key={node.id}
         text={node.text}
         child={node.child}
+        parent={node.parent}
         onSelect={this.handleSelect}
         onDoubleClick={this.handleDoubleClick}
         onCheck={this.check}
@@ -156,7 +182,7 @@ export default class EyzyTree extends React.Component<Tree, State> {
         checkable={this.props.checkable}
         hidenCheckbox={node.hidenCheckbox}
       >
-        { isExpanded && node.child ? node.child.map(this.renderNode) : null }
+        { isExpanded ? node.child.map(this.renderNode) : null }
       </TreeNode>
     )
   }
