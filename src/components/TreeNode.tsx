@@ -63,7 +63,7 @@ export default class TreeNode extends React.PureComponent<Node> {
   }
 
   renderCheckbox = () => {
-    if (!this.props.checkable) {
+    if (!this.props.checkable || this.props.hidenCheckbox) {
       return null
     }
 
@@ -132,7 +132,7 @@ export default class TreeNode extends React.PureComponent<Node> {
           </span>
         </div>
 
-        { hasChild(this.props) &&
+        { hasChild(this.props) && expanded &&
           <ul className="node-child">{ children }</ul>
         }
       </li>

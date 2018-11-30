@@ -138,6 +138,7 @@ export default class EyzyTree extends React.Component<Tree, State> {
     return (
       <TreeNode
         id={node.id}
+        key={node.id}
         text={node.text}
         child={node.child}
         onSelect={this.handleSelect}
@@ -153,7 +154,7 @@ export default class EyzyTree extends React.Component<Tree, State> {
         textRenderer={this.props.textRenderer}
         arrowRenderer={this.props.arrowRenderer}
         checkable={this.props.checkable}
-        key={node.id}
+        hidenCheckbox={node.hidenCheckbox}
       >
         { isExpanded && node.child ? node.child.map(this.renderNode) : null }
       </TreeNode>

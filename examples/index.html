@@ -25,6 +25,14 @@
     <div id="example1"></div>
 
     <script>
+      const withoutChecboxes = data.map(item => {
+        if (item.child && item.child.length) {
+          item.hidenCheckbox = 1
+        }
+
+        return item
+      })
+
       ReactDOM.render(
         React.createElement(EyzyTree, {
           data: data,
