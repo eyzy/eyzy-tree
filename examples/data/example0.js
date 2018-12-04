@@ -2,7 +2,6 @@ var data = [
   {
     "text": "Angular.js",
     "expanded": true,
-    "indeterminate": true,
     "child": [
       {
         "text": "Angular.js 1.6"
@@ -30,6 +29,7 @@ var data = [
   },
   {
     "text": "Apache Pig",
+    "expanded": true,
     "child": [
       {
         "text": "Apache Pig 0.17"
@@ -38,7 +38,7 @@ var data = [
         "text": "Apache Pig 0.16"
       },
       {
-        "text": "Apache Pig 0.15", "child": ["Apache Pig 0.15.1", "Apache Pig 0.15.2"]
+        "text": "Apache Pig 0.15", "expanded": true, "child": ["Apache Pig 0.15.1", "Apache Pig 0.15.2"]
       },
       {
         "text": "Apache Pig 0.14"

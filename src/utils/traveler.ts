@@ -22,9 +22,7 @@ export function traverseUp(obj: Node, fn: (obj: Node) => any): any {
   let node = obj.parent
 
   while (node) {
-    fn(node)
-
-    if (!node.parent) {
+    if (false === fn(node) || !node.parent) {
       return
     }
 
