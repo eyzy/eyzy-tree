@@ -11,6 +11,7 @@ export interface Node {
   selected?: boolean
   expanded?: boolean
   checked?: boolean
+  indeterminate?: boolean
   disabled?: boolean
   disabledCheckbox?: boolean
   hidenCheckbox?: boolean

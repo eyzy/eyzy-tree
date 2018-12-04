@@ -37,6 +37,22 @@
       }
     }
 
+    &.indeterminate {
+      > .node-checkbox {
+        background-color: $checkbox-checked-bg-color;
+        border-color: $checkbox-checked-bg-color;
+
+        &:after {
+          background-color: $checkbox-checked-color;
+          top: 50%;
+          left: 20%;
+          right: 20%;
+          height: 2px;
+          opacity: 1;
+        }
+      }
+    }
+
     &.selected {
       > .node-text {
         background: $node-selected-bg;  

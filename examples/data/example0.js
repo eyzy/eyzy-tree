@@ -2,6 +2,7 @@ var data = [
   {
     "text": "Angular.js",
     "expanded": true,
+    "indeterminate": true,
     "child": [
       {
         "text": "Angular.js 1.6"

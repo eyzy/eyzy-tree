@@ -116,6 +116,7 @@ export default class TreeNode extends React.PureComponent<Node> {
       expanded,
       disabled,
       disabledCheckbox,
+      indeterminate,
       textRenderer: TextRenderer
     } = this.props
 
@@ -127,7 +128,8 @@ export default class TreeNode extends React.PureComponent<Node> {
       'checked': checked,
       'expanded': expanded,
       'disabled': disabled,
-      'disabled-checkbox': disabledCheckbox
+      'disabled-checkbox': disabledCheckbox,
+      'indeterminate': !checked && indeterminate
     })
 
     return (
