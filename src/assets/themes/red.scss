@@ -45,6 +45,13 @@
       }
     }
 
+    &.indeterminate {
+      > .node-checkbox {
+        background-color: $eyzy-theme-red-checkbox-checked-bg-color;
+        border-color: $eyzy-theme-red-checkbox-border-color;
+      }
+    }
+
     .node-text,
     .node-arrow,
     .node-checkbox {

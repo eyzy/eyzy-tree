@@ -9,13 +9,15 @@ export function isNodeIndeterminate(node: Node, treeCheckedNodes: string[]): boo
     return false
   }
 
-  return node.child.some((item: Node) => {
-    if (item.disabled || item.disabledCheckbox) {
-      return false
+  const uncheckedNodes = node.child.reduce((count: number, item: Node) => {
+    if (true !== item.disabled && true !== item.disabledCheckbox && !isNodeChecked(item, treeCheckedNodes)) {
+      count++
     }
 
-    return !isNodeChecked(item, treeCheckedNodes)
-  })
+    return count
+  }, 0)
+
+  return uncheckedNodes > 0 && uncheckedNodes < node.child.length
 }
 
 export function isNodeChecked(node: Node, treeCheckedNodes: string[]): boolean {

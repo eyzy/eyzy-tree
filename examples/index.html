@@ -29,19 +29,18 @@
         React.createElement(EyzyTree, {
           data,
           theme: "",
-          checkable: 1,
-          expandOnSelect: true
+          checkable: 1
         }),
         document.getElementById('example0')
       )
-      
-      // ReactDOM.render(
-      //   React.createElement(EyzyTree, {
-      //     data: data,
-      //     checkable: 1,
-      //   }),
-      //   document.getElementById('example1')
-      // )
+
+      ReactDOM.render(
+        React.createElement(EyzyTree, {
+          data: data,
+          checkable: 1,
+        }),
+        document.getElementById('example1')
+      )
     </script>
   </body>
 </html>

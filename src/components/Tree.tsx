@@ -79,7 +79,7 @@ export default class EyzyTree extends React.Component<Tree, State> {
       checkedNodes = checkedNodes.filter(nodeId => !~childIds.indexOf(nodeId))
     }
 
-    traverseUp(node, (parentNode) => {
+    traverseUp(node, (parentNode): any => {
       if (parentNode.disabledCheckbox || parentNode.disabled) {
         return false
       }
