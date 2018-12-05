@@ -206,6 +206,10 @@ export default class EyzyTree extends React.Component<Tree> {
     return (
       <TreeNode
         key={node.id}
+        checkboxRenderer={this.props.checkboxRenderer}
+        textRenderer={this.props.textRenderer}
+        arrowRenderer={this.props.arrowRenderer}
+        checkable={this.props.checkable}
         {...node}
       >
         { node.expanded ? node.child.map(this.nodeRenderer) : null }
