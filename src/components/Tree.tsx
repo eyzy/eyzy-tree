@@ -17,48 +17,24 @@ import {
   isNodeIndeterminate 
 } from '../utils'
 
-interface State {
-  data: Node[]
-  selectedNodes: string[]
-  checkedNodes: string[]
-  expandedNodes: string[]
-  indeterminateNodes: string[]
-}
-
-export default class EyzyTree extends React.Component<Tree, State> {
+export default class EyzyTree extends React.Component<Tree> {
   static TreeNode = TreeNode
+
+  nodesLength: number
 
   constructor(props: Tree) {
     super(props)
 
     const data = parseNode(props.data)
+    const stateObject = {}
 
-    const checkedNodes: string[] = []
-    const selectedNodes: string[] = []
-    const expandedNodes: string[] = []
-    const indeterminateNodes: string[] = []
-
-    recurseDown(data, (node: Node) => {
-      if (node.checked) {
-        checkedNodes.push(node.id)
-      }
-
-      if (node.selected) {
-        selectedNodes.push(node.id)
-      }
-
-      if (node.expanded) {
-        expandedNodes.push(node.id)
-      }
+    data.forEach((item: Node, i: number) => {
+      stateObject[i] = item
     })
 
-    this.state = {
-      data,
-      selectedNodes,
-      checkedNodes,
-      expandedNodes,
-      indeterminateNodes
-    }
+    this.nodesLength = data.length
+
+    this.state = stateObject
   }
 
   refreshIndeterminateState = (node: Node, isChecked: boolean) => {
@@ -226,15 +202,32 @@ export default class EyzyTree extends React.Component<Tree, State> {
     )
   }
 
+  nodeRenderer = (node: Node): ReactElement<Node> => {
+    return (
+      <TreeNode
+        key={node.id}
+        {...node}
+      >
+        { node.expanded ? node.child.map(this.nodeRenderer) : null }
+      </TreeNode>
+    )
+  }
+
   render() {
     const props = this.props
     const treeClass = 'theme' in props 
       ? 'eyzy-tree ' + props.theme
       : 'eyzy-tree eyzy-theme'
-    
+
+    const nodes = []
+
+    for (let i = 0; i < this.nodesLength; i++) {
+      nodes.push(this.nodeRenderer(this.state[i]))
+    }
+
     return (
       <ul className={treeClass}>
-        { this.state.data.map(this.renderNode) }
+        { nodes }
       </ul>
     )
   }

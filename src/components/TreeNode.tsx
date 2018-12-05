@@ -132,6 +132,8 @@ export default class TreeNode extends React.PureComponent<Node> {
       'indeterminate': !checked && indeterminate
     })
 
+    console.log('RENDERING:', text)
+
     return (
       <li className="tree-node">
         <div className={nodeContentClass}>
