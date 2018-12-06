@@ -3,6 +3,7 @@ export interface Node {
   id: string
   text: string
   child: Node[]
+  node?: Node
   parent?: Node | null
   checkable?: boolean
   checkboxRenderer?: any

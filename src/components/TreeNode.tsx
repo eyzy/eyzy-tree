@@ -2,12 +2,19 @@ import React from 'react'
 import { Node } from '../types/Node'
 
 import cn from '../utils/cn'
+import { shallowEqual } from '../utils/shallowEqual'
 
 const hasChild = (node: Node): boolean => {
   return Array.isArray(node.child) && node.child.length > 0
 }
 
-export default class TreeNode extends React.PureComponent<Node> {
+export default class TreeNode extends React.Component<Node> {
+  shouldComponentUpdate(nextProps: Node): boolean {
+    const s = shallowEqual(this.props, nextProps)
+
+    return s
+  }
+
   getNode(): Node {
     const {
       id,
@@ -46,7 +53,7 @@ export default class TreeNode extends React.PureComponent<Node> {
     }
 
     if (this.props.onSelect) {
-      this.props.onSelect(this.getNode())
+      this.props.onSelect(this.props.node)
     }
   }
 

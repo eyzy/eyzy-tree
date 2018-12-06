@@ -1,7 +1,21 @@
 import { Node } from '../types/Node'
 
+export const hasOwnProp = {}.hasOwnProperty
+
 export function copyArray<T>(arr: T[]): T[] {
   return arr.concat([])
+}
+
+export function copyObject(obj: any) {
+  const newObj = {}
+
+  for (let i in obj) {
+    if (hasOwnProp.call(obj, i)) {
+      newObj[i] = obj[i]
+    }
+  }
+
+  return newObj
 }
 
 export function isNodeIndeterminate(node: Node, treeCheckedNodes: string[]): boolean {

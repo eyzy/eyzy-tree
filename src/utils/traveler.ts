@@ -18,6 +18,20 @@ export function recurseDown(obj: Node | Node[], fn: (obj: Node) => any, excludeS
   return res
 }
 
+export function rootElement(obj: Node): Node | null {
+  let node = obj.parent
+
+  while (node) {
+    if (!node.parent) {
+      return node
+    }
+    
+    node = node.parent
+  }
+
+  return  null
+}
+
 export function traverseUp(obj: Node, fn: (obj: Node) => any): any {
   let node = obj.parent
 
