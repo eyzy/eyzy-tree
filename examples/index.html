@@ -25,9 +25,14 @@
     <div id="example1"></div>
 
     <script>
+      const d = [
+        'Item 1',
+        { text: 'Item 2', child: ['Item 2.1', 'Item 2.2'], expanded: true }
+      ]
+
       ReactDOM.render(
         React.createElement(EyzyTree, {
-          data,
+          data: d,
           theme: "",
           checkable: 1
         }),

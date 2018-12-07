@@ -25,11 +25,11 @@ export function rootElement(obj: Node): Node | null {
     if (!node.parent) {
       return node
     }
-    
+
     node = node.parent
   }
 
-  return  null
+  return null
 }
 
 export function traverseUp(obj: Node, fn: (obj: Node) => any): any {

@@ -12,7 +12,7 @@ export default class TreeNode extends React.Component<Node> {
   shouldComponentUpdate(nextProps: Node): boolean {
     const s = shallowEqual(this.props, nextProps)
 
-    return s
+    return !s
   }
 
   getNode(): Node {

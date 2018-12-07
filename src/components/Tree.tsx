@@ -38,7 +38,8 @@ export default class EyzyTree extends React.Component<Tree> {
     this.state = stateObject
   }
 
-  getNodeIndex = (node: Node, parent: any) => {
+  getNodeIndex = (node: Node | null, parent: any) => {
+
     if (parent.child) {
       return parent.child.indexOf(node)
     }
@@ -53,28 +54,32 @@ export default class EyzyTree extends React.Component<Tree> {
   }
 
   updateItemState = (node: Node) => {
+    let stateIndex: number = 0
+    let stateObject: Node | null
+
     if (node.parent) {
-      const parent = node.parent
-      const index: number = this.getNodeIndex(node, parent)
+      const root: Node = rootElement(node) || node
+      const child = copyObject(node.parent.child)
+      const index = this.getNodeIndex(node, node.parent)
 
-      parent["child"][index] = copyObject(node)
+      child[index] = copyObject(node)
 
-      const root = rootElement(node)
-
-      if (root) {
-        const rootIndex = this.getNodeIndex(root, this.state)
-
-        this.setState({
-          [rootIndex]: copyObject(root)
-        })
-      }
-    } else {
-      const index: number = this.getNodeIndex(node, this.state)
-
-      this.setState({
-        [index]: copyObject(node)
+      traverseUp(node, (item: Node) => {
+        if (item !== node) {
+          item.child = item.child.map(copyObject) as Node[]
+        }
       })
+
+      stateObject = root
+    } else {
+      stateObject = node
     }
+
+    stateIndex = this.getNodeIndex(stateObject, this.state)
+
+    this.setState({
+      [stateIndex]: copyObject(stateObject) as Node
+    })
   }
 
   refreshIndeterminateState = (node: Node, isChecked: boolean) => {
@@ -249,18 +254,27 @@ export default class EyzyTree extends React.Component<Tree> {
   }
 
   nodeRenderer = (node: Node): ReactElement<Node> => {
+    const treePropsKeys: string[] = [
+      'checkable', 'arrowRenderer', 'textRenderer', 'checkboxRenderer'
+    ]
+
+    const treeProps = treePropsKeys.reduce((props: any, key: string) => {
+      if (this.props[key]) {
+        props[key] = this.props[key]
+      }
+
+      return props
+    }, {})
+
     return (
       <TreeNode
         key={node.id}
         node={node}
-        checkboxRenderer={this.props.checkboxRenderer}
-        textRenderer={this.props.textRenderer}
-        arrowRenderer={this.props.arrowRenderer}
-        checkable={this.props.checkable}
         onSelect={this.handleSelect}
         onDoubleClick={this.handleDoubleClick}
         onCheck={this.check}
         onExpand={this.expand}
+        {...treeProps}
         {...node}
       >
         { node.expanded ? node.child.map(this.nodeRenderer) : null }
