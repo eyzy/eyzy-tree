@@ -23,6 +23,8 @@ export default class EyzyTree extends React.Component<Tree> {
 
   nodesLength: number
 
+  selectedNodes: Node[] = []
+
   constructor(props: Tree) {
     super(props)
 
@@ -38,14 +40,13 @@ export default class EyzyTree extends React.Component<Tree> {
     this.state = stateObject
   }
 
-  getNodeIndex = (node: Node | null, parent: any) => {
-
+  getNodeIndex = (node: Node, parent: any) => {
     if (parent.child) {
-      return parent.child.indexOf(node)
+      return parent.child.find((item: Node) => node.id === item.id)
     }
 
     for (let i = 0; i < this.nodesLength; i++ ) {
-      if (parent[i] === node) {
+      if (parent[i].id === node.id) {
         return i
       }
     }
@@ -53,9 +54,11 @@ export default class EyzyTree extends React.Component<Tree> {
     return -1
   }
 
-  updateItemState = (node: Node) => {
+  updateItemState = (node: Node, stateKey: string, stateValue: any) => {
     let stateIndex: number = 0
     let stateObject: Node | null
+
+    node[stateKey] = stateValue
 
     if (node.parent) {
       const root: Node = rootElement(node) || node
@@ -131,19 +134,18 @@ export default class EyzyTree extends React.Component<Tree> {
   }
 
   select = (node: Node, ignoreEvent: boolean = false) => {
-    console.log(node)
+    this.selectedNodes = this.selectedNodes.filter((node: Node) => {
+      this.updateItemState(node, 'selected', false)
+      return false
+    })
 
-    node.selected = true
+    this.updateItemState(node, 'selected', true)
 
-    this.updateItemState(node)
+    this.selectedNodes.push(node)
 
-    // this.setState({
-    //   selectedNodes: [node.id]
-    // })
-
-    // if (false !== ignoreEvent && this.props.onSelect) {
-    //   this.props.onSelect(node)
-    // }
+    if (false !== ignoreEvent && this.props.onSelect) {
+      this.props.onSelect(node)
+    }
   }
 
   check = (node: Node) => {
