@@ -204,6 +204,7 @@ export default class EyzyTree extends React.Component<Tree, State> {
         key={node.id}
         text={node.text}
         child={node.child}
+        isBatch={node.isBatch}
         parent={node.parent}
         onSelect={this.handleSelect}
         onDoubleClick={this.handleDoubleClick}

@@ -22,7 +22,7 @@ var data = [
     ]
   },
   {
-    "text": "Ansible 2.4"
+    "text": "Ansible 2.4", "isBatch": true
   },
   {
     "text": "Apache HTTP Server"
