@@ -2,6 +2,10 @@ import { Node } from '../types/Node'
 
 export const hasOwnProp = {}.hasOwnProperty
 
+export function isArray(obj: any): boolean {
+  return Array.isArray(obj)
+}
+
 export function copyArray<T>(arr: T[]): T[] {
   return arr.concat([])
 }
@@ -11,11 +15,15 @@ export function copyObject(obj: any) {
 
   for (let i in obj) {
     if (hasOwnProp.call(obj, i)) {
-      newObj[i] = obj[i]
+      newObj[i] = isArray(obj[i]) ? copyArray(obj[i]) : obj[i]
     }
   }
 
   return newObj
+}
+
+export function isRoot(node: Node): boolean {
+  return node && !node.parent
 }
 
 export function isNodeIndeterminate(node: Node, treeCheckedNodes: string[]): boolean {

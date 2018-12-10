@@ -8,11 +8,13 @@ import TreeNode from './TreeNode'
 import { Node } from '../types/Node'
 import { Tree } from '../types/Tree'
 
+import State from '../utils/state'
 import { parseNode } from '../utils/parser'
 import { recurseDown, traverseUp, rootElement } from '../utils/traveler'
 import { 
   copyArray,
   copyObject,
+  isRoot,
   isNodeSelected,
   isNodeChecked,
   isNodeIndeterminate 
@@ -21,9 +23,9 @@ import {
 export default class EyzyTree extends React.Component<Tree> {
   static TreeNode = TreeNode
 
-  nodesLength: number
+  stateLength: number
 
-  selectedNodes: Node[] = []
+  selectedNodes: string[] = []
 
   constructor(props: Tree) {
     super(props)
@@ -35,54 +37,8 @@ export default class EyzyTree extends React.Component<Tree> {
       stateObject[i] = item
     })
 
-    this.nodesLength = data.length
-
+    this.stateLength = data.length
     this.state = stateObject
-  }
-
-  getNodeIndex = (node: Node, parent: any) => {
-    if (parent.child) {
-      return parent.child.find((item: Node) => node.id === item.id)
-    }
-
-    for (let i = 0; i < this.nodesLength; i++ ) {
-      if (parent[i].id === node.id) {
-        return i
-      }
-    }
-
-    return -1
-  }
-
-  updateItemState = (node: Node, stateKey: string, stateValue: any) => {
-    let stateIndex: number = 0
-    let stateObject: Node | null
-
-    node[stateKey] = stateValue
-
-    if (node.parent) {
-      const root: Node = rootElement(node) || node
-      const child = copyObject(node.parent.child)
-      const index = this.getNodeIndex(node, node.parent)
-
-      child[index] = copyObject(node)
-
-      traverseUp(node, (item: Node) => {
-        if (item !== node) {
-          item.child = item.child.map(copyObject) as Node[]
-        }
-      })
-
-      stateObject = root
-    } else {
-      stateObject = node
-    }
-
-    stateIndex = this.getNodeIndex(stateObject, this.state)
-
-    this.setState({
-      [stateIndex]: copyObject(stateObject) as Node
-    })
   }
 
   refreshIndeterminateState = (node: Node, isChecked: boolean) => {
@@ -134,14 +90,22 @@ export default class EyzyTree extends React.Component<Tree> {
   }
 
   select = (node: Node, ignoreEvent: boolean = false) => {
-    this.selectedNodes = this.selectedNodes.filter((node: Node) => {
-      this.updateItemState(node, 'selected', false)
+    const state = new State(this.state, this.stateLength)
+
+    this.selectedNodes = this.selectedNodes.filter((nodeId: string) => {
+      const node = state.getNodeById(nodeId)
+
+      if (node) {
+        state.set(node, 'selected', false)
+      }
+
       return false
     })
 
-    this.updateItemState(node, 'selected', true)
+    state.set(node, 'selected', true)
 
-    this.selectedNodes.push(node)
+    this.selectedNodes.push(node.id)
+    this.setState(state.get())
 
     if (false !== ignoreEvent && this.props.onSelect) {
       this.props.onSelect(node)
@@ -292,7 +256,7 @@ export default class EyzyTree extends React.Component<Tree> {
 
     const nodes = []
 
-    for (let i = 0; i < this.nodesLength; i++) {
+    for (let i = 0; i < this.stateLength; i++) {
       nodes.push(this.nodeRenderer(this.state[i]))
     }
 
