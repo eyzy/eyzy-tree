@@ -14,9 +14,7 @@ const comparingKeys = [
 
 export default class TreeNode extends React.Component<Node> {
   shouldComponentUpdate(nextProps: Node): boolean {
-    const s = shallowEqual(this.props, nextProps, comparingKeys)
-
-    return !s
+    return !shallowEqual(this.props, nextProps, comparingKeys)
   }
 
   getNode(): Node {

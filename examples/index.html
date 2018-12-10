@@ -28,7 +28,16 @@
       const d = [
         'Item 1',
         { text: 'Item 2', child: ['Item 2.1', 'Item 2.2'], expanded: true },
-        'Item 3'
+        'Item 3',
+        'Item 4',
+        {
+          text: 'Item 5', expanded: 1, child: [
+            { text: 'Item 5.1' },
+            { text: 'Item 5.2', expanded: 1, child: [
+              'Item 5.2.1', {text: 'Item 5.2.2', expanded: 1, child: ['Item 5.2.2.1', 'Item 5.2.2.2']}
+            ]}
+          ]
+        }
       ]
 
       ReactDOM.render(

@@ -3,8 +3,20 @@ import { Node } from '../types/Node'
 import { recurseDown, traverseUp, rootElement } from './traveler'
 import {
   isRoot,
-  copyObject
+  copyObject,
+  copyArray
 } from './index'
+
+function replaceChild(node: Node): Node {
+  if (!node || !node.child) {
+    return node
+  }
+
+  node.child = copyArray(node.child)
+  node.child.forEach(replaceChild)
+
+  return node
+}
 
 function getItemById(id: string, targetState: any): any {
   return Object.keys(targetState)
@@ -45,11 +57,13 @@ export default class State<T> {
     this.stateLength = stateLength
   }
 
-  updateRootNode(node: Node, key: string, value: any) {
+  updateRootNode(node: Node, key?: string, value?: any) {
     const i = getItemById(node.id, this.state)
     const newObj = copyObject(node)
 
-    newObj[key] = value
+    if (key) {
+      newObj[key] = value
+    }
 
     if (null !== i) {
       this.state[i] = newObj
@@ -60,7 +74,7 @@ export default class State<T> {
     const root: Node | null = rootElement(node)
     const parentNode: Node | null | undefined = node.parent
 
-    if (!parentNode || !root) {
+    if (!parentNode || !root || !parentNode.child) {
       return
     }
 
@@ -70,17 +84,9 @@ export default class State<T> {
       return
     }
 
-    const child = copyObject(parentNode.child)
-    child[index] = copyObject(node)
-    child[index][key] = value
+    parentNode.child[index][key] = value
 
-    traverseUp(node, (item: Node) => {
-      if (item !== node) {
-        item.child = item.child.map(copyObject) as Node[]
-      }
-    })
-
-    this.updateRootNode(root, key, value)
+    this.updateRootNode(replaceChild(root))
   }
 
   set(node: Node, key: string, value: any): T {

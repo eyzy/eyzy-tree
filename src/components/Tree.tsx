@@ -260,6 +260,10 @@ export default class EyzyTree extends React.Component<Tree> {
       nodes.push(this.nodeRenderer(this.state[i]))
     }
 
+    setTimeout(_ => {
+      console.log('----------------------')
+    }, 400)
+
     return (
       <ul className={treeClass}>
         { nodes }
