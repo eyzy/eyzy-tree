@@ -43,8 +43,8 @@
       ReactDOM.render(
         React.createElement(EyzyTree, {
           data: d,
-          theme: "",
-          checkable: 1
+          onSelect: (node) => {console.log('select', node.text)},
+          onUnSelect: (node) => {console.log('unselect', node.text)}
         }),
         document.getElementById('example0')
       )

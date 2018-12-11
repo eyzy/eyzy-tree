@@ -141,7 +141,7 @@ export default class TreeNode extends React.Component<Node> {
       'indeterminate': !checked && indeterminate
     })
 
-    console.log('RENDERING:', text)
+    // console.log('RENDERING:', text)
 
     return (
       <li className="tree-node">

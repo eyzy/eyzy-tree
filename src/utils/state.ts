@@ -62,6 +62,7 @@ export default class State<T> {
     const newObj = copyObject(node)
 
     if (key) {
+      node[key] = value
       newObj[key] = value
     }
 
@@ -84,6 +85,7 @@ export default class State<T> {
       return
     }
 
+    node[key] = value
     parentNode.child[index][key] = value
 
     this.updateRootNode(replaceChild(root))

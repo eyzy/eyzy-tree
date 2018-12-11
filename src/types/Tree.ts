@@ -12,6 +12,7 @@ export interface Tree {
   theme?: string
   data: Node[]
   onSelect?: (node: Node) => void
+  onUnSelect?: (node: Node) => void
   onCheck?: (node: Node) => void
   onExpand?: (node: Node, isExpanded: boolean) => void
   onDoubleClick?: (node: Node) => void

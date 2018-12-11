@@ -24,6 +24,7 @@ export default class EyzyTree extends React.Component<Tree> {
   static TreeNode = TreeNode
 
   stateLength: number
+  stateCache: State<any> | null = null
 
   selectedNodes: string[] = []
 
@@ -89,14 +90,41 @@ export default class EyzyTree extends React.Component<Tree> {
     })
   }
 
-  select = (node: Node, ignoreEvent: boolean = false) => {
-    const state = new State(this.state, this.stateLength)
+  getState = () => {
+    return this.stateCache || new State(this.state, this.stateLength)
+  }
+
+  updateState = (state: any, clearCache?: boolean) => {
+    if (clearCache) {
+      this.setState(state)
+      this.stateCache = null
+      return
+    }
+
+    if (this.stateCache) {
+      return
+    }
+
+    this.setState(state)
+  }
+
+  useState = (state: any, cb: () => void): any => {
+    this.stateCache = state
+    cb()
+  }
+
+  select = (node: Node, ignoreEvent?: boolean) => {
+    const state = this.getState()
 
     this.selectedNodes = this.selectedNodes.filter((nodeId: string) => {
       const node = state.getNodeById(nodeId)
 
       if (node) {
         state.set(node, 'selected', false)
+
+        if (true !== ignoreEvent && this.props.onUnSelect) {
+          this.props.onUnSelect(node)
+        }
       }
 
       return false
@@ -105,9 +133,9 @@ export default class EyzyTree extends React.Component<Tree> {
     state.set(node, 'selected', true)
 
     this.selectedNodes.push(node.id)
-    this.setState(state.get())
+    this.updateState(state.get())
 
-    if (false !== ignoreEvent && this.props.onSelect) {
+    if (true !== ignoreEvent && this.props.onSelect) {
       this.props.onSelect(node)
     }
   }
@@ -136,25 +164,21 @@ export default class EyzyTree extends React.Component<Tree> {
   }
 
   expand = (node: Node) => {
-    const id = node.id
-
     if (!node.child.length) {
       return
     }
 
-    if (node.expanded) {
-      this.setState({
-        expandedNodes: this.state.expandedNodes.filter((nodeid: string) => id !== nodeid)
-      })
-    } else {
-      this.setState({
-        expandedNodes: [...this.state.expandedNodes, id]
+    const state = this.getState()
+
+    state.set(node, 'expanded', !node.expanded)
+
+    if (this.props.selectOnExpand && !node.selected) {
+      this.useState(state, () => {
+        this.select(node)
       })
     }
 
-    if (this.props.selectOnExpand && !node.selected) {
-      this.select(node)
-    }
+    this.updateState(state.get(), true)
 
     if (this.props.onExpand) {
       this.props.onExpand(node, !!node.expanded)
