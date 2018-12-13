@@ -120,7 +120,7 @@ export default class EyzyTree extends React.Component<Tree> {
       const node = state.getNodeById(nodeId)
 
       if (node) {
-        state.set(node, 'selected', false)
+        state.set(node.id, 'selected', false)
 
         if (true !== ignoreEvent && this.props.onUnSelect) {
           this.props.onUnSelect(node)
@@ -130,7 +130,7 @@ export default class EyzyTree extends React.Component<Tree> {
       return false
     })
 
-    state.set(node, 'selected', true)
+    state.set(node.id, 'selected', true)
 
     this.selectedNodes.push(node.id)
     this.updateState(state.get())
@@ -170,7 +170,7 @@ export default class EyzyTree extends React.Component<Tree> {
 
     const state = this.getState()
 
-    state.set(node, 'expanded', !node.expanded)
+    state.set(node.id, 'expanded', !node.expanded)
 
     if (this.props.selectOnExpand && !node.selected) {
       this.useState(state, () => {

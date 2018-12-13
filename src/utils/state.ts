@@ -13,7 +13,12 @@ function replaceChild(node: Node): Node {
   }
 
   node.child = copyArray(node.child)
-  node.child.forEach(replaceChild)
+  node.child.forEach((child: Node) => {
+    const replaced = replaceChild(child)
+    replaced.parent = node
+
+    return replaced
+  })
 
   return node
 }
@@ -48,6 +53,14 @@ function getNodeIndex(nodeId: string, parent: any, nodesLength: number): number 
   return null
 }
 
+function updateChildNodes(parentNode: Node) {
+  parentNode.child.forEach((child: Node) => {
+    child.parent = parentNode
+  })
+
+  return parentNode
+}
+
 export default class State<T> {
   private state: T
   private stateLength: number
@@ -67,7 +80,7 @@ export default class State<T> {
     }
 
     if (null !== i) {
-      this.state[i] = newObj
+      this.state[i] = updateChildNodes(newObj as Node)
     }
   }
 
@@ -91,7 +104,13 @@ export default class State<T> {
     this.updateRootNode(replaceChild(root))
   }
 
-  set(node: Node, key: string, value: any): T {
+  set(id: string, key: string, value: any): T {
+    const node = this.getNodeById(id)
+
+    if (!node) {
+      return this.state
+    }
+
     if (isRoot(node)) {
       this.updateRootNode(node, key, value)
     } else {
