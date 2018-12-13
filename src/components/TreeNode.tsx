@@ -49,13 +49,13 @@ export default class TreeNode extends React.Component<Node> {
     return node
   }
 
-  handleSelect = () => {
+  handleSelect = (event: React.MouseEvent) => {
     if (this.props.disabled) {
       return
     }
 
     if (this.props.onSelect) {
-      this.props.onSelect(this.props.node)
+      this.props.onSelect(this.getNode(), event)
     }
   }
 

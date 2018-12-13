@@ -1,3 +1,4 @@
+import React from 'react'
 
 export interface Node {
   id: string
@@ -16,7 +17,7 @@ export interface Node {
   disabled?: boolean
   disabledCheckbox?: boolean
   hidenCheckbox?: boolean
-  onSelect?: (node: Node) => void
+  onSelect?: (node: Node, event: React.MouseEvent) => void
   onCheck?: (node: Node) => void
   onExpand?: (node: Node) => void
   onDoubleClick?: (node: Node) => void

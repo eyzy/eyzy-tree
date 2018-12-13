@@ -10,11 +10,9 @@ import { Tree } from '../types/Tree'
 
 import State from '../utils/state'
 import { parseNode } from '../utils/parser'
-import { recurseDown, traverseUp, rootElement } from '../utils/traveler'
+import { recurseDown, traverseUp } from '../utils/traveler'
 import { 
   copyArray,
-  copyObject,
-  isRoot,
   isNodeSelected,
   isNodeChecked,
   isNodeIndeterminate 
@@ -27,6 +25,8 @@ export default class EyzyTree extends React.Component<Tree> {
   stateCache: State<any> | null = null
 
   selectedNodes: string[] = []
+  checkedNodes: string[] = []
+  indeterminateNodes: string[] = []
 
   constructor(props: Tree) {
     super(props)
@@ -42,11 +42,17 @@ export default class EyzyTree extends React.Component<Tree> {
     this.state = stateObject
   }
 
-  refreshIndeterminateState = (node: Node, isChecked: boolean) => {
-    let checkedNodes: string[] = copyArray(this.state.checkedNodes)
-    let indeterminateNodes = copyArray(this.state.indeterminateNodes)
+  refreshIndeterminateState = (id: string, willBeChecked: boolean) => {
+    let checkedNodes: string[] = copyArray(this.checkedNodes)
+    let indeterminateNodes = copyArray(this.indeterminateNodes)
 
+    const state = this.getState()
     const childIds: string[] = []
+    const node = state.getNodeById(id)
+
+    if (!node) {
+      return
+    }
 
     recurseDown(node, (child: Node) => {
       if (!child.disabled && !child.disabledCheckbox) {
@@ -54,7 +60,7 @@ export default class EyzyTree extends React.Component<Tree> {
       }
     })
 
-    if (isChecked) {
+    if (willBeChecked) {
       checkedNodes.push(...childIds)
     } else {
       checkedNodes = checkedNodes.filter(nodeId => !~childIds.indexOf(nodeId))
@@ -74,7 +80,7 @@ export default class EyzyTree extends React.Component<Tree> {
       } else {
         indeterminateNodes = indeterminateNodes.filter(nodeId => nodeId !== id)
 
-        if (isChecked) {
+        if (willBeChecked) {
           checkedNodes.push(id)
         } else {
           checkedNodes = checkedNodes.filter(nodeId => nodeId !== id)
@@ -84,10 +90,25 @@ export default class EyzyTree extends React.Component<Tree> {
 
     indeterminateNodes = indeterminateNodes.filter(nodeId => !~checkedNodes.indexOf(nodeId))
 
-    this.setState({
-      checkedNodes,
-      indeterminateNodes
+    this.checkedNodes.forEach((id: string) => {
+      if (-1 !== this.checkedNodes.indexOf(id)) {
+        state.set(id, 'checked', false)
+      }
     })
+
+    this.indeterminateNodes.forEach((id: string) => {
+      if (-1 !== this.indeterminateNodes.indexOf(id)) {
+        state.set(id, 'indeterminate', false)
+      }
+    })
+
+    checkedNodes.forEach((id: string) => state.set(id, 'checked', true))
+    indeterminateNodes.forEach((id: string) => state.set(id, 'indeterminate', true))
+
+    this.checkedNodes = checkedNodes
+    this.indeterminateNodes = indeterminateNodes
+
+    this.updateState(state, true)
   }
 
   getState = () => {
@@ -141,21 +162,24 @@ export default class EyzyTree extends React.Component<Tree> {
   }
 
   check = (node: Node) => {
-    const id = node.id
-    const isNotChecked = !isNodeChecked(node, this.state.checkedNodes)
+    const state = this.getState()
+    const willBeChecked: boolean = !node.checked
+    const id: string = node.id
 
-    let checkedNodes;
+    state.set(id, 'checked', willBeChecked)
 
-    if (isNotChecked) {
-      checkedNodes = [...this.state.checkedNodes, id]
+    if (willBeChecked) {
+      this.checkedNodes = [...this.checkedNodes, id]
     } else {
-      checkedNodes = this.state.checkedNodes.filter((checkedId: string) => id !== checkedId)
+      this.checkedNodes = this.checkedNodes.filter((checkedId: string) => id !== checkedId)
     }
-    
+
     if (this.props.autoCheckChildren !== false) {
-      this.refreshIndeterminateState(node, isNotChecked)
+      this.useState(state, () => {
+        this.refreshIndeterminateState(node.id, willBeChecked)
+      })
     } else {
-      this.setState({checkedNodes})
+      this.updateState(state.get())
     }
 
     if (this.props.onCheck) {
@@ -197,7 +221,7 @@ export default class EyzyTree extends React.Component<Tree> {
     }
   }
 
-  handleSelect = (node: Node) => {
+  handleSelect = (node: Node, event: React.MouseEvent) => {
     this.select(node)
 
     const { checkOnSelect, expandOnSelect, checkable } = this.props
@@ -210,40 +234,6 @@ export default class EyzyTree extends React.Component<Tree> {
   }
 
   renderNode = (node: Node): ReactElement<Node> => {
-    const isSelected = isNodeSelected(node, this.state.selectedNodes)
-    const isChecked = isNodeChecked(node, this.state.checkedNodes)
-    const isIndeterminate = this.state.indeterminateNodes.indexOf(node.id) !== -1
-    const isExpanded = node.child.length > 0 && this.state.expandedNodes.indexOf(node.id) !== -1
-
-    return (
-      <TreeNode
-        id={node.id}
-        key={node.id}
-        text={node.text}
-        child={node.child}
-        parent={node.parent}
-        onSelect={this.handleSelect}
-        onDoubleClick={this.handleDoubleClick}
-        onCheck={this.check}
-        onExpand={this.expand}
-        selected={isSelected}
-        checked={isChecked}
-        indeterminate={isIndeterminate}
-        expanded={isExpanded}
-        disabled={node.disabled}
-        disabledCheckbox={node.disabledCheckbox}
-        checkboxRenderer={this.props.checkboxRenderer}
-        textRenderer={this.props.textRenderer}
-        arrowRenderer={this.props.arrowRenderer}
-        checkable={this.props.checkable}
-        hidenCheckbox={node.hidenCheckbox}
-      >
-        { isExpanded ? node.child.map(this.renderNode) : null }
-      </TreeNode>
-    )
-  }
-
-  nodeRenderer = (node: Node): ReactElement<Node> => {
     const treePropsKeys: string[] = [
       'checkable', 'arrowRenderer', 'textRenderer', 'checkboxRenderer'
     ]
@@ -267,7 +257,7 @@ export default class EyzyTree extends React.Component<Tree> {
         {...treeProps}
         {...node}
       >
-        { node.expanded ? node.child.map(this.nodeRenderer) : null }
+        { node.expanded ? node.child.map(this.renderNode) : null }
       </TreeNode>
     )
   }
@@ -281,7 +271,7 @@ export default class EyzyTree extends React.Component<Tree> {
     const nodes = []
 
     for (let i = 0; i < this.stateLength; i++) {
-      nodes.push(this.nodeRenderer(this.state[i]))
+      nodes.push(this.renderNode(this.state[i]))
     }
 
     setTimeout(_ => {
