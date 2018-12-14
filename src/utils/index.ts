@@ -32,7 +32,7 @@ export function isNodeIndeterminate(node: Node, treeCheckedNodes: string[]): boo
   }
 
   const uncheckedNodes = node.child.reduce((count: number, item: Node) => {
-    if (true !== item.disabled && true !== item.disabledCheckbox && !isNodeChecked(item, treeCheckedNodes)) {
+    if (true !== item.disabled && true !== item.disabledCheckbox && item.checked) {
       count++
     }
 
@@ -40,12 +40,4 @@ export function isNodeIndeterminate(node: Node, treeCheckedNodes: string[]): boo
   }, 0)
 
   return uncheckedNodes > 0 && uncheckedNodes < node.child.length
-}
-
-export function isNodeChecked(node: Node, treeCheckedNodes: string[]): boolean {
-  return treeCheckedNodes.indexOf(node.id) !== -1
-}
-
-export function isNodeSelected(node: Node, treeSelectedNodes: string[]): boolean {
-  return treeSelectedNodes.indexOf(node.id) !== -1
 }

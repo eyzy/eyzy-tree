@@ -11,12 +11,7 @@ import { Tree } from '../types/Tree'
 import State from '../utils/state'
 import { parseNode } from '../utils/parser'
 import { recurseDown, traverseUp } from '../utils/traveler'
-import { 
-  copyArray,
-  isNodeSelected,
-  isNodeChecked,
-  isNodeIndeterminate 
-} from '../utils'
+import { copyArray, isNodeIndeterminate } from '../utils'
 
 export default class EyzyTree extends React.Component<Tree> {
   static TreeNode = TreeNode
@@ -27,6 +22,11 @@ export default class EyzyTree extends React.Component<Tree> {
   selectedNodes: string[] = []
   checkedNodes: string[] = []
   indeterminateNodes: string[] = []
+
+  /**
+   * init selected & checked states
+   * indeterminate doesnt work properly
+  */
 
   constructor(props: Tree) {
     super(props)
@@ -66,7 +66,7 @@ export default class EyzyTree extends React.Component<Tree> {
       checkedNodes = checkedNodes.filter(nodeId => !~childIds.indexOf(nodeId))
     }
 
-    traverseUp(node, (parentNode): any => {
+    traverseUp(node, (parentNode: Node): any => {
       if (parentNode.disabledCheckbox || parentNode.disabled) {
         return false
       }
@@ -172,6 +172,12 @@ export default class EyzyTree extends React.Component<Tree> {
       this.checkedNodes = [...this.checkedNodes, id]
     } else {
       this.checkedNodes = this.checkedNodes.filter((checkedId: string) => id !== checkedId)
+    }
+
+    if (this.props.selectOnCheck) {
+      this.useState(state, () => {
+        this.select(node)
+      })
     }
 
     if (this.props.autoCheckChildren !== false) {
