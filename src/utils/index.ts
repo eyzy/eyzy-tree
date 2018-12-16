@@ -6,6 +6,10 @@ export function isArray(obj: any): boolean {
   return Array.isArray(obj)
 }
 
+export function isFunction(value: any): boolean {
+  return 'function' === typeof value 
+}
+
 export function copyArray<T>(arr: T[]): T[] {
   return arr.concat([])
 }
@@ -26,13 +30,25 @@ export function isRoot(node: Node): boolean {
   return node && !node.parent
 }
 
-export function isNodeIndeterminate(node: Node, treeCheckedNodes: string[]): boolean {
+export function isLeaf(node: Node): boolean {
+  return node.child && 0 === node.child.length
+}
+
+export function isNodeIndeterminate(node: Node, treeCheckedNodes: string[], indeterminateNodes: string[]): boolean {
   if (!node.child.length) {
     return false
   }
 
+  const hasIndeterminate: boolean = node.child.some((child: Node) => {
+    return !child.disabled && !child.disabledCheckbox && -1 !== indeterminateNodes.indexOf(child.id)
+  })
+
+  if (hasIndeterminate) {
+    return true
+  }
+
   const uncheckedNodes = node.child.reduce((count: number, item: Node) => {
-    if (true !== item.disabled && true !== item.disabledCheckbox && item.checked) {
+    if (true !== item.disabled && true !== item.disabledCheckbox && -1 === treeCheckedNodes.indexOf(item.id)) {
       count++
     }
 

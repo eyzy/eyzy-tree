@@ -4,6 +4,8 @@ export interface Node {
   id: string
   text: string
   child: Node[]
+  isBatch?: boolean
+  loading? :boolean
   node?: Node
   parent?: Node | null
   checkable?: boolean

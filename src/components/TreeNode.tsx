@@ -5,7 +5,7 @@ import cn from '../utils/cn'
 import { shallowEqual } from '../utils/shallowEqual'
 
 const hasChild = (node: Node): boolean => {
-  return Array.isArray(node.child) && node.child.length > 0
+  return node.isBatch || Array.isArray(node.child) && node.child.length > 0
 }
 
 const comparingKeys = [
@@ -26,7 +26,8 @@ export default class TreeNode extends React.Component<Node> {
       child,
       expanded,
       disabled,
-      parent
+      parent,
+      isBatch
     } = this.props
 
     const node: Node = {
@@ -44,6 +45,10 @@ export default class TreeNode extends React.Component<Node> {
 
     if (void 0 !== disabled) {
       node.disabled = disabled
+    }
+
+    if (void 0 !== isBatch) {
+      node.isBatch = isBatch
     }
 
     return node
@@ -119,6 +124,7 @@ export default class TreeNode extends React.Component<Node> {
 
   render() {
     const {
+      loading,
       checked,
       selected,
       children,
@@ -137,6 +143,7 @@ export default class TreeNode extends React.Component<Node> {
       'checked': checked,
       'expanded': expanded,
       'disabled': disabled,
+      'loading': loading,
       'disabled-checkbox': disabledCheckbox,
       'indeterminate': !checked && indeterminate
     })

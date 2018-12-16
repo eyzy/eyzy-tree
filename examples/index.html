@@ -16,7 +16,7 @@
 
       #example0,
       #example1 {
-        width: 350px;
+        width: 500px;
       }
     </style>
   </head>
@@ -25,28 +25,26 @@
     <div id="example1"></div>
 
     <script>
-      const d = [
-        'Item 1',
-        { text: 'Item 2', child: ['Item 2.1', 'Item 2.2'], expanded: true },
-        'Item 3',
-        'Item 4',
-        {
-          text: 'Item 5', expanded: 1, child: [
-            { text: 'Item 5.1' },
-            { text: 'Item 5.2', expanded: 1, child: [
-              'Item 5.2.1', {text: 'Item 5.2.2', expanded: 1, child: ['Item 5.2.2.1', 'Item 5.2.2.2']}
-            ]}
-          ]
-        }
-      ]
-
       ReactDOM.render(
         React.createElement(EyzyTree, {
-          data: d,
+          data,
           checkable: true,
           selectOnCheck: true,
           onSelect: (node) => {console.log('select', node.text)},
-          onUnSelect: (node) => {console.log('unselect', node.text)}
+          onUnSelect: (node) => {console.log('unselect', node.text)},
+          textRenderer: (props) => {
+            return React.createElement('div', null, `${props.node.text} - ${props.node.id}`)
+          },
+          fetchData: (node) => {
+            return new Promise(resolve => {
+              setTimeout(() => {
+                resolve([
+                  node.text + ' Child-1',
+                  { text: node.text + ' Child-2', checked: true }
+                ])
+              }, 1000)
+            })
+          }
         }),
         document.getElementById('example0')
       )
