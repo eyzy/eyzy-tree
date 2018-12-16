@@ -2,6 +2,7 @@ var data = [
   {
     "text": "Angular.js",
     "expanded": true,
+    "selected": true,
     "child": [
       {
         "text": "Angular.js 1.6"
@@ -38,10 +39,14 @@ var data = [
         "text": "Apache Pig 0.16"
       },
       {
-        "text": "Apache Pig 0.15", "expanded": true, "child": ["Apache Pig 0.15.1", "Apache Pig 0.15.2"]
+        "text": "Apache Pig 0.15", "expanded": true, "child": [
+          "Apache Pig 0.15.1", 
+          "Apache Pig 0.15.2",
+          { "text": "Apache Pig 0.15.3", "checked": true}
+        ]
       },
       {
-        "text": "Apache Pig 0.14"
+        "text": "Apache Pig 0.14", "isBatch": true
       },
       {
         "text": "Apache Pig 0.13"
@@ -49,7 +54,7 @@ var data = [
     ]
   },
   {
-    "text": "Async"
+    "text": "Async", "isBatch": true
   },
   {
     "text": "Babel"

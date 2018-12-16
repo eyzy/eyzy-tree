@@ -1,6 +1,8 @@
 import { Node } from './Node'
 
 export interface Tree {
+  data: Node[]
+  fetchData?: (node: Node) => PromiseLike<Node[] | null>
   checkboxRenderer?: any
   arrowRenderer?: any
   textRenderer?: any
@@ -9,9 +11,10 @@ export interface Tree {
   selectOnExpand?: boolean
   expandOnSelect?: boolean
   checkOnSelect?: boolean
+  selectOnCheck?: boolean
   theme?: string
-  data: Node[]
   onSelect?: (node: Node) => void
+  onUnSelect?: (node: Node) => void
   onCheck?: (node: Node) => void
   onExpand?: (node: Node, isExpanded: boolean) => void
   onDoubleClick?: (node: Node) => void

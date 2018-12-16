@@ -1,9 +1,12 @@
+import React from 'react'
 
 export interface Node {
   id: string
   text: string
   child: Node[]
   isBatch?: boolean
+  loading? :boolean
+  node?: Node
   parent?: Node | null
   checkable?: boolean
   checkboxRenderer?: any
@@ -16,7 +19,7 @@ export interface Node {
   disabled?: boolean
   disabledCheckbox?: boolean
   hidenCheckbox?: boolean
-  onSelect?: (node: Node) => void
+  onSelect?: (node: Node, event: React.MouseEvent) => void
   onCheck?: (node: Node) => void
   onExpand?: (node: Node) => void
   onDoubleClick?: (node: Node) => void

@@ -1,16 +1,54 @@
 import { Node } from '../types/Node'
 
+export const hasOwnProp = {}.hasOwnProperty
+
+export function isArray(obj: any): boolean {
+  return Array.isArray(obj)
+}
+
+export function isFunction(value: any): boolean {
+  return 'function' === typeof value 
+}
+
 export function copyArray<T>(arr: T[]): T[] {
   return arr.concat([])
 }
 
-export function isNodeIndeterminate(node: Node, treeCheckedNodes: string[]): boolean {
+export function copyObject(obj: any) {
+  const newObj = {}
+
+  for (let i in obj) {
+    if (hasOwnProp.call(obj, i)) {
+      newObj[i] = isArray(obj[i]) ? copyArray(obj[i]) : obj[i]
+    }
+  }
+
+  return newObj
+}
+
+export function isRoot(node: Node): boolean {
+  return node && !node.parent
+}
+
+export function isLeaf(node: Node): boolean {
+  return node.child && 0 === node.child.length
+}
+
+export function isNodeIndeterminate(node: Node, treeCheckedNodes: string[], indeterminateNodes: string[]): boolean {
   if (!node.child.length) {
     return false
   }
 
+  const hasIndeterminate: boolean = node.child.some((child: Node) => {
+    return !child.disabled && !child.disabledCheckbox && -1 !== indeterminateNodes.indexOf(child.id)
+  })
+
+  if (hasIndeterminate) {
+    return true
+  }
+
   const uncheckedNodes = node.child.reduce((count: number, item: Node) => {
-    if (true !== item.disabled && true !== item.disabledCheckbox && !isNodeChecked(item, treeCheckedNodes)) {
+    if (true !== item.disabled && true !== item.disabledCheckbox && -1 === treeCheckedNodes.indexOf(item.id)) {
       count++
     }
 
@@ -18,12 +56,4 @@ export function isNodeIndeterminate(node: Node, treeCheckedNodes: string[]): boo
   }, 0)
 
   return uncheckedNodes > 0 && uncheckedNodes < node.child.length
-}
-
-export function isNodeChecked(node: Node, treeCheckedNodes: string[]): boolean {
-  return treeCheckedNodes.indexOf(node.id) !== -1
-}
-
-export function isNodeSelected(node: Node, treeSelectedNodes: string[]): boolean {
-  return treeSelectedNodes.indexOf(node.id) !== -1
 }

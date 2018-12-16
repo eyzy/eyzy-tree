@@ -2,12 +2,21 @@ import React from 'react'
 import { Node } from '../types/Node'
 
 import cn from '../utils/cn'
+import { shallowEqual } from '../utils/shallowEqual'
 
 const hasChild = (node: Node): boolean => {
-  return Array.isArray(node.child) && node.child.length > 0
+  return node.isBatch || Array.isArray(node.child) && node.child.length > 0
 }
 
-export default class TreeNode extends React.PureComponent<Node> {
+const comparingKeys = [
+  'id', 'checked', 'selected', 'child'
+]
+
+export default class TreeNode extends React.Component<Node> {
+  shouldComponentUpdate(nextProps: Node): boolean {
+    return !shallowEqual(this.props, nextProps, comparingKeys)
+  }
+
   getNode(): Node {
     const {
       id,
@@ -17,7 +26,8 @@ export default class TreeNode extends React.PureComponent<Node> {
       child,
       expanded,
       disabled,
-      parent
+      parent,
+      isBatch
     } = this.props
 
     const node: Node = {
@@ -37,16 +47,20 @@ export default class TreeNode extends React.PureComponent<Node> {
       node.disabled = disabled
     }
 
+    if (void 0 !== isBatch) {
+      node.isBatch = isBatch
+    }
+
     return node
   }
 
-  handleSelect = () => {
+  handleSelect = (event: React.MouseEvent) => {
     if (this.props.disabled) {
       return
     }
 
     if (this.props.onSelect) {
-      this.props.onSelect(this.getNode())
+      this.props.onSelect(this.getNode(), event)
     }
   }
 
@@ -110,6 +124,7 @@ export default class TreeNode extends React.PureComponent<Node> {
 
   render() {
     const {
+      loading,
       checked,
       selected,
       children,
@@ -128,9 +143,12 @@ export default class TreeNode extends React.PureComponent<Node> {
       'checked': checked,
       'expanded': expanded,
       'disabled': disabled,
+      'loading': loading,
       'disabled-checkbox': disabledCheckbox,
       'indeterminate': !checked && indeterminate
     })
+
+    // console.log('RENDERING:', text)
 
     return (
       <li className="tree-node">
