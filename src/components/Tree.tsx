@@ -94,7 +94,7 @@ export default class EyzyTree extends React.Component<Tree> {
       const id = parentNode.id
 
       if (isIndeterminate) {
-        indeterminateNodes.push(id)
+        !~indeterminateNodes.indexOf(id) && indeterminateNodes.push(id)
         checkedNodes = checkedNodes.filter(nodeId => nodeId !== id)
       } else {
         indeterminateNodes = indeterminateNodes.filter(nodeId => nodeId !== id)
@@ -279,8 +279,9 @@ export default class EyzyTree extends React.Component<Tree> {
 
     const state = this.getState()
     const autoCheckChildren = this.props.autoCheckChildren
+    const id = node.id
 
-    state.set(node.id, 'loading', true)
+    state.set(id, 'loading', true)
 
     result.then((nodes: any[]) => {
       const child = parseNode(nodes).map((obj: Node) => {
@@ -288,15 +289,25 @@ export default class EyzyTree extends React.Component<Tree> {
         return obj
       })
 
-      state.set(node.id, 'loading', false)
-      state.set(node.id, 'expanded', true)
-      state.set(node.id, 'isBatch', false)
-      state.set(node.id, 'child', child)
+      state.set(id, 'loading', false)
+      state.set(id, 'expanded', true)
+      state.set(id, 'isBatch', false)
+      state.set(id, 'child', child)
 
-      recurseDown(node, (obj: Node) => {
-        if (isLeaf(obj) && autoCheckChildren !== false) {
-          this.refreshIndeterminateState(obj.id, !!obj.checked, false)
+      recurseDown(state.getNodeById(id), (obj: Node) => {
+        if (id == obj.id || !obj.checked) {
+          return
         }
+
+        this.checkedNodes.push(obj.id)
+
+        if (!isLeaf(obj) || autoCheckChildren === false) {
+          return
+        }
+
+        this.useState(state, () => {
+          this.refreshIndeterminateState(obj.id, !!obj.checked, false)
+        })
       })
 
       this.updateState(state.get(), true)
@@ -335,12 +346,11 @@ export default class EyzyTree extends React.Component<Tree> {
   }
 
   render() {
+    const nodes = []
     const props = this.props
     const treeClass = 'theme' in props 
       ? 'eyzy-tree ' + props.theme
       : 'eyzy-tree eyzy-theme'
-
-    const nodes = []
 
     for (let i = 0; i < this.stateLength; i++) {
       nodes.push(this.renderNode(this.state[i]))

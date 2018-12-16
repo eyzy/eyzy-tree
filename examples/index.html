@@ -28,6 +28,7 @@
       ReactDOM.render(
         React.createElement(EyzyTree, {
           data,
+          theme: "eyzy-theme-red",
           checkable: true,
           selectOnCheck: true,
           onSelect: (node) => {console.log('select', node.text)},
@@ -42,20 +43,20 @@
                   node.text + ' Child-1',
                   { text: node.text + ' Child-2', checked: true }
                 ])
-              }, 1000)
+              }, 400)
             })
           }
         }),
         document.getElementById('example0')
       )
 
-      // ReactDOM.render(
-      //   React.createElement(EyzyTree, {
-      //     data: data,
-      //     checkable: 1,
-      //   }),
-      //   document.getElementById('example1')
-      // )
+      ReactDOM.render(
+        React.createElement(EyzyTree, {
+          data: data,
+          checkable: 1
+        }),
+        document.getElementById('example1')
+      )
     </script>
   </body>
 </html>
