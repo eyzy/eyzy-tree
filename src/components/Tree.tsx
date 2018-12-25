@@ -61,6 +61,20 @@ export default class EyzyTree extends React.Component<Tree> {
     this.stateCache = null
   }
 
+  fireEvent = (name: string, id: string, ...args: any) => {
+    const eventCb = this.props[name]
+
+    if (!eventCb) {
+      return
+    }
+
+    const node = this.getState().getNodeById(id)
+
+    if (node) {
+      eventCb.call(null, node, ...args)
+    }
+  }
+
   refreshIndeterminateState = (id: string, willBeChecked: boolean, shouldRender?: boolean) => {
     let checkedNodes: string[] = copyArray(this.checkedNodes)
     let indeterminateNodes = copyArray(this.indeterminateNodes)
@@ -157,28 +171,37 @@ export default class EyzyTree extends React.Component<Tree> {
 
   select = (node: Node, ignoreEvent?: boolean) => {
     const state = this.getState()
+    const id = node.id
+
+    if (node.selected) {
+      return
+    }
 
     this.selectedNodes = this.selectedNodes.filter((nodeId: string) => {
+      if (nodeId === id) {
+        return
+      }
+
       const node = state.getNodeById(nodeId)
 
       if (node) {
         state.set(node.id, 'selected', false)
 
-        if (true !== ignoreEvent && this.props.onUnSelect) {
-          this.props.onUnSelect(node)
+        if (true !== ignoreEvent) {
+          this.fireEvent('onUnSelect', node.id)
         }
       }
 
       return false
     })
 
-    state.set(node.id, 'selected', true)
+    state.set(id, 'selected', true)
 
-    this.selectedNodes.push(node.id)
+    this.selectedNodes.push(id)
     this.updateState(state.get())
 
-    if (true !== ignoreEvent && this.props.onSelect) {
-      this.props.onSelect(node)
+    if (true !== ignoreEvent) {
+      this.fireEvent('onSelect', id)
     }
   }
 
@@ -209,9 +232,7 @@ export default class EyzyTree extends React.Component<Tree> {
       this.updateState(state.get(), true)
     }
 
-    if (this.props.onCheck) {
-      this.props.onCheck(node)
-    }
+    this.fireEvent('onCheck', id, willBeChecked)
   }
 
   expand = (node: Node) => {
@@ -234,22 +255,17 @@ export default class EyzyTree extends React.Component<Tree> {
     }
 
     this.updateState(state.get(), true)
-
-    if (this.props.onExpand) {
-      this.props.onExpand(node, !!node.expanded)
-    }
+    this.fireEvent('onExpand', node.id, !node.expanded)
   }
 
   handleDoubleClick = (node: Node) => {
+    this.fireEvent('onDoubleClick', node.id)
+
     if (node.disabled || !node.child.length || this.props.expandOnSelect) {
       return
     }
 
     this.expand(node)
-
-    if (this.props.onDoubleClick) {
-      this.props.onDoubleClick(node)
-    }
   }
 
   handleSelect = (node: Node, event: React.MouseEvent) => {
@@ -293,6 +309,8 @@ export default class EyzyTree extends React.Component<Tree> {
       state.set(id, 'expanded', true)
       state.set(id, 'isBatch', false)
       state.set(id, 'child', child)
+
+      this.fireEvent('onExpand', id, true)
 
       recurseDown(state.getNodeById(id), (obj: Node) => {
         if (id == obj.id || !obj.checked) {

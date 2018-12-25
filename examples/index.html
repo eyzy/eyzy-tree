@@ -25,12 +25,17 @@
     <div id="example1"></div>
 
     <script>
+      const copy = JSON.parse(JSON.stringify(data))
+
       ReactDOM.render(
         React.createElement(EyzyTree, {
           data,
           theme: "eyzy-theme-red",
           checkable: true,
           selectOnCheck: true,
+          onDoubleClick: (node) => {console.log('dbl', node.text)},
+          onCheck: (node, isChecked) => {console.log('check', node.text, node.checked, isChecked)},
+          onExpand: (node, isExpanded) => {console.log('expand', node.text, node.expanded, isExpanded)},
           onSelect: (node) => {console.log('select', node.text)},
           onUnSelect: (node) => {console.log('unselect', node.text)},
           textRenderer: (props) => {
@@ -49,14 +54,14 @@
         }),
         document.getElementById('example0')
       )
-
-      ReactDOM.render(
-        React.createElement(EyzyTree, {
-          data: data,
-          checkable: 1
-        }),
-        document.getElementById('example1')
-      )
+      console.log('Check asynx - load child')
+      // ReactDOM.render(
+      //   React.createElement(EyzyTree, {
+      //     data: copy,
+      //     checkable: 1
+      //   }),
+      //   document.getElementById('example1')
+      // )
     </script>
   </body>
 </html>
