@@ -186,6 +186,10 @@ export default class EyzyTree extends React.Component<Tree> {
       return
     }
 
+    if (this.props.preventSelectParent && (node.child.length || node.isBatch)) {
+      return this.expand(node)
+    }
+
     this.selectedNodes = this.selectedNodes.filter((nodeId: string) => {
       const node = state.getNodeById(nodeId)
 
