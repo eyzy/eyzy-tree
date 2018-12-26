@@ -9,7 +9,7 @@ const hasChild = (node: Node): boolean => {
 }
 
 const comparingKeys = [
-  'id', 'checked', 'selected', 'child'
+  'id', 'checked', 'selected', 'child', 'checked', 'expanded'
 ]
 
 export default class TreeNode extends React.Component<Node> {
@@ -39,17 +39,9 @@ export default class TreeNode extends React.Component<Node> {
       parent
     } 
 
-    if (void 0 !== expanded) {
-      node.expanded = expanded
-    }
-
-    if (void 0 !== disabled) {
-      node.disabled = disabled
-    }
-
-    if (void 0 !== isBatch) {
-      node.isBatch = isBatch
-    }
+    node.expanded = !!expanded
+    node.disabled = !!disabled
+    node.isBatch = !!isBatch
 
     return node
   }

@@ -141,6 +141,18 @@ export default class EyzyTree extends React.Component<Tree> {
     this.checkedNodes = checkedNodes
     this.indeterminateNodes = indeterminateNodes
 
+    childIds.forEach((id: string) => {
+      const node = state.getNodeById(id)
+
+      if (!node) {
+        return
+      }
+
+      if (checkedNodes.indexOf(node.id) === (willBeChecked ? -1 : 1)) {
+        this.fireEvent('onCheck', id, !willBeChecked)
+      }
+    })
+
     if (false !== shouldRender) {
       this.updateState(state, true)
     }
@@ -178,10 +190,6 @@ export default class EyzyTree extends React.Component<Tree> {
     }
 
     this.selectedNodes = this.selectedNodes.filter((nodeId: string) => {
-      if (nodeId === id) {
-        return
-      }
-
       const node = state.getNodeById(nodeId)
 
       if (node) {

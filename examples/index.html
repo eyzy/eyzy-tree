@@ -54,14 +54,24 @@
         }),
         document.getElementById('example0')
       )
-      console.log('Check asynx - load child')
-      // ReactDOM.render(
-      //   React.createElement(EyzyTree, {
-      //     data: copy,
-      //     checkable: 1
-      //   }),
-      //   document.getElementById('example1')
-      // )
+
+      ReactDOM.render(
+        React.createElement(EyzyTree, {
+          data: copy,
+          checkable: 1,
+          fetchData: (node) => {
+            return new Promise(resolve => {
+              setTimeout(() => {
+                resolve([
+                  node.text + ' Child-1',
+                  { text: node.text + ' Child-2', checked: true }
+                ])
+              }, 400)
+            })
+          }
+        }),
+        document.getElementById('example1')
+      )
     </script>
   </body>
 </html>
