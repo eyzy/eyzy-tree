@@ -11,7 +11,7 @@ import { Tree } from '../types/Tree'
 
 import State from '../utils/state'
 import { parseNode } from '../utils/parser'
-import { recurseDown, traverseUp } from '../utils/traveler'
+import { recurseDown, traverseUp, getFirstChild } from '../utils/traveler'
 import { copyArray, isNodeIndeterminate, isFunction, isLeaf } from '../utils'
 
 export default class EyzyTree extends React.Component<Tree> {
@@ -306,7 +306,7 @@ export default class EyzyTree extends React.Component<Tree> {
   handleDoubleClick = (node: Node) => {
     this.fireEvent('onDoubleClick', node.id)
 
-    if (node.disabled || !node.child.length || this.props.expandOnSelect) {
+    if (node.disabled || isLeaf(node) || this.props.expandOnSelect) {
       return
     }
 
@@ -331,48 +331,47 @@ export default class EyzyTree extends React.Component<Tree> {
     }
 
     const keyCode = event.keyCode
-    const state = this.getState()
     const selectedNode = this.getSelectedNode()
-    const callbacks: any[] = []
+
+    // TODO
+    // case 38-40 - focus or select?
 
     if (selectedNode) {
       switch(keyCode) {
         case 32: // space
         case 13: // enter
-          callbacks.push(() => {
+          if (this.props.checkable && !selectedNode.disabled && !selectedNode.disabledCheckbox) {
             this.check(selectedNode)
-          })
+          } else if (!isLeaf(selectedNode)) {
+            this.expand(selectedNode)
+          }
         break;
   
         case 27: // esc
-          callbacks.push(() => {
-            this.unselect(selectedNode)
-          })
+          this.unselect(selectedNode)
         break;
 
         case 39: // right arrow
-          if (!isLeaf(selectedNode) && !selectedNode.expanded) {
-            callbacks.push(() => {
+          if (!isLeaf(selectedNode)) {
+            if (!selectedNode.expanded) {
               this.expand(selectedNode)
-            })
+            } else {
+              const firstChild = getFirstChild(this.getState(), selectedNode)
+
+              if (firstChild) {
+                this.select(firstChild)
+              }
+            }
           }
         break;
 
         case 37: // left arrow 
           if (!isLeaf(selectedNode) && selectedNode.expanded) {
-            callbacks.push(() => {
-              this.expand(selectedNode)
-            })
+            this.expand(selectedNode)
           }
         break;
       }
     }
-
-    this.useState(state, () => {
-      callbacks.forEach(cb => cb())
-    })
-
-    this.updateState(state.get(), true)
 
     console.log(keyCode)
   }
