@@ -31,7 +31,7 @@ export function isRoot(node: Node): boolean {
 }
 
 export function isLeaf(node: Node): boolean {
-  return node.child && 0 === node.child.length
+  return !node.child || (0 === node.child.length && !node.isBatch)
 }
 
 export function isNodeIndeterminate(node: Node, treeCheckedNodes: string[], indeterminateNodes: string[]): boolean {

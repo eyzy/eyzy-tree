@@ -9,6 +9,7 @@ export interface Tree {
   checkable?: boolean
   autoCheckChildren?: boolean
   preventSelectParent?: boolean
+  keyboardNavigation?: boolean
   selectOnExpand?: boolean
   expandOnSelect?: boolean
   checkOnSelect?: boolean

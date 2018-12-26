@@ -159,6 +159,16 @@ export default class EyzyTree extends React.Component<Tree> {
     return this.stateCache || new State(this.state, this.stateLength)
   }
 
+  getSelectedNode = (): Node | null => {
+    const lastSelectedNode = this.selectedNodes[this.selectedNodes.length - 1]
+
+    if (!lastSelectedNode) {
+      return null
+    }
+
+    return this.getState().getNodeById(lastSelectedNode)
+  }
+
   updateState = (state: any, clearCache?: boolean) => {
     if (clearCache) {
       this.setState(state)
@@ -176,6 +186,28 @@ export default class EyzyTree extends React.Component<Tree> {
   useState = (state: any, cb: () => void): any => {
     this.stateCache = state
     cb()
+  }
+
+  unselect = (node: Node) => {
+    if (!node.selected) {
+      return
+    }
+
+    const state = this.getState()
+    state.set(node.id, 'selected', false)
+
+    this.selectedNodes = this.selectedNodes.filter((nodeId: string) => {
+      const node = state.getNodeById(nodeId)
+
+      if (node) {
+        state.set(node.id, 'selected', false)
+        this.fireEvent('onUnSelect', node.id)
+      }
+
+      return false
+    })
+
+    this.updateState(state.get())
   }
 
   select = (node: Node, ignoreEvent?: boolean) => {
@@ -215,6 +247,10 @@ export default class EyzyTree extends React.Component<Tree> {
   }
 
   check = (node: Node) => {
+    if (!this.props.checkable) {
+      return
+    }
+
     const state = this.getState()
     const willBeChecked: boolean = !node.checked
     const id: string = node.id
@@ -287,6 +323,58 @@ export default class EyzyTree extends React.Component<Tree> {
     } else if (expandOnSelect) {
       this.expand(node)
     }
+  }
+
+  handleKeyUp = (event: React.KeyboardEvent) => {
+    if (false === this.props.keyboardNavigation) {
+      return
+    }
+
+    const keyCode = event.keyCode
+    const state = this.getState()
+    const selectedNode = this.getSelectedNode()
+    const callbacks: any[] = []
+
+    if (selectedNode) {
+      switch(keyCode) {
+        case 32: // space
+        case 13: // enter
+          callbacks.push(() => {
+            this.check(selectedNode)
+          })
+        break;
+  
+        case 27: // esc
+          callbacks.push(() => {
+            this.unselect(selectedNode)
+          })
+        break;
+
+        case 39: // right arrow
+          if (!isLeaf(selectedNode) && !selectedNode.expanded) {
+            callbacks.push(() => {
+              this.expand(selectedNode)
+            })
+          }
+        break;
+
+        case 37: // left arrow 
+          if (!isLeaf(selectedNode) && selectedNode.expanded) {
+            callbacks.push(() => {
+              this.expand(selectedNode)
+            })
+          }
+        break;
+      }
+    }
+
+    this.useState(state, () => {
+      callbacks.forEach(cb => cb())
+    })
+
+    this.updateState(state.get(), true)
+
+    console.log(keyCode)
   }
 
   loadChild = (node: Node) => {
@@ -384,7 +472,7 @@ export default class EyzyTree extends React.Component<Tree> {
     }
 
     return (
-      <ul className={treeClass}>
+      <ul className={treeClass} tabIndex={-1} onKeyUp={this.handleKeyUp}>
         { nodes }
       </ul>
     )
