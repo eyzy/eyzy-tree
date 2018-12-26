@@ -82,6 +82,7 @@ export default class EyzyTree extends React.Component<Tree> {
     const state = this.getState()
     const childIds: string[] = []
     const node = state.getNodeById(id)
+    const nodesForEvent: string[] = []
 
     if (!node) {
       return
@@ -90,6 +91,10 @@ export default class EyzyTree extends React.Component<Tree> {
     recurseDown(node, (child: Node) => {
       if (!child.disabled && !child.disabledCheckbox && id !== child.id) {
         childIds.push(child.id)
+
+        if (child.checked !== willBeChecked) {
+          nodesForEvent.push(child.id)
+        }
       }
     })
 
@@ -141,21 +146,13 @@ export default class EyzyTree extends React.Component<Tree> {
     this.checkedNodes = checkedNodes
     this.indeterminateNodes = indeterminateNodes
 
-    childIds.forEach((id: string) => {
-      const node = state.getNodeById(id)
-
-      if (!node) {
-        return
-      }
-
-      if (checkedNodes.indexOf(node.id) === (willBeChecked ? -1 : 1)) {
-        this.fireEvent('onCheck', id, !willBeChecked)
-      }
-    })
-
     if (false !== shouldRender) {
       this.updateState(state, true)
     }
+
+    nodesForEvent.forEach((id: string) => {
+      this.fireEvent('onCheck', id, willBeChecked)
+    })
   }
 
   getState = () => {
@@ -233,14 +230,14 @@ export default class EyzyTree extends React.Component<Tree> {
     }
 
     if (this.props.autoCheckChildren !== false) {
+      this.fireEvent('onCheck', id, willBeChecked)
       this.useState(state, () => {
         this.refreshIndeterminateState(node.id, willBeChecked)
       })
     } else {
       this.updateState(state.get(), true)
+      this.fireEvent('onCheck', id, willBeChecked)
     }
-
-    this.fireEvent('onCheck', id, willBeChecked)
   }
 
   expand = (node: Node) => {
