@@ -136,4 +136,15 @@ export default class State<T> {
   get(): T {
     return this.state
   }
+
+  toArray() {
+    const result = []
+    const state = this.state
+
+    for (let i in state) {
+      result.push(state[i])
+    }
+
+    return result
+  }
 }

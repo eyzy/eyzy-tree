@@ -14,6 +14,7 @@ export interface Tree {
   expandOnSelect?: boolean
   checkOnSelect?: boolean
   selectOnCheck?: boolean
+  selectOnNavigate?: boolean
   theme?: string
   onSelect?: (node: Node) => void
   onUnSelect?: (node: Node) => void

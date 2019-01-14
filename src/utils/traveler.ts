@@ -48,6 +48,6 @@ export function traverseUp(obj: Node, fn: (obj: Node) => any): any {
   }
 }
 
-export function getFirstChild(state: any, node: Node): Node | null {
+export function getFirstChild(node: Node): Node | null {
   return node.child[0] || null
 }

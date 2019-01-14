@@ -12,6 +12,7 @@ import { Tree } from '../types/Tree'
 import State from '../utils/state'
 import { parseNode } from '../utils/parser'
 import { recurseDown, traverseUp, getFirstChild } from '../utils/traveler'
+import { linkedNode } from '../utils/linkedNode'
 import { copyArray, isNodeIndeterminate, isFunction, isLeaf } from '../utils'
 
 export default class EyzyTree extends React.Component<Tree> {
@@ -333,9 +334,6 @@ export default class EyzyTree extends React.Component<Tree> {
     const keyCode = event.keyCode
     const selectedNode = this.getSelectedNode()
 
-    // TODO
-    // case 38-40 - focus or select?
-
     if (selectedNode) {
       switch(keyCode) {
         case 32: // space
@@ -356,7 +354,7 @@ export default class EyzyTree extends React.Component<Tree> {
             if (!selectedNode.expanded) {
               this.expand(selectedNode)
             } else {
-              const firstChild = getFirstChild(this.getState(), selectedNode)
+              const firstChild = getFirstChild(selectedNode)
 
               if (firstChild) {
                 this.select(firstChild)
@@ -366,14 +364,34 @@ export default class EyzyTree extends React.Component<Tree> {
         break;
 
         case 37: // left arrow 
-          if (!isLeaf(selectedNode) && selectedNode.expanded) {
+          if (isLeaf(selectedNode) || !selectedNode.expanded) {
+            const parentNode = selectedNode.parent
+
+            if (parentNode) {
+              this.select(parentNode)
+            }
+          } else if (selectedNode.expanded) {
             this.expand(selectedNode)
+          }
+        break;
+
+        case 40: // bottom arrow
+          const {next} = linkedNode(selectedNode, this.getState())
+          
+          if (next) {
+            this.select(next)
+          }
+        break;
+
+        case 38: // up arrow
+          const {prev} = linkedNode(selectedNode, this.getState())
+            
+          if (prev) {
+            this.select(prev)
           }
         break;
       }
     }
-
-    console.log(keyCode)
   }
 
   loadChild = (node: Node) => {
