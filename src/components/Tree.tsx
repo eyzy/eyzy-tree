@@ -25,8 +25,6 @@ export default class EyzyTree extends React.Component<Tree> {
   checkedNodes: string[] = []
   indeterminateNodes: string[] = []
 
-  $$tree: RefObject<HTMLElement>
-
   constructor(props: Tree) {
     super(props)
 
