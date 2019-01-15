@@ -1,3 +1,4 @@
+import { getFirstChild, getLastChild } from './traveler'
 import { Node } from '../types/Node'
 
 interface LinkedNode {
@@ -22,7 +23,11 @@ export function linkedNode(node: Node, state: any, ignoreExpanded?: boolean): Li
   let i: number = 0
 
   if (node.expanded && node.child.length && true !== ignoreExpanded) {
-    result.next = state.getNodeById(node.child[0].id)
+    const firstChild: Node | null = getFirstChild(node, true)
+
+    if (firstChild) {
+      result.next = state.getNodeById(firstChild.id)
+    }
   }
 
   while (i++ < neighborIds.length) {
@@ -38,7 +43,15 @@ export function linkedNode(node: Node, state: any, ignoreExpanded?: boolean): Li
       const _node = state.getNodeById(neighborIds[currentPos - i])
 
       if (_node && !_node.disabled) {
-        result.prev = _node
+        if (_node.expanded) {
+          const lastChild: Node | null = getLastChild(_node, true)
+
+          if (lastChild) {
+            result.prev =  state.getNodeById(lastChild.id)
+          }
+        } else {
+          result.prev = _node
+        }
       }
     }
   }

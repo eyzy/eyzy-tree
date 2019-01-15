@@ -8,7 +8,9 @@ export function recurseDown(obj: any, fn: (obj: Node) => any, excludeSelf?: bool
   }
 
   if (obj[0]) {
-    return Object.keys(obj).map(key => recurseDown(obj[key], fn))
+    return Object.keys(obj)
+      .filter(key => isFinite(+key))
+      .map(key => recurseDown(obj[key], fn))
   }
 
   if (!excludeSelf) {
@@ -48,6 +50,29 @@ export function traverseUp(obj: Node, fn: (obj: Node) => any): any {
   }
 }
 
-export function getFirstChild(node: Node): Node | null {
+export function getFirstChild(node: Node, onlyEnabled?: boolean): Node | null {
+  if (onlyEnabled) {
+    const enabledNode: Node[] = node.child.filter((n: Node) => !n.disabled)
+
+    return enabledNode.length ? enabledNode[0] : null
+  }
+
   return node.child[0] || null
+}
+
+export function getLastChild(node: Node, onlyEnabled?: boolean): Node | null {
+  const len: number = node.child ? node.child.length : 0
+
+  if (!len) {
+    return null
+  }
+
+  if (onlyEnabled) {
+    const enabledNode: Node[] = node.child.filter((n: Node) => !n.disabled)
+    const enabledNodeLen: number = enabledNode.length
+
+    return enabledNodeLen ? enabledNode[enabledNodeLen - 1] : null
+  }
+
+  return node.child[len - 1]
 }

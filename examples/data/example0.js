@@ -14,8 +14,14 @@ var data = [
         "text": "Angular.js 1.4", "disabled": true, "checked": true
       },
       {
-        "text": "Angular.js 1.3", "disabledCheckbox": true,
-        "child": ["Angular.js 1.3.1", "Angular.js 1.3.2", "Angular.js 1.3.3"]
+        "text": "Angular.js 1.3", 
+        "disabledCheckbox": true,
+        "child": [
+          { text: "Angular.js 1.3.1", disabled: true }, 
+          "Angular.js 1.3.2", 
+          "Angular.js 1.3.3",
+          { text: "Angular.js 1.3.4", disabled: true }, 
+        ]
       },
       {
         "text": "Angular.js 1.2", "disabledCheckbox": true, "checked": true

@@ -25,6 +25,8 @@ export default class EyzyTree extends React.Component<Tree> {
   checkedNodes: string[] = []
   indeterminateNodes: string[] = []
 
+  $$tree: RefObject<HTMLElement>
+
   constructor(props: Tree) {
     super(props)
 
@@ -354,7 +356,7 @@ export default class EyzyTree extends React.Component<Tree> {
             if (!selectedNode.expanded) {
               this.expand(selectedNode)
             } else {
-              const firstChild = getFirstChild(selectedNode)
+              const firstChild = getFirstChild(selectedNode, true)
 
               if (firstChild) {
                 this.select(firstChild)
@@ -385,7 +387,7 @@ export default class EyzyTree extends React.Component<Tree> {
 
         case 38: // up arrow
           const {prev} = linkedNode(selectedNode, this.getState())
-            
+
           if (prev) {
             this.select(prev)
           }
@@ -489,8 +491,11 @@ export default class EyzyTree extends React.Component<Tree> {
     }
 
     return (
-      <ul className={treeClass} tabIndex={-1} onKeyUp={this.handleKeyUp}>
-        { nodes }
+      <ul 
+        className={treeClass} 
+        tabIndex={-1} 
+        onKeyDown={this.handleKeyUp}>
+          { nodes }
       </ul>
     )
   }
