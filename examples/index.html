@@ -42,15 +42,18 @@
           onExpand: (node, isExpanded) => {console.log('expand', node.text, node.expanded, isExpanded)},
           onSelect: (node) => {console.log('select', node.text)},
           onUnSelect: (node) => {console.log('unselect', node.text)},
-          textRenderer: (props) => {
-            return React.createElement('div', null, `${props.node.text} - ${props.node.id}`)
+          textRenderer: ({node}) => {
+            // return React.createElement('div', null, `${node.text} - ${node.id} - (${node.depth})`)
+            return React.createElement('div', null, `${node.text} - (${node.depth})`)
           },
           fetchData: (node) => {
             return new Promise(resolve => {
               setTimeout(() => {
                 resolve([
                   node.text + ' Child-1',
-                  { text: node.text + ' Child-2', checked: true }
+                  { text: node.text + ' Child-2', checked: true },
+                  { text: node.text + ' Child-3', child: [node.text + ' Child-3-1', node.text + ' Child-3-2']},
+                  node.text + ' Child-4',
                 ])
               }, 400)
             })

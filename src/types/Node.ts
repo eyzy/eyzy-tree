@@ -4,6 +4,7 @@ export interface Node {
   id: string
   text: string
   child: Node[]
+  depth?: number
   isBatch?: boolean
   loading? :boolean
   node?: Node

@@ -35,7 +35,9 @@ export default class EyzyTree extends React.Component<Tree> {
       stateObject[i] = item
     })
 
-    recurseDown(stateObject, (obj: Node) => {
+    recurseDown(stateObject, (obj: Node, depth: number) => {
+      obj.depth = depth
+
       if (obj.selected) {
         this.selectedNodes.push(obj.id)
       }
@@ -424,9 +426,13 @@ export default class EyzyTree extends React.Component<Tree> {
       state.set(id, 'isBatch', false)
       state.set(id, 'child', child)
 
-      this.fireEvent('onExpand', id, true)
+      this.useState(state, () => {
+        this.fireEvent('onExpand', id, true)
+      })
 
-      recurseDown(state.getNodeById(id), (obj: Node) => {
+      recurseDown(state.getNodeById(id), (obj: Node, depth: number) => {
+        obj.depth = depth + (node.depth || 0)
+
         if (id == obj.id || !obj.checked) {
           return
         }
@@ -440,7 +446,7 @@ export default class EyzyTree extends React.Component<Tree> {
         this.useState(state, () => {
           this.refreshIndeterminateState(obj.id, !!obj.checked, false)
         })
-      })
+      }, true)
 
       this.updateState(state.get(), true)
     })

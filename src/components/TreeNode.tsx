@@ -27,7 +27,8 @@ export default class TreeNode extends React.Component<Node> {
       expanded,
       disabled,
       parent,
-      isBatch
+      isBatch,
+      depth
     } = this.props
 
     const node: Node = {
@@ -36,7 +37,8 @@ export default class TreeNode extends React.Component<Node> {
       selected,
       text,
       child,
-      parent
+      parent,
+      depth
     } 
 
     node.expanded = !!expanded

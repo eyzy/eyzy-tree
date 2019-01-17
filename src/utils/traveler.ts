@@ -1,24 +1,24 @@
 import { Node } from '../types/Node'
 
-export function recurseDown(obj: any, fn: (obj: Node) => any, excludeSelf?: boolean): any {
+export function recurseDown(obj: any, fn: (obj: Node, depth: number) => any, excludeSelf?: boolean, depth: number = 0): any {
   let res
 
   if (Array.isArray(obj)) {
-    return obj.map(node => recurseDown(node, fn))
+    return obj.map(node => recurseDown(node, fn, false, depth))
   }
 
   if (obj[0]) {
     return Object.keys(obj)
       .filter(key => isFinite(+key))
-      .map(key => recurseDown(obj[key], fn))
+      .map(key => recurseDown(obj[key], fn, false, depth))
   }
 
   if (!excludeSelf) {
-    res = fn(obj)
+    res = fn(obj, depth)
   }
 
   if (res !== false && obj.child && obj.child.length) {
-    res = recurseDown(obj.child, fn)
+    res = recurseDown(obj.child, fn, false, depth + 1)
   }
 
   return res

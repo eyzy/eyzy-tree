@@ -11,6 +11,7 @@
 ### Features
 - flexible
 - customizable
+- keyboard navigation
 
 ### Table of Contents
 - [Getting Started](#getting-started)
