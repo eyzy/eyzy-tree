@@ -14,6 +14,7 @@ import { parseNode } from '../utils/parser'
 import { recurseDown, traverseUp, getFirstChild } from '../utils/traveler'
 import { linkedNode } from '../utils/linkedNode'
 import { copyArray, isNodeIndeterminate, isFunction, isLeaf } from '../utils'
+import { string } from 'prop-types';
 
 export default class EyzyTree extends React.Component<Tree> {
   static TreeNode = TreeNode
@@ -396,6 +397,54 @@ export default class EyzyTree extends React.Component<Tree> {
     }
   }
 
+  appendChild = (id: string, nodes: any[]): Node | null => {
+    const state = this.getState()
+    const node = state.getNodeById(id)
+
+    if (!node) {
+      return null
+    }
+
+    const parentDepth: number = node.depth || 0
+    const child = parseNode(nodes).map((obj: Node) => {
+      obj.parent = node
+      return obj
+    })
+
+    const autoCheckChildren = false !== this.props.autoCheckChildren
+    const checkedNodes: string[] = []
+
+    recurseDown(child, (obj: Node, depth: number) => {
+      obj.depth = parentDepth + depth + 1
+
+      if (autoCheckChildren && obj.parent && obj.parent.checked) {
+        obj.checked = true
+      }
+
+      if (obj.checked) {
+        checkedNodes.push(obj.id)
+      }
+    })
+
+    this.checkedNodes.push(...checkedNodes)
+
+    state.set(node.id, 'child', child)
+
+    if (autoCheckChildren) {
+      checkedNodes.forEach((id: string) => {
+        const node = state.getNodeById(id)
+  
+        if (node && isLeaf(node)) {
+          this.useState(state, () => {
+            this.refreshIndeterminateState(id, true, false)
+          })
+        }
+      })
+    }
+
+    return node
+  }
+
   loadChild = (node: Node) => {
     const { fetchData } = this.props
 
@@ -410,43 +459,22 @@ export default class EyzyTree extends React.Component<Tree> {
     }
 
     const state = this.getState()
-    const autoCheckChildren = this.props.autoCheckChildren
     const id = node.id
 
     state.set(id, 'loading', true)
 
     result.then((nodes: any[]) => {
-      const child = parseNode(nodes).map((obj: Node) => {
-        obj.parent = node
-        return obj
+      this.useState(state, () => {
+        this.appendChild(id, nodes)
       })
 
       state.set(id, 'loading', false)
       state.set(id, 'expanded', true)
       state.set(id, 'isBatch', false)
-      state.set(id, 'child', child)
 
       this.useState(state, () => {
         this.fireEvent('onExpand', id, true)
       })
-
-      recurseDown(state.getNodeById(id), (obj: Node, depth: number) => {
-        obj.depth = depth + (node.depth || 0)
-
-        if (id == obj.id || !obj.checked) {
-          return
-        }
-
-        this.checkedNodes.push(obj.id)
-
-        if (!isLeaf(obj) || autoCheckChildren === false) {
-          return
-        }
-
-        this.useState(state, () => {
-          this.refreshIndeterminateState(obj.id, !!obj.checked, false)
-        })
-      }, true)
 
       this.updateState(state.get(), true)
     })

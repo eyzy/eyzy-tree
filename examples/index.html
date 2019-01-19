@@ -37,23 +37,29 @@
           data,
           theme: "eyzy-theme-red",
           checkable: true,
+          autoCheckChildren: false,
           onDoubleClick: (node) => {console.log('dbl', node.text)},
           onCheck: (node, isChecked) => {console.log('check', node.text, node.checked, isChecked)},
           onExpand: (node, isExpanded) => {console.log('expand', node.text, node.expanded, isExpanded)},
           onSelect: (node) => {console.log('select', node.text)},
           onUnSelect: (node) => {console.log('unselect', node.text)},
           textRenderer: ({node}) => {
-            // return React.createElement('div', null, `${node.text} - ${node.id} - (${node.depth})`)
-            return React.createElement('div', null, `${node.text} - (${node.depth})`)
+            return React.createElement('div', null, `${node.text} - ${node.id}`)
+            // return React.createElement('div', null, `${node.text} - (${node.depth})`)
           },
           fetchData: (node) => {
             return new Promise(resolve => {
               setTimeout(() => {
                 resolve([
-                  node.text + ' Child-1',
+                  // { text: node.text + ' Child-1', checked: 1 },
+                  // { text: node.text + ' Child-2', checked: 1, expanded: 1, child: [node.text + ' Child-2-1', node.text + ' Child-2-2']},
+                  // { text: node.text + ' Child-3', checked: 0, expanded: 1, child: [
+                  //   { text: node.text + ' Child-3-1', checked: true }, 
+                  //   { text: node.text + ' Child-3-2', checked: false}]},
+                  { text: node.text + ' Child-1', checked: 0 },
                   { text: node.text + ' Child-2', checked: true },
-                  { text: node.text + ' Child-3', child: [node.text + ' Child-3-1', node.text + ' Child-3-2']},
-                  node.text + ' Child-4',
+                  { text: node.text + ' Child-3', checked: 1, child: [node.text + ' Child-3-1', node.text + ' Child-3-2']},
+                  { text: node.text + ' Child-4', checked: 1 },
                 ])
               }, 400)
             })

@@ -7,6 +7,7 @@ export function recurseDown(obj: any, fn: (obj: Node, depth: number) => any, exc
     return obj.map(node => recurseDown(node, fn, false, depth))
   }
 
+  // TODO: get rid of it: create a State interface
   if (obj[0]) {
     return Object.keys(obj)
       .filter(key => isFinite(+key))
