@@ -50,11 +50,6 @@
             return new Promise(resolve => {
               setTimeout(() => {
                 resolve([
-                  // { text: node.text + ' Child-1', checked: 1 },
-                  // { text: node.text + ' Child-2', checked: 1, expanded: 1, child: [node.text + ' Child-2-1', node.text + ' Child-2-2']},
-                  // { text: node.text + ' Child-3', checked: 0, expanded: 1, child: [
-                  //   { text: node.text + ' Child-3-1', checked: true }, 
-                  //   { text: node.text + ' Child-3-2', checked: false}]},
                   { text: node.text + ' Child-1', checked: 0 },
                   { text: node.text + ' Child-2', checked: true },
                   { text: node.text + ' Child-3', checked: 1, child: [node.text + ' Child-3-1', node.text + ' Child-3-2']},

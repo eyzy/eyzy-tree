@@ -144,7 +144,12 @@ export default class EyzyTree extends React.Component<Tree> {
     })
 
     checkedNodes.forEach((id: string) => state.set(id, 'checked', true))
-    indeterminateNodes.forEach((id: string) => state.set(id, 'indeterminate', true))
+
+    const useIndeterminateState: boolean = false !== this.props.useIndeterminateState
+
+    if (useIndeterminateState) {
+      indeterminateNodes.forEach((id: string) => state.set(id, 'indeterminate', true))
+    }
 
     this.checkedNodes = checkedNodes
     this.indeterminateNodes = indeterminateNodes
