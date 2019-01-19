@@ -14,7 +14,6 @@ import { parseNode } from '../utils/parser'
 import { recurseDown, traverseUp, getFirstChild } from '../utils/traveler'
 import { linkedNode } from '../utils/linkedNode'
 import { copyArray, isNodeIndeterminate, isFunction, isLeaf } from '../utils'
-import { string } from 'prop-types';
 
 export default class EyzyTree extends React.Component<Tree> {
   static TreeNode = TreeNode
