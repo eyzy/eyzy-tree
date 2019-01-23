@@ -26,6 +26,7 @@ export default class TreeNode extends React.Component<Node> {
       child,
       expanded,
       disabled,
+      disabledCheckbox,
       parent,
       isBatch,
       depth
@@ -44,6 +45,7 @@ export default class TreeNode extends React.Component<Node> {
     node.expanded = !!expanded
     node.disabled = !!disabled
     node.isBatch = !!isBatch
+    node.disabledCheckbox = !!disabledCheckbox
 
     return node
   }

@@ -1,6 +1,6 @@
 import { Node } from '../types/Node'
 
-import { recurseDown, traverseUp, rootElement } from './traveler'
+import { recurseDown, rootElement } from './traveler'
 import {
   isRoot,
   copyObject,
@@ -61,17 +61,19 @@ function updateChildNodes(parentNode: Node) {
   return parentNode
 }
 
+export type StateObject = { stirng: Node }
+
 export default class State<T> {
-  private state: T
-  private stateLength: number
+  public length: number
+  private nodes: T
 
   constructor(state: T, stateLength: number) {
-    this.state = state
-    this.stateLength = stateLength
+    this.length = stateLength
+    this.nodes = state
   }
 
   updateRootNode(node: Node, key?: string, value?: any) {
-    const i = getItemById(node.id, this.state)
+    const i = getItemById(node.id, this.nodes)
     const newObj = copyObject(node)
 
     if (key) {
@@ -80,7 +82,7 @@ export default class State<T> {
     }
 
     if (null !== i) {
-      this.state[i] = updateChildNodes(newObj as Node)
+      this.nodes[i] = updateChildNodes(newObj as Node)
     }
   }
 
@@ -92,7 +94,7 @@ export default class State<T> {
       return
     }
 
-    const index = getNodeIndex(node.id, parentNode, this.stateLength)
+    const index = getNodeIndex(node.id, parentNode, this.length)
 
     if (null === index) {
       return
@@ -108,7 +110,7 @@ export default class State<T> {
     const node = this.getNodeById(id)
 
     if (!node) {
-      return this.state
+      return this.nodes
     }
 
     if (isRoot(node)) {
@@ -117,13 +119,13 @@ export default class State<T> {
       this.updateLeafNode(node, key, value)
     }
 
-    return this.state
+    return this.nodes
   }
 
   getNodeById(id: string): Node | null {
     let node: Node | null = null
 
-    recurseDown(this.state, (obj: Node): any => {
+    recurseDown(this.nodes, (obj: Node): any => {
       if (obj.id === id) {
         node = obj
         return false
@@ -134,12 +136,12 @@ export default class State<T> {
   }
 
   get(): T {
-    return this.state
+    return this.nodes
   }
 
   toArray() {
     const result = []
-    const state = this.state
+    const state = this.nodes
 
     for (let i in state) {
       result.push(state[i])

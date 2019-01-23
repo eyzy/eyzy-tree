@@ -9,21 +9,21 @@ import TreeNode from './TreeNode'
 import { Node } from '../types/Node'
 import { Tree } from '../types/Tree'
 
-import State from '../utils/state'
+import State, { StateObject } from '../utils/state'
 import { parseNode } from '../utils/parser'
 import { recurseDown, traverseUp, getFirstChild } from '../utils/traveler'
 import { linkedNode } from '../utils/linkedNode'
 import { copyArray, isNodeIndeterminate, isFunction, isLeaf } from '../utils'
 
+
 export default class EyzyTree extends React.Component<Tree> {
   static TreeNode = TreeNode
-
-  stateLength: number
-  stateCache: State<any> | null = null
 
   selectedNodes: string[] = []
   checkedNodes: string[] = []
   indeterminateNodes: string[] = []
+
+  _state: State<StateObject>
 
   constructor(props: Tree) {
     super(props)
@@ -47,21 +47,17 @@ export default class EyzyTree extends React.Component<Tree> {
       }
     })
 
-    const state = new State(stateObject, data.length)
+    this._state = new State(stateObject as StateObject, data.length)
 
     this.checkedNodes.forEach((id: string) => {
-      const node = state.getNodeById(id)
+      const node = this._state.getNodeById(id)
 
       if (node && isLeaf(node) && this.props.autoCheckChildren !== false) {
-        this.useState(state, () => {
-          this.refreshIndeterminateState(id, true, false)
-        })
+        this.refreshIndeterminateState(id, true, false)
       }
     })
 
-    this.stateLength = data.length
-    this.state = state.get()
-    this.stateCache = null
+    this.state = this._state.get()
   }
 
   fireEvent = (name: string, id: string, ...args: any) => {
@@ -155,7 +151,7 @@ export default class EyzyTree extends React.Component<Tree> {
     this.indeterminateNodes = indeterminateNodes
 
     if (false !== shouldRender) {
-      this.updateState(state, true)
+      this.updateState(state)
     }
 
     nodesForEvent.forEach((id: string) => {
@@ -163,8 +159,8 @@ export default class EyzyTree extends React.Component<Tree> {
     })
   }
 
-  getState = () => {
-    return this.stateCache || new State(this.state, this.stateLength)
+  getState = (): State<StateObject> => {
+    return this._state
   }
 
   getSelectedNode = (): Node | null => {
@@ -177,23 +173,8 @@ export default class EyzyTree extends React.Component<Tree> {
     return this.getState().getNodeById(lastSelectedNode)
   }
 
-  updateState = (state: any, clearCache?: boolean) => {
-    if (clearCache) {
-      this.setState(state)
-      this.stateCache = null
-      return
-    }
-
-    if (this.stateCache) {
-      return
-    }
-
-    this.setState(state)
-  }
-
-  useState = (state: any, cb: () => void): any => {
-    this.stateCache = state
-    cb()
+  updateState = (state: State<StateObject>) => {
+    this.setState(state.get())
   }
 
   unselect = (node: Node) => {
@@ -215,7 +196,7 @@ export default class EyzyTree extends React.Component<Tree> {
       return false
     })
 
-    this.updateState(state.get())
+    this.updateState(state)
   }
 
   select = (node: Node, ignoreEvent?: boolean) => {
@@ -247,7 +228,7 @@ export default class EyzyTree extends React.Component<Tree> {
     state.set(id, 'selected', true)
 
     this.selectedNodes.push(id)
-    this.updateState(state.get())
+    this.updateState(state)
 
     if (true !== ignoreEvent) {
       this.fireEvent('onSelect', id)
@@ -272,18 +253,14 @@ export default class EyzyTree extends React.Component<Tree> {
     }
 
     if (this.props.selectOnCheck) {
-      this.useState(state, () => {
-        this.select(node)
-      })
+      this.select(node)
     }
 
     if (this.props.autoCheckChildren !== false) {
       this.fireEvent('onCheck', id, willBeChecked)
-      this.useState(state, () => {
-        this.refreshIndeterminateState(node.id, willBeChecked)
-      })
+      this.refreshIndeterminateState(node.id, willBeChecked)
     } else {
-      this.updateState(state.get(), true)
+      this.updateState(state)
       this.fireEvent('onCheck', id, willBeChecked)
     }
   }
@@ -302,12 +279,10 @@ export default class EyzyTree extends React.Component<Tree> {
     state.set(node.id, 'expanded', !node.expanded)
 
     if (this.props.selectOnExpand && !node.selected) {
-      this.useState(state, () => {
-        this.select(node)
-      })
+      this.select(node)
     }
 
-    this.updateState(state.get(), true)
+    this.updateState(state)
     this.fireEvent('onExpand', node.id, !node.expanded)
   }
 
@@ -439,9 +414,7 @@ export default class EyzyTree extends React.Component<Tree> {
         const node = state.getNodeById(id)
   
         if (node && isLeaf(node)) {
-          this.useState(state, () => {
-            this.refreshIndeterminateState(id, true, false)
-          })
+          this.refreshIndeterminateState(id, true, false)
         }
       })
     }
@@ -468,22 +441,17 @@ export default class EyzyTree extends React.Component<Tree> {
     state.set(id, 'loading', true)
 
     result.then((nodes: any[]) => {
-      this.useState(state, () => {
-        this.appendChild(id, nodes)
-      })
+      this.appendChild(id, nodes)
 
       state.set(id, 'loading', false)
       state.set(id, 'expanded', true)
       state.set(id, 'isBatch', false)
 
-      this.useState(state, () => {
-        this.fireEvent('onExpand', id, true)
-      })
-
-      this.updateState(state.get(), true)
+      this.fireEvent('onExpand', id, true)
+      this.updateState(state)
     })
 
-    this.updateState(state.get())
+    this.updateState(state)
   }
 
   renderNode = (node: Node): ReactElement<Node> => {
@@ -522,7 +490,7 @@ export default class EyzyTree extends React.Component<Tree> {
       ? 'eyzy-tree ' + props.theme
       : 'eyzy-tree eyzy-theme'
 
-    for (let i = 0; i < this.stateLength; i++) {
+    for (let i = 0; i < this._state.length; i++) {
       nodes.push(this.renderNode(this.state[i]))
     }
 
