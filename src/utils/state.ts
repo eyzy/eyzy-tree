@@ -7,6 +7,26 @@ import {
   copyArray
 } from './index'
 
+type IterableValue = [string, any]
+
+function iterable(key: any, value: any): IterableValue[] {
+  if ('string' === typeof key) {
+    return [[key, value]]
+  }
+
+  if (!value) {
+    const res: IterableValue[] = []
+
+    for (let i in key) {
+      res.push([i, key[i]])
+    }
+
+    return res
+  }
+
+  return []
+}
+
 function replaceChild(node: Node): Node {
   if (!node || !node.child) {
     return node
@@ -72,13 +92,15 @@ export default class State<T> {
     this.nodes = state
   }
 
-  updateRootNode(node: Node, key?: string, value?: any) {
+  updateRootNode(node: Node, iterableValue?: IterableValue[]) {
     const i = getItemById(node.id, this.nodes)
     const newObj = copyObject(node)
 
-    if (key) {
-      node[key] = value
-      newObj[key] = value
+    if (iterableValue) {
+      iterableValue.forEach(([key, value]: IterableValue) => {
+        node[key] = value
+        newObj[key] = value
+      })
     }
 
     if (null !== i) {
@@ -86,7 +108,7 @@ export default class State<T> {
     }
   }
 
-  updateLeafNode(node: Node, key: string, value: any) {
+  updateLeafNode(node: Node, iterableValue: IterableValue[]) {
     const root: Node | null = rootElement(node)
     const parentNode: Node | null | undefined = node.parent
 
@@ -100,13 +122,17 @@ export default class State<T> {
       return
     }
 
-    node[key] = value
-    parentNode.child[index][key] = value
+    if (iterableValue) {
+      iterableValue.forEach(([key, value]: IterableValue) => {
+        node[key] = value
+        parentNode.child[index][key] = value
+      })
+    }
 
     this.updateRootNode(replaceChild(root))
   }
 
-  set(id: string, key: string, value: any): T {
+  set(id: string, key: any, value?: any): T {
     const node = this.getNodeById(id)
 
     if (!node) {
@@ -114,9 +140,9 @@ export default class State<T> {
     }
 
     if (isRoot(node)) {
-      this.updateRootNode(node, key, value)
+      this.updateRootNode(node, iterable(key, value))
     } else {
-      this.updateLeafNode(node, key, value)
+      this.updateLeafNode(node, iterable(key, value))
     }
 
     return this.nodes

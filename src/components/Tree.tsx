@@ -443,9 +443,11 @@ export default class EyzyTree extends React.Component<Tree> {
     result.then((nodes: any[]) => {
       this.appendChild(id, nodes)
 
-      state.set(id, 'loading', false)
-      state.set(id, 'expanded', true)
-      state.set(id, 'isBatch', false)
+      state.set(id, {
+        loading: false,
+        expanded: true,
+        isBatch: false
+      })
 
       this.fireEvent('onExpand', id, true)
       this.updateState(state)
