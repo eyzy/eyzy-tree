@@ -13,7 +13,7 @@ import State, { StateObject } from '../utils/state'
 import { parseNode } from '../utils/parser'
 import { recurseDown, traverseUp, getFirstChild } from '../utils/traveler'
 import { linkedNode } from '../utils/linkedNode'
-import { copyArray, isNodeIndeterminate, isFunction, isLeaf } from '../utils'
+import { has, copyArray, isNodeIndeterminate, isFunction, isLeaf } from '../utils'
 
 
 export default class EyzyTree extends React.Component<Tree> {
@@ -88,19 +88,19 @@ export default class EyzyTree extends React.Component<Tree> {
     }
 
     recurseDown(node, (child: Node) => {
-      if (!child.disabled && !child.disabledCheckbox && id !== child.id) {
+      if (!child.disabled && !child.disabledCheckbox) {
         childIds.push(child.id)
 
         if (child.checked !== willBeChecked) {
           nodesForEvent.push(child.id)
         }
       }
-    })
+    }, true)
 
     if (willBeChecked) {
-      checkedNodes.push(...childIds)
+      checkedNodes.push(...childIds.filter((id: string) => !has(checkedNodes, id)))
     } else {
-      checkedNodes = checkedNodes.filter(nodeId => !~childIds.indexOf(nodeId))
+      checkedNodes = checkedNodes.filter(nodeId => !has(childIds, nodeId))
     }
 
     traverseUp(node, (parentNode: Node): any => {
@@ -112,12 +112,12 @@ export default class EyzyTree extends React.Component<Tree> {
       const id = parentNode.id
 
       if (isIndeterminate) {
-        !~indeterminateNodes.indexOf(id) && indeterminateNodes.push(id)
+        !has(indeterminateNodes, id) && indeterminateNodes.push(id)
         checkedNodes = checkedNodes.filter(nodeId => nodeId !== id)
       } else {
         indeterminateNodes = indeterminateNodes.filter(nodeId => nodeId !== id)
 
-        if (willBeChecked) {
+        if (willBeChecked && !has(checkedNodes, id)) {
           checkedNodes.push(id)
         } else {
           checkedNodes = checkedNodes.filter(nodeId => nodeId !== id)
@@ -125,21 +125,29 @@ export default class EyzyTree extends React.Component<Tree> {
       }
     })
 
-    indeterminateNodes = indeterminateNodes.filter(nodeId => !~checkedNodes.indexOf(nodeId))
+    indeterminateNodes = indeterminateNodes.filter(nodeId => !has(checkedNodes, nodeId))
 
-    this.checkedNodes.forEach((id: string) => {
-      if (-1 !== this.checkedNodes.indexOf(id)) {
+    if (willBeChecked) {
+      checkedNodes.forEach((id: string) => {
+        if (!has(this.checkedNodes, id)) {
+          state.set(id, 'checked', true)
+        }
+      })
+    } else {
+      this.checkedNodes.forEach((id: string) => {
+        if (!has(checkedNodes, id)) {
+          state.set(id, 'checked', false)
+        }
+      })
+
+      childIds.forEach((id: string) => {
         state.set(id, 'checked', false)
-      }
-    })
+      })
+    }
 
     this.indeterminateNodes.forEach((id: string) => {
-      if (-1 !== this.indeterminateNodes.indexOf(id)) {
-        state.set(id, 'indeterminate', false)
-      }
+      state.set(id, 'indeterminate', false)
     })
-
-    checkedNodes.forEach((id: string) => state.set(id, 'checked', true))
 
     const useIndeterminateState: boolean = false !== this.props.useIndeterminateState
 
@@ -400,7 +408,7 @@ export default class EyzyTree extends React.Component<Tree> {
         obj.checked = true
       }
 
-      if (obj.checked) {
+      if (obj.checked && !~this.checkedNodes.indexOf(obj.id)) {
         checkedNodes.push(obj.id)
       }
     })

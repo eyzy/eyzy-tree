@@ -10,6 +10,10 @@ export function isFunction(value: any): boolean {
   return 'function' === typeof value 
 }
 
+export function has(targetArray: any[], targetValue: any): boolean {
+  return !!~targetArray.indexOf(targetValue)
+}
+
 export function copyArray<T>(arr: T[]): T[] {
   return arr.concat([])
 }
