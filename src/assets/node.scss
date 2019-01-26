@@ -13,6 +13,13 @@
     flex-wrap: nowrap;
     align-items: center;
 
+    &.disabled:hover {
+      &:before {
+        transition: transparent;
+        background: transparent;
+      }
+    }
+
     > span {
       margin-right: $node-el-margin-right;
     }
@@ -137,7 +144,7 @@
   }
 
   .node-text {
-    padding: 4px 7px;
+    padding: 0 7px;
     line-height: 24px;
     cursor: pointer;
     display: flex;

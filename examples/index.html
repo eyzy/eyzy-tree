@@ -32,52 +32,67 @@
     <script>
       const copy = JSON.parse(JSON.stringify(data))
 
+      class TreeWrapper extends React.Component {
+        constructor(props) {
+          super(props)
+
+          this.api = null
+        }
+
+        render() {
+          return React.createElement(EyzyTree, {
+            data,
+            theme: "",
+            checkable: true,
+            onDoubleClick: (node) => {console.log('dbl', node.text)},
+            onCheck: (node, isChecked) => {console.log('check', node.text, node.checked, isChecked)},
+            onExpand: (node, isExpanded) => {console.log('expand', node.text, node.expanded, isExpanded)},
+            onSelect: (node) => {console.log('select', node.text)},
+            onUnSelect: (node) => {console.log('unselect', node.text)},
+            textRenderer: ({node}) => {
+              // return React.createElement('div', null, `${node.text} - ${node.id}`)
+              return React.createElement('div', null, `${node.text} - (${node.depth})`)
+            },
+            fetchData: (node) => {
+              return new Promise(resolve => {
+                setTimeout(() => {
+                  resolve([
+                    { text: node.text + ' Child-1', checked: 0 },
+                    { text: node.text + ' Child-2', checked: true },
+                    { text: node.text + ' Child-3', checked: 1, child: [node.text + ' Child-3-1', node.text + ' Child-3-2']},
+                    { text: node.text + ' Child-4', checked: 1 },
+                  ])
+                }, 400)
+              })
+            }
+          })
+        }
+      }
+
+      const element = React.createElement(TreeWrapper)
+
+      ReactDOM.render(
+        element,
+        document.getElementById('example0')
+      )
+
       ReactDOM.render(
         React.createElement(EyzyTree, {
-          data,
-          theme: "eyzy-theme-red",
-          checkable: true,
-          onDoubleClick: (node) => {console.log('dbl', node.text)},
-          onCheck: (node, isChecked) => {console.log('check', node.text, node.checked, isChecked)},
-          onExpand: (node, isExpanded) => {console.log('expand', node.text, node.expanded, isExpanded)},
-          onSelect: (node) => {console.log('select', node.text)},
-          onUnSelect: (node) => {console.log('unselect', node.text)},
-          textRenderer: ({node}) => {
-            return React.createElement('div', null, `${node.text} - ${node.id}`)
-            // return React.createElement('div', null, `${node.text} - (${node.depth})`)
-          },
+          data: copy,
+          theme: "",
           fetchData: (node) => {
             return new Promise(resolve => {
               setTimeout(() => {
                 resolve([
-                  { text: node.text + ' Child-1', checked: 0 },
-                  { text: node.text + ' Child-2', checked: true },
-                  { text: node.text + ' Child-3', checked: 1, child: [node.text + ' Child-3-1', node.text + ' Child-3-2']},
-                  { text: node.text + ' Child-4', checked: 1 },
+                  node.text + ' Child-1',
+                  { text: node.text + ' Child-2', checked: true }
                 ])
               }, 400)
             })
           }
         }),
-        document.getElementById('example0')
+        document.getElementById('example1')
       )
-
-      // ReactDOM.render(
-      //   React.createElement(EyzyTree, {
-      //     data: copy,
-      //     fetchData: (node) => {
-      //       return new Promise(resolve => {
-      //         setTimeout(() => {
-      //           resolve([
-      //             node.text + ' Child-1',
-      //             { text: node.text + ' Child-2', checked: true }
-      //           ])
-      //         }, 400)
-      //       })
-      //     }
-      //   }),
-      //   document.getElementById('example1')
-      // )
     </script>
   </body>
 </html>

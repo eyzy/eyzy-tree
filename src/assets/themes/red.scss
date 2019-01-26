@@ -28,6 +28,13 @@
       }
     }
 
+    &.disabled:hover {
+      &:before {
+        transition: transparent;
+        background: transparent;
+      }
+    }
+
     &.selected {
       &:before {
         background: $node-selected-bg;
@@ -63,6 +70,7 @@
     }
 
     .node-text {
+      padding: 4px 7px;
       flex-grow: 1;
       cursor: pointer;
     }
