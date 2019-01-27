@@ -6,6 +6,10 @@ export function isArray(obj: any): boolean {
   return Array.isArray(obj)
 }
 
+export function isExpandable(node: Node): boolean {
+  return !!(node.child && node.child.length) || !!node.isBatch
+}
+
 export function isFunction(value: any): boolean {
   return 'function' === typeof value 
 }

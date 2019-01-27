@@ -22,6 +22,7 @@
       #example0,
       #example1 {
         width: 500px;
+        padding: 0 10px;
       }
     </style>
   </head>
@@ -43,6 +44,8 @@
           return React.createElement(EyzyTree, {
             data,
             checkable: true,
+            expandOnSelect: true,
+            multiple: false,
             onReady: (api) => {this.api = api},
             onDoubleClick: (node) => {console.log('dbl', node.text)},
             onCheck: (node, isChecked) => {console.log('check', node.text, node.checked, isChecked)},
@@ -76,22 +79,23 @@
         document.getElementById('example0')
       )
 
-      // ReactDOM.render(
-      //   React.createElement(EyzyTree, {
-      //     data: copy,
-      //     fetchData: (node) => {
-      //       return new Promise(resolve => {
-      //         setTimeout(() => {
-      //           resolve([
-      //             node.text + ' Child-1',
-      //             { text: node.text + ' Child-2', checked: true }
-      //           ])
-      //         }, 400)
-      //       })
-      //     }
-      //   }),
-      //   document.getElementById('example1')
-      // )
+      ReactDOM.render(
+        React.createElement(EyzyTree, {
+          data: copy,
+          multiple: true,
+          fetchData: (node) => {
+            return new Promise(resolve => {
+              setTimeout(() => {
+                resolve([
+                  node.text + ' Child-1',
+                  { text: node.text + ' Child-2', checked: true }
+                ])
+              }, 400)
+            })
+          }
+        }),
+        document.getElementById('example1')
+      )
     </script>
   </body>
 </html>

@@ -18,6 +18,7 @@ export interface Tree {
   selectOnCheck?: boolean
   selectOnNavigate?: boolean
   theme?: string
+  multiple?: boolean
   onReady?: (api: TreeAPI) => void
   onSelect?: (node: Node) => void
   onUnSelect?: (node: Node) => void
