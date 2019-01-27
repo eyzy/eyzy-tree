@@ -9,6 +9,7 @@ import TreeNode from './TreeNode'
 import { Node } from '../types/Node'
 import { Tree } from '../types/Tree'
 
+import { TreeAPI } from '../TreeAPI'
 import State, { StateObject } from '../utils/state'
 import { parseNode } from '../utils/parser'
 import { recurseDown, traverseUp, getFirstChild } from '../utils/traveler'
@@ -58,6 +59,14 @@ export default class EyzyTree extends React.Component<Tree> {
     })
 
     this.state = this._state.get()
+  }
+
+  componentDidMount() {
+    if (this.props.onReady) {
+      this.props.onReady(
+        new TreeAPI(this, this._state)
+      )
+    }
   }
 
   fireEvent = (name: string, id: string, ...args: any) => {

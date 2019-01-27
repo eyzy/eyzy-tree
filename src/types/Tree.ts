@@ -1,4 +1,5 @@
 import { Node } from './Node'
+import { TreeAPI } from '../TreeAPI'
 
 export interface Tree {
   data: Node[]
@@ -17,6 +18,7 @@ export interface Tree {
   selectOnCheck?: boolean
   selectOnNavigate?: boolean
   theme?: string
+  onReady?: (api: TreeAPI) => void
   onSelect?: (node: Node) => void
   onUnSelect?: (node: Node) => void
   onCheck?: (node: Node, isChecked: boolean) => void

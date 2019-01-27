@@ -42,8 +42,8 @@
         render() {
           return React.createElement(EyzyTree, {
             data,
-            theme: "",
             checkable: true,
+            onReady: (api) => {this.api = api},
             onDoubleClick: (node) => {console.log('dbl', node.text)},
             onCheck: (node, isChecked) => {console.log('check', node.text, node.checked, isChecked)},
             onExpand: (node, isExpanded) => {console.log('expand', node.text, node.expanded, isExpanded)},
@@ -76,23 +76,22 @@
         document.getElementById('example0')
       )
 
-      ReactDOM.render(
-        React.createElement(EyzyTree, {
-          data: copy,
-          theme: "",
-          fetchData: (node) => {
-            return new Promise(resolve => {
-              setTimeout(() => {
-                resolve([
-                  node.text + ' Child-1',
-                  { text: node.text + ' Child-2', checked: true }
-                ])
-              }, 400)
-            })
-          }
-        }),
-        document.getElementById('example1')
-      )
+      // ReactDOM.render(
+      //   React.createElement(EyzyTree, {
+      //     data: copy,
+      //     fetchData: (node) => {
+      //       return new Promise(resolve => {
+      //         setTimeout(() => {
+      //           resolve([
+      //             node.text + ' Child-1',
+      //             { text: node.text + ' Child-2', checked: true }
+      //           ])
+      //         }, 400)
+      //       })
+      //     }
+      //   }),
+      //   document.getElementById('example1')
+      // )
     </script>
   </body>
 </html>
