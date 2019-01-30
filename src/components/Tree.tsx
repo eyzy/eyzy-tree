@@ -53,7 +53,7 @@ export default class EyzyTree extends React.Component<Tree> {
     this.checkedNodes.forEach((id: string) => {
       const node = this._state.getNodeById(id)
 
-      if (node && isLeaf(node) && this.props.autoCheckChildren !== false) {
+      if (node && isLeaf(node) && this.props.noCascade !== true) {
         this.refreshIndeterminateState(id, true, false)
       }
     })
@@ -288,7 +288,7 @@ export default class EyzyTree extends React.Component<Tree> {
       this.select(node)
     }
 
-    if (this.props.autoCheckChildren !== false) {
+    if (this.props.noCascade !== true) {
       this.fireEvent('onCheck', id, willBeChecked)
       this.refreshIndeterminateState(node.id, willBeChecked)
     } else {
@@ -439,13 +439,13 @@ export default class EyzyTree extends React.Component<Tree> {
       return obj
     })
 
-    const autoCheckChildren = false !== this.props.autoCheckChildren
+    const cascadeCheck: boolean = true !== this.props.noCascade
     const checkedNodes: string[] = []
 
     recurseDown(child, (obj: Node, depth: number) => {
       obj.depth = parentDepth + depth + 1
 
-      if (autoCheckChildren && obj.parent && obj.parent.checked) {
+      if (cascadeCheck && obj.parent && obj.parent.checked) {
         obj.checked = true
       }
 
@@ -458,7 +458,7 @@ export default class EyzyTree extends React.Component<Tree> {
 
     state.set(node.id, 'child', child)
 
-    if (autoCheckChildren) {
+    if (cascadeCheck) {
       checkedNodes.forEach((id: string) => {
         const node = state.getNodeById(id)
   

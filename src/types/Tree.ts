@@ -8,7 +8,7 @@ export interface Tree {
   arrowRenderer?: any
   textRenderer?: any
   checkable?: boolean
-  autoCheckChildren?: boolean
+  noCascade?: boolean
   useIndeterminateState?: boolean
   preventSelectParent?: boolean
   keyboardNavigation?: boolean
