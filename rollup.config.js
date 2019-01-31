@@ -1,6 +1,7 @@
 import pkg from './package.json'
 import uglify from 'rollup-plugin-uglify-es'
 import typescript from 'rollup-plugin-typescript'
+import tslint from 'rollup-plugin-tslint'
 import scss from 'rollup-plugin-scss'
 import serve from 'rollup-plugin-serve'
 
@@ -34,6 +35,7 @@ const config = {
   ],
   cache: false,
   plugins: [
+    tslint(),
     typescript(),
     scss({
       output: 'dist/style.css'

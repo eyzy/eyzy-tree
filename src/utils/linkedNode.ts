@@ -32,25 +32,25 @@ export function linkedNode(node: Node, state: any, ignoreExpanded?: boolean): Li
 
   while (i++ < neighborIds.length) {
     if (!result.next) {
-      const _node = state.getNodeById(neighborIds[currentPos + i])
+      const node: Node | null = state.getNodeById(neighborIds[currentPos + i])
 
-      if (_node && !_node.disabled) {
-        result.next = _node
+      if (node && !node.disabled) {
+        result.next = node
       }
     }
 
     if (!result.prev) {
-      const _node = state.getNodeById(neighborIds[currentPos - i])
+      const node: Node | null = state.getNodeById(neighborIds[currentPos - i])
 
-      if (_node && !_node.disabled) {
-        if (_node.expanded) {
-          const lastChild: Node | null = getLastChild(_node, true)
+      if (node && !node.disabled) {
+        if (node.expanded) {
+          const lastChild: Node | null = getLastChild(node, true)
 
           if (lastChild) {
             result.prev =  state.getNodeById(lastChild.id)
           }
         } else {
-          result.prev = _node
+          result.prev = node
         }
       }
     }

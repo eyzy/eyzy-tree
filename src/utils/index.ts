@@ -29,7 +29,7 @@ export function copyArray<T>(arr: T[]): T[] {
 export function copyObject(obj: any) {
   const newObj = {}
 
-  for (let i in obj) {
+  for (const i in obj) {
     if (hasOwnProp.call(obj, i)) {
       newObj[i] = isArray(obj[i]) ? copyArray(obj[i]) : obj[i]
     }
