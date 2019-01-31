@@ -2,7 +2,7 @@
 
 > Most expected React tree component.
 
-![NPM version](https://img.shields.io/npm/v/eyzy-tree.svg?style=flat)
+[![NPM version](https://img.shields.io/npm/v/eyzy-tree.svg?style=flat)](https://npmjs.com/package/eyzy-tree)
 ![NPM license](https://img.shields.io/npm/l/eyzy-tree.svg?style=flat)
 [![NPM total downloads](https://img.shields.io/npm/dt/eyzy-tree.svg?style=flat)](https://npmcharts.com/compare/eyzy-tree?minimal=true)
 [![NPM monthly downloads](https://img.shields.io/npm/dm/eyzy-tree.svg?style=flat)](https://npmcharts.com/compare/eyzy-tree?minimal=true)
