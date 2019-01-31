@@ -1,8 +1,8 @@
 <html>
   <head>
     <title>Basic</title>
-    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <script src="/eyzy-tree.umd.js"></script>
     <script src="/data/api.js"></script>
 
@@ -38,7 +38,12 @@
             checkable: true,
             checkOnSelect: true,
             multiple: true,
-            onReady: (api) => {this.api = api}
+            onReady: (api) => {this.api = api}, 
+            onCheck: () => {
+              console.log(
+                this.api.checked('BRANCH', 1).map(t => t.text).join(', ')
+              )
+            }
           })
         }
       }

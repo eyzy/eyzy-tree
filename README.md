@@ -7,6 +7,7 @@
 [![NPM total downloads](https://img.shields.io/npm/dt/eyzy-tree.svg?style=flat)](https://npmcharts.com/compare/eyzy-tree?minimal=true)
 [![NPM monthly downloads](https://img.shields.io/npm/dm/eyzy-tree.svg?style=flat)](https://npmcharts.com/compare/eyzy-tree?minimal=true)
 
+[Documentation](https://eyzy.gitbook.io/tree/). Docs in progress.
 
 ### Features
 - flexible

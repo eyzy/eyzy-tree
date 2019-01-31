@@ -4,7 +4,7 @@ import State, { StateObject } from './utils/state'
 import { isNodeCheckable, isLeaf } from './utils/index'
 import { TreeComponent } from './types/TreeComponent'
 
-type CheckboxValueConsistency = 'ALL' | 'TOP' | 'BRANCH' | 'LEAF' | 'WITH_INDETERMINATE' | 'BRANCH_PRIORITY'
+type CheckboxValueConsistency = 'ALL' | 'BRANCH' | 'LEAF' | 'WITH_INDETERMINATE'
 
 export class TreeAPI {
   private state: State<StateObject>
@@ -26,7 +26,7 @@ export class TreeAPI {
   checked(valueConsistsOf: CheckboxValueConsistency, ignoreDisabled?: boolean): Node[] {
     const state = this.state
     let checkedNodes: Node[] = []
-    
+
     this.tree.checkedNodes.forEach((id: string) => {
       const node = state.getNodeById(id)
 
@@ -50,9 +50,15 @@ export class TreeAPI {
     }
 
     switch(valueConsistsOf) {
-      case 'TOP': return checkedNodes.filter((node: Node) => !isLeaf(node) && !(node.parent && node.parent.checked))
-      case 'BRANCH': return checkedNodes.filter((node: Node) => !isLeaf(node))
       case 'LEAF': return checkedNodes.filter((node: Node) => isLeaf(node))
+      case 'BRANCH': 
+        return checkedNodes.filter((node: Node) => {
+          if (node.parent && node.parent.checked) {
+            return false
+          }
+
+          return true
+        })
     }
 
     return checkedNodes
