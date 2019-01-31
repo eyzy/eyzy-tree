@@ -8,6 +8,7 @@ import TreeNode from './TreeNode'
 
 import { Node } from '../types/Node'
 import { Tree } from '../types/Tree'
+import { TreeComponent } from '../types/TreeComponent'
 
 import { TreeAPI } from '../TreeAPI'
 import State, { StateObject } from '../utils/state'
@@ -17,7 +18,7 @@ import { linkedNode } from '../utils/linkedNode'
 import { has, copyArray, isNodeIndeterminate, isFunction, isLeaf, isExpandable } from '../utils'
 
 
-export default class EyzyTree extends React.Component<Tree> {
+export default class EyzyTree extends React.Component<Tree> implements TreeComponent {
   static TreeNode = TreeNode
 
   selectedNodes: string[] = []
@@ -64,7 +65,7 @@ export default class EyzyTree extends React.Component<Tree> {
   componentDidMount() {
     if (this.props.onReady) {
       this.props.onReady(
-        new TreeAPI(this, this._state)
+        new TreeAPI(this as TreeComponent, this._state)
       )
     }
   }
@@ -289,8 +290,8 @@ export default class EyzyTree extends React.Component<Tree> {
     }
 
     if (this.props.noCascade !== true) {
-      this.fireEvent('onCheck', id, willBeChecked)
       this.refreshIndeterminateState(node.id, willBeChecked)
+      this.fireEvent('onCheck', id, willBeChecked)
     } else {
       this.updateState(state)
       this.fireEvent('onCheck', id, willBeChecked)

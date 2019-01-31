@@ -1,0 +1,54 @@
+<html>
+  <head>
+    <title>Basic</title>
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="/eyzy-tree.umd.js"></script>
+    <script src="/data/api.js"></script>
+
+    <link rel="stylesheet" href="/style.css">
+
+    <style>
+      body {
+        padding: 20px;
+        display: flex;
+      }
+
+      #example0,
+      #example1 {
+        width: 500px;
+        padding: 0 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="example0"></div>
+
+    <script>
+      class TreeWrapper extends React.Component {
+        constructor(props) {
+          super(props)
+
+          this.api = null
+        }
+
+        render() {
+          return React.createElement(EyzyTree, {
+            data,
+            checkable: true,
+            checkOnSelect: true,
+            multiple: true,
+            onReady: (api) => {this.api = api}
+          })
+        }
+      }
+
+      const element = React.createElement(TreeWrapper)
+
+      ReactDOM.render(
+        element,
+        document.getElementById('example0')
+      )
+    </script>
+  </body>
+</html>

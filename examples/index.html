@@ -45,6 +45,8 @@
             data,
             checkable: true,
             expandOnSelect: true,
+            selectOnExpand: true,
+            preventParentSelect: true,
             multiple: false,
             onReady: (api) => {this.api = api},
             onDoubleClick: (node) => {console.log('dbl', node.text)},

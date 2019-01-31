@@ -10,6 +10,10 @@ export function isExpandable(node: Node): boolean {
   return !!(node.child && node.child.length) || !!node.isBatch
 }
 
+export function isNodeCheckable(node: Node): boolean {
+  return !(!!node.disabled || !!node.disabledCheckbox)
+}
+
 export function isFunction(value: any): boolean {
   return 'function' === typeof value 
 }
