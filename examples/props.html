@@ -50,13 +50,15 @@
           }
         }
 
+        renderText({node}) {
+          return React.createElement('div', null, `${node.text} - (${node.depth})`)
+        }
+
         render() {
           return React.createElement(EyzyTree, {
             ...this.state,
             data,
-            textRenderer: ({node}) => {
-              return React.createElement('div', null, `${node.text} - (${node.depth})`)
-            },
+            textRenderer: this.renderText,
             fetchData: (node) => {
               return new Promise(resolve => {
                 setTimeout(() => {

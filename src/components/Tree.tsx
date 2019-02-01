@@ -21,23 +21,18 @@ import { recurseDown, traverseUp, getFirstChild } from '../utils/traveler'
 import { linkedNode } from '../utils/linkedNode'
 import { has, copyArray, isNodeIndeterminate, isFunction, isLeaf, isExpandable } from '../utils'
 
-const comparingKeys = [
+const mutatingFields = [
   'checkable', 
-  'noCascade', 
   'useIndeterminateState', 
-  'preventSelectParent', 
-  'checked', 
-  'expanded',
-  'keyboardNavigation',
-  'selectOnExpand',
-  'expandOnSelect',
-  'checkOnSelect',
-  'selectOnCheck'
+  'checkboxRenderer',
+  'arrowRenderer',
+  'textRenderer'
 ]
 
-interface StateObj extends Tree {
+interface StateObj {
   nodes: StateObject
   hash: string
+  mutatingFields: {string: any}
 }
 
 export default class EyzyTree extends React.Component<Tree, StateObj> implements TreeComponent {
@@ -84,15 +79,15 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
     this.state = {
       nodes: this._state.get(),
       hash: uuid(),
-      ...grapObjProps(props, comparingKeys)
+      mutatingFields: grapObjProps(props, mutatingFields)
     }
   }
 
   static getDerivedStateFromProps(nextProps: Tree, state: StateObj) {
-    if (!shallowEqual(nextProps, state, comparingKeys)) {
+    if (!shallowEqual(nextProps, state.mutatingFields, mutatingFields)) {
       return {
         hash: uuid(),
-        ...grapObjProps(nextProps, comparingKeys)
+        mutatingFields: grapObjProps(nextProps, mutatingFields)
       }
     }
 
@@ -159,7 +154,10 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
       const id = parentNode.id
 
       if (isIndeterminate) {
-        !has(indeterminateNodes, id) && indeterminateNodes.push(id)
+        if (!has(indeterminateNodes, id)) {
+          indeterminateNodes.push(id)
+        }
+
         checkedNodes = checkedNodes.filter(nodeId => nodeId !== id)
       } else {
         indeterminateNodes = indeterminateNodes.filter(nodeId => nodeId !== id)
@@ -269,8 +267,8 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
 
   select = (node: Node, ignoreEvent?: boolean, extendSelection?: boolean) => {
     const state = this.getState()
-    const id = node.id
-    const events: Array<string[]> = []
+    const id: string = node.id
+    const events: string[][] = []
     const { multiple } = this.props
 
     if (extendSelection && node.selected) {
@@ -498,7 +496,7 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
 
     if (cascadeCheck) {
       checkedNodes.forEach((id: string) => {
-        const node = state.getNodeById(id)
+        const node: Node | null = state.getNodeById(id)
   
         if (node && isLeaf(node)) {
           this.refreshIndeterminateState(id, true, false)
@@ -510,7 +508,7 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
   }
 
   loadChild = (node: Node) => {
-    const { fetchData } = this.props
+    const { fetchData, selectOnExpand } = this.props
 
     if (!fetchData || !isFunction(fetchData)) {
       return
@@ -530,13 +528,21 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
     result.then((nodes: any[]) => {
       this.appendChild(id, nodes)
 
+      const selected: boolean = selectOnExpand ? true : !!node.selected
+
       state.set(id, {
         loading: false,
         expanded: true,
-        isBatch: false
+        isBatch: false,
+        selected
       })
 
       this.fireEvent('onExpand', id, true)
+
+      if (selectOnExpand) {
+        this.fireEvent('onSelect', id)
+      }
+
       this.updateState(state)
     })
 
@@ -557,6 +563,7 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
     }, {})
 
     treeProps.hash = this.state.hash
+    treeProps.useIndeterminateState = this.props.useIndeterminateState
 
     return (
       <TreeNode

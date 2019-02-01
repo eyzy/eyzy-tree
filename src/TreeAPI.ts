@@ -17,7 +17,7 @@ export class TreeAPI {
 
   selected(): Node[] {
     const state = this.state
-    const selectedNodes: (Node | null)[] = this.tree.selectedNodes
+    const selectedNodes: Array<Node | null> = this.tree.selectedNodes
       .map((id: string): Node | null => state.getNodeById(id))
 
     return selectedNodes.filter((item: Node | null) => null !== item) as Node[]

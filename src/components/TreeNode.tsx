@@ -14,6 +14,10 @@ const comparingKeys = [
 
 export default class TreeNode extends React.Component<Node> {
   shouldComponentUpdate(nextProps: Node): boolean {
+    if (0 === nextProps.depth && this.props.hash !== nextProps.hash) {
+      return true
+    }
+
     return !shallowEqual(this.props, nextProps, comparingKeys)
   }
 
@@ -128,6 +132,7 @@ export default class TreeNode extends React.Component<Node> {
       disabled,
       disabledCheckbox,
       indeterminate,
+      useIndeterminateState,
       textRenderer: TextRenderer
     } = this.props
 
@@ -141,10 +146,8 @@ export default class TreeNode extends React.Component<Node> {
       'disabled': disabled,
       'loading': loading,
       'disabled-checkbox': disabledCheckbox,
-      'indeterminate': !checked && indeterminate
+      'indeterminate': !checked && indeterminate && false !== useIndeterminateState
     })
-
-    // console.log('RENDERING:', text)
 
     return (
       <li className="tree-node">

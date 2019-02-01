@@ -24,4 +24,8 @@ export interface Node {
   onCheck?: (node: Node) => void
   onExpand?: (node: Node) => void
   onDoubleClick?: (node: Node) => void
+
+  // it needs only for  home use
+  useIndeterminateState?: boolean
+  hash?: string
 }
