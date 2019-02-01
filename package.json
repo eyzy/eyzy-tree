@@ -1,6 +1,6 @@
 {
   "name": "eyzy-tree",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "author": "Kostiantyn <phlyze@gmail.com>",
   "description": "React tree component",
   "homepage": "https://eyzy.gitbook.io/tree/",
@@ -20,11 +20,12 @@
     "tslint-react": "^3.6.0"
   },
   "library": "EyzyTree",
-  "module": "dist/eyzy-tree.esm.js",
-  "main": "dist/eyzy-tree.umd.js",
+  "module": "es/eyzy-tree.js",
+  "main": "lib/eyzy-tree.js",
   "scripts": {
     "build": "cross-env NODE_ENV=production rollup -c",
-    "start": "cross-env NODE_ENV=development rollup -cw"
+    "start": "cross-env NODE_ENV=development rollup -cw",
+    "publish": "npm run build && npm publish"
   },
   "devDependencies": {
     "@types/jest": "^23.3.1",
@@ -48,7 +49,10 @@
   ],
   "files": [
     "src",
-    "dist"
+    "dist",
+    "style.css",
+    "lib",
+    "es"
   ],
   "babel": {
     "presets": [

@@ -1,3 +1,6 @@
+import fs from 'fs'
+import path from 'path'
+
 import pkg from './package.json'
 import uglify from 'rollup-plugin-uglify-es'
 import typescript from 'rollup-plugin-typescript'
@@ -31,6 +34,12 @@ const config = {
       name: pkg.library,
       sourcemap,
       banner
+    }, {
+      file: `dist/${pkg.name}.js`,
+      format: 'umd',
+      name: pkg.library,
+      sourcemap,
+      banner
     }
   ],
   cache: false,
@@ -38,7 +47,11 @@ const config = {
     tslint(),
     typescript(),
     scss({
-      output: 'dist/style.css'
+      output: (styles) => {
+        fs.writeFileSync(path.resolve('./', 'dist/style.css'), styles)
+        fs.writeFileSync(path.resolve('./', 'style.css'), styles)
+      },
+      outputStyle: 'compressed'
     })
   ]
 }
