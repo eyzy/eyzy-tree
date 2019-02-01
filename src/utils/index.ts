@@ -2,6 +2,16 @@ import { Node } from '../types/Node'
 
 export const hasOwnProp = {}.hasOwnProperty
 
+export function grapObjProps(obj: any, props: string[]) {
+  return props.reduce((result: any, name: string) => {
+    if (name in obj) {
+      result[name] = obj[name]
+    }
+
+    return result
+  }, {});
+}
+
 export function isArray(obj: any): boolean {
   return Array.isArray(obj)
 }

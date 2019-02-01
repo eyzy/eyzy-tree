@@ -9,12 +9,12 @@ const hasChild = (node: Node): boolean => {
 }
 
 const comparingKeys = [
-  'id', 'checked', 'selected', 'child', 'checked', 'expanded'
+  'id', 'checked', 'selected', 'child', 'checked', 'expanded', 'hash'
 ]
 
 export default class TreeNode extends React.Component<Node> {
   shouldComponentUpdate(nextProps: Node): boolean {
-    return !shallowEqual(this.props, nextProps, comparingKeys)
+    return nextProps['propsHasChanged'] || !shallowEqual(this.props, nextProps, comparingKeys)
   }
 
   getNode(): Node {

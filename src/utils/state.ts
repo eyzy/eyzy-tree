@@ -4,7 +4,8 @@ import { recurseDown, rootElement } from './traveler'
 import {
   isRoot,
   copyObject,
-  copyArray
+  copyArray,
+  hasOwnProp
 } from './index'
 
 type IterableValue = [string, any]
@@ -17,8 +18,10 @@ function iterable(key: any, value: any): IterableValue[] {
   if (!value) {
     const res: IterableValue[] = []
 
-    for (let i in key) {
-      res.push([i, key[i]])
+    for (const i in key) {
+      if (hasOwnProp.call(key, i)) {
+        res.push([i, key[i]])
+      }
     }
 
     return res
@@ -81,7 +84,7 @@ function updateChildNodes(parentNode: Node) {
   return parentNode
 }
 
-export type StateObject = { stirng: Node }
+export interface StateObject { stirng: Node }
 
 export default class State<T> {
   public length: number
@@ -169,8 +172,10 @@ export default class State<T> {
     const result = []
     const state = this.nodes
 
-    for (let i in state) {
-      result.push(state[i])
+    for (const i in state) {
+      if (hasOwnProp.call(state, i)) {
+        result.push(state[i])
+      }
     }
 
     return result

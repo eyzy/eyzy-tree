@@ -2,7 +2,7 @@ import { Node } from './Node'
 import { TreeAPI } from '../TreeAPI'
 
 export interface Tree {
-  data: Node[]
+  data?: Node[]
   fetchData?: (node: Node) => PromiseLike<Node[] | null>
   checkboxRenderer?: any
   arrowRenderer?: any
