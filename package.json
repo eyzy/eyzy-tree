@@ -25,7 +25,6 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production rollup -c",
     "start": "cross-env NODE_ENV=development rollup -cw",
-    "publish": "npm run build && npm publish"
   },
   "devDependencies": {
     "@types/jest": "^23.3.1",
