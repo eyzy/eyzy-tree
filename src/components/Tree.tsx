@@ -17,9 +17,10 @@ import uuid from '../utils/uuid'
 import { grapObjProps } from '../utils/index'
 import { parseNode } from '../utils/parser'
 import { shallowEqual } from '../utils/shallowEqual'
-import { recurseDown, traverseUp, getFirstChild } from '../utils/traveler'
+import { recurseDown, traverseUp, getFirstChild, flatMap } from '../utils/traveler'
 import { linkedNode } from '../utils/linkedNode'
 import { has, copyArray, isNodeIndeterminate, isFunction, isLeaf, isExpandable } from '../utils'
+import { string } from 'prop-types';
 
 const mutatingFields = [
   'checkable', 
@@ -41,6 +42,8 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
   selectedNodes: string[] = []
   checkedNodes: string[] = []
   indeterminateNodes: string[] = []
+
+  focusedNode: string
 
   _state: State<StateObject>
 
@@ -294,6 +297,10 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
 
     state.set(id, 'selected', true)
 
+    if (!extendSelection) {
+      this.focusedNode = id
+    }
+
     this.selectedNodes.push(id)
     this.updateState(state)
 
@@ -301,6 +308,45 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
       events.push(['onSelect', id])
       events.forEach((event: string[]) => this.fireEvent(event[0], event[1]))
     }
+  }
+
+  selectRange = (focusedNode: string, targetNode: string) => {
+    const { ids, nodes } = flatMap(this.state.nodes, true)
+
+    const focusedIndex = ids.indexOf(focusedNode)
+    const targetIndex = ids.indexOf(targetNode)
+
+    if (!~focusedIndex || !~targetIndex) {
+      return
+    }
+
+    const start = Math.min(focusedIndex, targetIndex)
+    const end = Math.max(focusedIndex, targetIndex) + 1
+    const state = this.getState()
+    const willBeSelected: string[] = nodes.slice(start, end).map((node: Node) => node.id) 
+    const fireEvents: string[][] = []
+
+    this.selectedNodes.forEach((id: string) => {
+      if (!has(willBeSelected, id)) {
+        state.set(id, 'selected', false)
+        fireEvents.push(['onUnSelect', id])
+      }
+    })
+
+    this.selectedNodes = willBeSelected.map((id: string) => {
+      if (!has(this.selectedNodes, id)) {
+        state.set(id, 'selected', true)
+        fireEvents.push(['onSelect', id])
+      }
+
+      return id
+    })
+
+    this.updateState(state)
+ 
+    fireEvents.forEach(([name, id]) => {
+      this.fireEvent(name, id)
+    })
   }
 
   check = (node: Node) => {
@@ -373,8 +419,12 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
     if (this.props.preventSelectParent && isExpandable(node)) {
       return this.expand(node)
     }
-    
-    const { checkOnSelect, expandOnSelect, checkable } = this.props
+
+    const { multiple, checkOnSelect, expandOnSelect, checkable } = this.props
+
+    if (event.shiftKey && multiple && this.focusedNode) {
+      return this.selectRange(this.focusedNode, node.id)
+    }
 
     this.select(node, false, event.ctrlKey)
 

@@ -1,4 +1,5 @@
 import { Node } from '../types/Node'
+import { StateObject } from './state'
 
 export function recurseDown(obj: any, fn: (obj: Node, depth: number) => any, excludeSelf?: boolean, depth: number = 0): any {
   let res
@@ -76,4 +77,31 @@ export function getLastChild(node: Node, onlyEnabled?: boolean): Node | null {
   }
 
   return node.child[len - 1]
+}
+
+export interface FlatMap {
+  nodes: Node[]
+  ids: string[]
+}
+
+export function flatMap(collection: StateObject, ignoreCollapsed?: boolean): FlatMap {
+  const result = {
+    nodes: [],
+    ids: []
+  } as FlatMap
+
+  recurseDown(collection, (node: Node) => {
+    if (node.disabled) {
+      return
+    }
+
+    if (ignoreCollapsed && node.parent && !node.parent.expanded) {
+      return
+    }
+
+    result.nodes.push(node)
+    result.ids.push(node.id)
+  })
+
+  return result
 }
