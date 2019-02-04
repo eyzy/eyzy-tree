@@ -7,17 +7,21 @@
 [![NPM total downloads](https://img.shields.io/npm/dt/eyzy-tree.svg?style=flat)](https://npmcharts.com/compare/eyzy-tree?minimal=true)
 [![NPM monthly downloads](https://img.shields.io/npm/dm/eyzy-tree.svg?style=flat)](https://npmcharts.com/compare/eyzy-tree?minimal=true)
 
-[Documentation](https://eyzy.gitbook.io/tree/). Docs in progress.
+[Documentation](https://eyzy.gitbook.io/tree/) | [Examples](https://eyzy.gitbook.io/tree/examples/custom-theme)
 
 ### Features
-- flexible
-- customizable
+- flexible configuration
+- rich options
+- events for every action
 - keyboard navigation
+- check boxes
+- multi-selection
+- async support
 
 ### Table of Contents
 - [Getting Started](#getting-started)
 - [Usage](#usage)
-- [Themes](#themes)
+- [Customization](#customization)
 - [Tree Props](#tree-props)
 - [Node Props](#node-props)
 
@@ -36,7 +40,7 @@ yarn add eyzy-tree
 Connect in browser.
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/eyzy-tree/dist/eyzy-tree.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/eyzy-tree/dist/eyzy-tree.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/eyzy-tree/dist/style.css" rel="stylesheet" />
 ```
 
@@ -45,7 +49,7 @@ Connect in browser.
 ```javascript
 import React, { Component } from 'react'
 import EyzyTree from 'eyzy-tree'
-import 'eyzy-tree/dist/style.css'
+import 'eyzy-tree/style.css'
 
 export default class Tree extends Component {
   constructor(props) {
@@ -73,8 +77,8 @@ export default class Tree extends Component {
 
 ```
 
-### Themes
-Here is an example with all possible themes: https://jsfiddle.net/amsik/wkqdtoa4/
+### Customization
+[Click here](https://eyzy.gitbook.io/tree/customization) to find out how to configure the component.
 
 ### Tree Props
 
@@ -107,3 +111,6 @@ Here is an example with all possible themes: https://jsfiddle.net/amsik/wkqdtoa4
 | `disabled` | boolean | Whether to disable a node |
 | `disabledCheckbox` | boolean | Whether to disable a node's checkbox |
 | `hidenCheckbox` | boolean | Whether to hide a node's checkbox |
+
+### Licence
+[MIT](https://opensource.org/licenses/MIT)
