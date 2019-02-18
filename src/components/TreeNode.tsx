@@ -22,36 +22,17 @@ export default class TreeNode extends React.Component<Node> {
   }
 
   getNode(): Node {
+    if (this.props.node) {
+      return this.props.node
+    }
+
     const {
-      id,
-      checked,
-      selected,
-      text,
-      child,
-      expanded,
-      disabled,
-      disabledCheckbox,
-      parent,
-      isBatch,
-      depth
+      id, text, child
     } = this.props
 
-    const node: Node = {
-      id,
-      checked,
-      selected,
-      text,
-      child,
-      parent,
-      depth
-    } 
-
-    node.expanded = !!expanded
-    node.disabled = !!disabled
-    node.isBatch = !!isBatch
-    node.disabledCheckbox = !!disabledCheckbox
-
-    return node
+    return {
+      id, text, child: child || []
+    }
   }
 
   handleSelect = (event: React.MouseEvent) => {

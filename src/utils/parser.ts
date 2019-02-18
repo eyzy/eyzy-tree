@@ -29,6 +29,10 @@ export function parseNode(data: Node[] | string, parentNode?: Node | null): Node
       ? parseNode(node.child, node)
       : []
 
+    if (!node.data) {
+      node.data = {}
+    }
+
     node.parent = parent
 
     return node
