@@ -1,6 +1,6 @@
-import { Node } from '../types/Node'
+import { TreeNode } from '../types/Node'
 
-export function recurseDown(obj: any, fn: (obj: Node, depth: number) => any, excludeSelf?: boolean, depth: number = 0): any {
+export function recurseDown(obj: any, fn: (obj: TreeNode, depth: number) => any, excludeSelf?: boolean, depth: number = 0): any {
   let res
 
   if (Array.isArray(obj)) {
@@ -18,7 +18,7 @@ export function recurseDown(obj: any, fn: (obj: Node, depth: number) => any, exc
   return res
 }
 
-export function rootElement(obj: Node): Node | null {
+export function rootElement(obj: TreeNode): TreeNode | null {
   let node = obj.parent
 
   while (node) {
@@ -32,7 +32,7 @@ export function rootElement(obj: Node): Node | null {
   return null
 }
 
-export function traverseUp(obj: Node, fn: (obj: Node) => any): any {
+export function traverseUp(obj: TreeNode, fn: (obj: TreeNode) => any): any {
   let node = obj.parent
 
   while (node) {
@@ -44,17 +44,17 @@ export function traverseUp(obj: Node, fn: (obj: Node) => any): any {
   }
 }
 
-export function getFirstChild(node: Node, onlyEnabled?: boolean): Node | null {
+export function getFirstChild(node: TreeNode, onlyEnabled?: boolean): TreeNode | null {
   if (onlyEnabled) {
-    const enabledNode: Node[] = node.child.filter((n: Node) => !n.disabled)
+    const enabledTreeNode: TreeNode[] = node.child.filter((n: TreeNode) => !n.disabled)
 
-    return enabledNode.length ? enabledNode[0] : null
+    return enabledTreeNode.length ? enabledTreeNode[0] : null
   }
 
   return node.child[0] || null
 }
 
-export function getLastChild(node: Node, onlyEnabled?: boolean): Node | null {
+export function getLastChild(node: TreeNode, onlyEnabled?: boolean): TreeNode | null {
   const len: number = node.child ? node.child.length : 0
 
   if (!len) {
@@ -62,27 +62,27 @@ export function getLastChild(node: Node, onlyEnabled?: boolean): Node | null {
   }
 
   if (onlyEnabled) {
-    const enabledNode: Node[] = node.child.filter((n: Node) => !n.disabled)
-    const enabledNodeLen: number = enabledNode.length
+    const enabledTreeNode: TreeNode[] = node.child.filter((n: TreeNode) => !n.disabled)
+    const enabledTreeNodeLen: number = enabledTreeNode.length
 
-    return enabledNodeLen ? enabledNode[enabledNodeLen - 1] : null
+    return enabledTreeNodeLen ? enabledTreeNode[enabledTreeNodeLen - 1] : null
   }
 
   return node.child[len - 1]
 }
 
 export interface FlatMap {
-  nodes: Node[]
+  nodes: TreeNode[]
   ids: string[]
 }
 
-export function flatMap(collection: Node[], ignoreCollapsed?: boolean): FlatMap {
+export function flatMap(collection: TreeNode[], ignoreCollapsed?: boolean): FlatMap {
   const result = {
     nodes: [],
     ids: []
   } as FlatMap
 
-  recurseDown(collection, (node: Node) => {
+  recurseDown(collection, (node: TreeNode) => {
     if (node.disabled) {
       return
     }
@@ -98,10 +98,10 @@ export function flatMap(collection: Node[], ignoreCollapsed?: boolean): FlatMap 
   return result
 }
 
-export function walkBreadth(items: Node[], cb: (node: Node) => boolean): boolean {
+export function walkBreadth(items: TreeNode[], cb: (node: TreeNode) => boolean): boolean {
   const levels = {}
 
-  recurseDown(items, (item: Node) => {
+  recurseDown(items, (item: TreeNode) => {
     const depth = item.depth || 0
 
     if (!levels[depth]) {
@@ -111,10 +111,10 @@ export function walkBreadth(items: Node[], cb: (node: Node) => boolean): boolean
     levels[depth].push(item)
   })
 
-  const nodes: Node[] = Object.keys(levels).reduce((nodes: Node[], level: string): Node[] => {
+  const nodes: TreeNode[] = Object.keys(levels).reduce((nodes: TreeNode[], level: string): TreeNode[] => {
     nodes.push(...levels[level])
     return nodes
   }, [])
 
-  return nodes.some((node: Node) => false === cb(node))
+  return nodes.some((node: TreeNode) => false === cb(node))
 }

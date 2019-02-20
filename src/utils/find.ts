@@ -1,8 +1,8 @@
-import { Node } from '../types/Node'
+import { TreeNode } from '../types/Node'
 import { isString, isRegExp, isFunction } from './index'
 
-type Traveler = (source: Node[], cb: (node: Node) => boolean) => boolean
-type Criteria = (node: Node) => boolean
+type Traveler = (source: TreeNode[], cb: (node: TreeNode) => boolean) => boolean
+type Criteria = (node: TreeNode) => boolean
 
 function parseCriteria(criteria: any): Criteria {
   if (isFunction(criteria)) {
@@ -13,7 +13,7 @@ function parseCriteria(criteria: any): Criteria {
     ? { text: criteria }
     : criteria 
 
-  return (node: Node): boolean => {
+  return (node: TreeNode): boolean => {
     const keys: string[] = Object.keys(matches)
 
     return keys.every((key: string): boolean => {
@@ -22,7 +22,7 @@ function parseCriteria(criteria: any): Criteria {
   }
 }
 
-function testKey(v0: any, v1: any, node: Node): boolean {
+function testKey(v0: any, v1: any, node: TreeNode): boolean {
   if (isRegExp(v0)) {
     return new RegExp(v0).test(v1)
   }
@@ -30,15 +30,15 @@ function testKey(v0: any, v1: any, node: Node): boolean {
   return v0 === v1
 }
 
-function matchCriterias(node: Node, criterias: Criteria[]): boolean {
+function matchCriterias(node: TreeNode, criterias: Criteria[]): boolean {
   return criterias.some(criteria => true === criteria(node))
 }
 
-export function find(source: Node[], traveler: Traveler, multiple: boolean, criterias: any[]): any {
-  let result: Node[] = []
+export function find(source: TreeNode[], traveler: Traveler, multiple: boolean, criterias: any[]): any {
+  let result: TreeNode[] = []
 
   const searchCriterias: Criteria[] = criterias.map(parseCriteria)
-  const seeker = (node: Node): boolean => {
+  const seeker = (node: TreeNode): boolean => {
     if (matchCriterias(node, searchCriterias)) {
       result.push(node)
       return multiple

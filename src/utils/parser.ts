@@ -1,7 +1,7 @@
-import { Node } from '../types/Node'
+import { Node, TreeNode } from '../types/Node'
 import uuid from './uuid'
 
-export function parseNode(data: Node[] | string, parentNode?: Node | null): Node[] {
+export function parseNode(data: Array<string | Node>, parentNode?: TreeNode | null): TreeNode[] {
   if (!data || !Array.isArray(data)) {
     return []
   }
@@ -9,18 +9,17 @@ export function parseNode(data: Node[] | string, parentNode?: Node | null): Node
   const parent = parentNode || null
 
   if ('string' === typeof data) {
-    return [
-      { text: data, id: uuid(), parent, child: [] }
-    ]
+    return parseNode([data], parent)
   }
 
-  return data.map((node: Node) => {
+  return data.map((node: TreeNode): TreeNode => {
     if ('string' === typeof node) {
       return {
         id: uuid(),
         text: node,
         parent,
-        child: []
+        child: [],
+        data: {}
       }
     }
 

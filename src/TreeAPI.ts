@@ -1,8 +1,8 @@
-import { Node } from './types/Node'
+import { TreeNode } from './types/Node'
+import { TreeComponent } from './types/Tree'
 
 import State from './utils/state'
 import { isNodeCheckable, isLeaf } from './utils/index'
-import { TreeComponent } from './types/TreeComponent'
 import { find } from './utils/find'
 import { walkBreadth } from './utils/traveler'
 
@@ -17,25 +17,25 @@ export class TreeAPI {
     this.state = state
   }
 
-  find(...criterias: any): Node | null {
+  find(...criterias: any): TreeNode | null {
     return find(this.state.get(), walkBreadth, false, criterias)
   }
 
-  findAll(...criterias: any): Node | null {
+  findAll(...criterias: any): TreeNode | null {
     return find(this.state.get(), walkBreadth, true, criterias)
   }
 
-  selected(): Node[] {
+  selected(): TreeNode[] {
     const state = this.state
-    const selectedNodes: Array<Node | null> = this.tree.selectedNodes
-      .map((id: string): Node | null => state.getNodeById(id))
+    const selectedNodes: Array<TreeNode | null> = this.tree.selectedNodes
+      .map((id: string): TreeNode | null => state.getNodeById(id))
 
-    return selectedNodes.filter((item: Node | null) => null !== item) as Node[]
+    return selectedNodes.filter((item: TreeNode | null) => null !== item) as TreeNode[]
   }
 
-  checked(valueConsistsOf: CheckboxValueConsistency, ignoreDisabled?: boolean): Node[] {
+  checked(valueConsistsOf: CheckboxValueConsistency, ignoreDisabled?: boolean): TreeNode[] {
     const state = this.state
-    let checkedNodes: Node[] = []
+    let checkedNodes: TreeNode[] = []
 
     this.tree.checkedNodes.forEach((id: string) => {
       const node = state.getNodeById(id)
@@ -60,9 +60,9 @@ export class TreeAPI {
     }
 
     switch(valueConsistsOf) {
-      case 'LEAF': return checkedNodes.filter((node: Node) => isLeaf(node))
+      case 'LEAF': return checkedNodes.filter((node: TreeNode) => isLeaf(node))
       case 'BRANCH': 
-        return checkedNodes.filter((node: Node) => {
+        return checkedNodes.filter((node: TreeNode) => {
           if (node.parent && node.parent.checked) {
             return false
           }

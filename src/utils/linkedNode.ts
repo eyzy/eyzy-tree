@@ -1,14 +1,14 @@
 import { getFirstChild, getLastChild } from './traveler'
-import { Node } from '../types/Node'
+import { TreeNode } from '../types/Node'
 
 interface LinkedNode {
-  current: Node
-  parent?: Node,
-  next?: Node,
-  prev?: Node
+  current: TreeNode
+  parent?: TreeNode,
+  next?: TreeNode,
+  prev?: TreeNode
 }
 
-export function linkedNode(node: Node, state: any, ignoreExpanded?: boolean): LinkedNode {
+export function linkedNode(node: TreeNode, state: any, ignoreExpanded?: boolean): LinkedNode {
   const result: LinkedNode = {
     current: node
   }
@@ -16,14 +16,14 @@ export function linkedNode(node: Node, state: any, ignoreExpanded?: boolean): Li
   const currentNodeId: string = node.id
   const parent = node.parent
   const neighborIds: string[] = (parent ? parent.child : state.toArray())
-    .map((n: Node) => n.id)
+    .map((n: TreeNode) => n.id)
 
   const currentPos: number = neighborIds.indexOf(currentNodeId)
 
   let i: number = 0
 
   if (node.expanded && node.child.length && true !== ignoreExpanded) {
-    const firstChild: Node | null = getFirstChild(node, true)
+    const firstChild: TreeNode | null = getFirstChild(node, true)
 
     if (firstChild) {
       result.next = state.getNodeById(firstChild.id)
@@ -32,7 +32,7 @@ export function linkedNode(node: Node, state: any, ignoreExpanded?: boolean): Li
 
   while (i++ < neighborIds.length) {
     if (!result.next) {
-      const node: Node | null = state.getNodeById(neighborIds[currentPos + i])
+      const node: TreeNode | null = state.getNodeById(neighborIds[currentPos + i])
 
       if (node && !node.disabled) {
         result.next = node
@@ -40,11 +40,11 @@ export function linkedNode(node: Node, state: any, ignoreExpanded?: boolean): Li
     }
 
     if (!result.prev) {
-      const node: Node | null = state.getNodeById(neighborIds[currentPos - i])
+      const node: TreeNode | null = state.getNodeById(neighborIds[currentPos - i])
 
       if (node && !node.disabled) {
         if (node.expanded) {
-          const lastChild: Node | null = getLastChild(node, true)
+          const lastChild: TreeNode | null = getLastChild(node, true)
 
           if (lastChild) {
             result.prev =  state.getNodeById(lastChild.id)

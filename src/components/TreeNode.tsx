@@ -1,10 +1,10 @@
 import React from 'react'
-import { Node } from '../types/Node'
+import { TreeNodeProps, TreeNode } from '../types/Node'
 
 import cn from '../utils/cn'
 import { shallowEqual } from '../utils/shallowEqual'
 
-const hasChild = (node: Node): boolean => {
+const hasChild = (node: TreeNodeProps): boolean => {
   return node.isBatch || Array.isArray(node.child) && node.child.length > 0
 }
 
@@ -12,8 +12,8 @@ const comparingKeys = [
   'id', 'checked', 'selected', 'child', 'checked', 'expanded', 'hash'
 ]
 
-export default class TreeNode extends React.Component<Node> {
-  shouldComponentUpdate(nextProps: Node): boolean {
+export default class Node extends React.Component<TreeNodeProps> {
+  shouldComponentUpdate(nextProps: TreeNodeProps): boolean {
     if (0 === nextProps.depth && this.props.hash !== nextProps.hash) {
       return true
     }
@@ -21,18 +21,8 @@ export default class TreeNode extends React.Component<Node> {
     return !shallowEqual(this.props, nextProps, comparingKeys)
   }
 
-  getNode(): Node {
-    if (this.props.node) {
-      return this.props.node
-    }
-
-    const {
-      id, text, child, parent
-    } = this.props
-
-    return {
-      id, text, parent, child: child || []
-    }
+  getNode(): TreeNode {
+    return this.props.node
   }
 
   handleSelect = (event: React.MouseEvent) => {

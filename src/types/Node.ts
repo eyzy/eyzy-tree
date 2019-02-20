@@ -1,31 +1,46 @@
 import React from 'react'
 
+/**
+ * The interface of the node that will be passed in the data property of the tree
+ */
 export interface Node {
-  id: string
+  id?: string
   text: string
-  child: Node[]
+  child?: Node[]
   data?: any
-  depth?: number
   isBatch?: boolean
-  loading? :boolean
-  node?: Node
-  parent: Node | null
   checkable?: boolean
-  checkboxRenderer?: any
-  arrowRenderer?: any
-  textRenderer?: any
+  checkboxRenderer?: React.ReactNode
+  arrowRenderer?: React.ReactNode
+  textRenderer?: React.ReactNode
   selected?: boolean
   expanded?: boolean
   checked?: boolean
-  indeterminate?: boolean
   disabled?: boolean
   disabledCheckbox?: boolean
   hidenCheckbox?: boolean
-  onSelect?: (node: Node, event: React.MouseEvent) => void
-  onCheck?: (node: Node) => void
-  onExpand?: (node: Node) => void
-  onDoubleClick?: (node: Node) => void
+  onSelect?: (node: TreeNode, event: React.MouseEvent) => void
+  onCheck?: (node: TreeNode) => void
+  onExpand?: (node: TreeNode) => void
+  onDoubleClick?: (node: TreeNode) => void
+}
 
+/**
+ * Parsed node.
+ */
+export interface TreeNode extends Node {
+  id: string
+  text: string
+  child: TreeNode[]
+  data: any
+  parent: TreeNode | null
+  depth?: number
+}
+
+export interface TreeNodeProps extends TreeNode {
+  loading?: boolean
+  node: TreeNode
+  indeterminate?: boolean
   // it needs only for  home use
   useIndeterminateState?: boolean
   hash?: string
