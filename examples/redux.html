@@ -1,0 +1,87 @@
+<html>
+  <head>
+    <title>Basic</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="/eyzy-tree.js"></script>
+    <script src="/data/api.js"></script>
+
+    <link rel="stylesheet" href="/style.css">
+
+    <style>
+      body {
+        padding: 20px;
+        display: flex;
+      }
+
+      #example02 {
+        height: 300px;
+        overflow-y: scroll;
+      }
+
+      #example0,
+      #example1 {
+        width: 500px;
+        padding: 0 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="example0"></div>
+    <div id="example1"></div>
+
+    <script>
+      const copy = JSON.parse(JSON.stringify(data))
+
+      class TreeWrapper extends React.Component {
+        constructor(props) {
+          super(props)
+
+          this.api = null
+        }
+
+        render() {
+          return React.createElement(EyzyTree, {
+            data,
+            theme: 'eyzy-theme-red',
+            checkable: true,
+            expandOnSelect: true,
+            selectOnExpand: true,
+            preventParentSelect: true,
+            multiple: false,
+            onReady: (api) => {this.api = api},
+            onDoubleClick: (node) => {console.log('dbl', node.text)},
+            onCheck: (node, isChecked) => {console.log('check', node.text, node.checked, isChecked)},
+            onExpand: (node, isExpanded) => {console.log('expand', node.text, node.expanded, isExpanded)},
+            onSelect: (node) => {console.log('select', node.text)},
+            onUnSelect: (node) => {console.log('unselect', node.text)},
+            textRenderer: ({node}) => {
+              // return React.createElement('div', null, `${node.text} - ${node.id}`)
+              return React.createElement('div', null, `${node.text} - (${node.depth})`)
+            },
+            fetchData: (node) => {
+              return new Promise(resolve => {
+                setTimeout(() => {
+                  resolve([
+                    { text: node.text + ' Child-1', checked: 0 },
+                    { text: node.text + ' Child-2', checked: true },
+                    { text: node.text + ' Child-3', checked: 1, child: [node.text + ' Child-3-1', node.text + ' Child-3-2']},
+                    { text: node.text + ' Child-4', checked: 1 },
+                  ])
+                }, 400)
+              })
+            }
+          })
+        }
+      }
+
+      const element = React.createElement(TreeWrapper)
+
+      ReactDOM.render(
+        element,
+        document.getElementById('example0')
+      )
+
+    </script>
+  </body>
+</html>

@@ -1,5 +1,4 @@
 import { Node } from '../types/Node'
-import { StateObject } from './state'
 
 export function recurseDown(obj: any, fn: (obj: Node, depth: number) => any, excludeSelf?: boolean, depth: number = 0): any {
   let res
@@ -84,7 +83,7 @@ export interface FlatMap {
   ids: string[]
 }
 
-export function flatMap(collection: StateObject, ignoreCollapsed?: boolean): FlatMap {
+export function flatMap(collection: Node[], ignoreCollapsed?: boolean): FlatMap {
   const result = {
     nodes: [],
     ids: []

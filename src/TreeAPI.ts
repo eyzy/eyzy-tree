@@ -1,16 +1,16 @@
 import { Node } from './types/Node'
 
-import State, { StateObject } from './utils/state'
+import State from './utils/state'
 import { isNodeCheckable, isLeaf } from './utils/index'
 import { TreeComponent } from './types/TreeComponent'
 
 type CheckboxValueConsistency = 'ALL' | 'BRANCH' | 'LEAF' | 'WITH_INDETERMINATE'
 
 export class TreeAPI {
-  private state: State<StateObject>
+  private state: State
   private tree: TreeComponent
 
-  constructor(tree: TreeComponent, state: State<StateObject>) {
+  constructor(tree: TreeComponent, state: State) {
     this.tree = tree
     this.state = state
   }

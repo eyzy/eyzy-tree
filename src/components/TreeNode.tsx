@@ -27,11 +27,11 @@ export default class TreeNode extends React.Component<Node> {
     }
 
     const {
-      id, text, child
+      id, text, child, parent
     } = this.props
 
     return {
-      id, text, child: child || []
+      id, text, parent, child: child || []
     }
   }
 

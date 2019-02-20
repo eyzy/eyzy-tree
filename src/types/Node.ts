@@ -9,7 +9,7 @@ export interface Node {
   isBatch?: boolean
   loading? :boolean
   node?: Node
-  parent?: Node | null
+  parent: Node | null
   checkable?: boolean
   checkboxRenderer?: any
   arrowRenderer?: any

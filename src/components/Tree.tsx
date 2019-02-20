@@ -12,7 +12,7 @@ import { TreeComponent } from '../types/TreeComponent'
 
 import { TreeAPI } from '../TreeAPI'
 
-import State, { StateObject } from '../utils/state'
+import State from '../utils/state'
 import uuid from '../utils/uuid'
 import { grapObjProps } from '../utils/index'
 import { parseNode } from '../utils/parser'
@@ -20,7 +20,6 @@ import { shallowEqual } from '../utils/shallowEqual'
 import { recurseDown, traverseUp, getFirstChild, flatMap } from '../utils/traveler'
 import { linkedNode } from '../utils/linkedNode'
 import { has, copyArray, isNodeIndeterminate, isFunction, isLeaf, isExpandable } from '../utils'
-import { string } from 'prop-types';
 
 const mutatingFields = [
   'checkable', 
@@ -30,13 +29,13 @@ const mutatingFields = [
   'textRenderer'
 ]
 
-interface StateObj {
-  nodes: StateObject
+interface TreeState {
+  nodes: Node[]
   hash: string
   mutatingFields: {string: any}
 }
 
-export default class EyzyTree extends React.Component<Tree, StateObj> implements TreeComponent {
+export default class EyzyTree extends React.Component<Tree, TreeState> implements TreeComponent {
   static TreeNode = TreeNode
 
   selectedNodes: string[] = []
@@ -45,19 +44,15 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
 
   focusedNode: string
 
-  _state: State<StateObject>
+  // tslint:disable-next-line
+  _state: State
 
   constructor(props: Tree) {
     super(props)
 
     const data = parseNode(props.data || [])
-    const stateObject = {}
 
-    data.forEach((item: Node, i: number) => {
-      stateObject[i] = item
-    })
-
-    recurseDown(stateObject, (obj: Node, depth: number) => {
+    recurseDown(data, (obj: Node, depth: number) => {
       obj.depth = depth
 
       if (obj.selected) {
@@ -69,7 +64,7 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
       }
     })
 
-    this._state = new State(stateObject as StateObject, data.length)
+    this._state = new State(data)
 
     this.checkedNodes.forEach((id: string) => {
       const node = this._state.getNodeById(id)
@@ -86,7 +81,7 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
     }
   }
 
-  static getDerivedStateFromProps(nextProps: Tree, state: StateObj) {
+  static getDerivedStateFromProps(nextProps: Tree, state: TreeState) {
     if (!shallowEqual(nextProps, state.mutatingFields, mutatingFields)) {
       return {
         hash: uuid(),
@@ -215,7 +210,7 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
     })
   }
 
-  getState = (): State<StateObject> => {
+  getState = (): State => {
     return this._state
   }
 
@@ -229,7 +224,7 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
     return this.getState().getNodeById(lastSelectedNode)
   }
 
-  updateState = (state: State<StateObject>) => {
+  updateState = (state: State) => {
     this.setState({ nodes: state.get() })
   }
 
@@ -632,24 +627,19 @@ export default class EyzyTree extends React.Component<Tree, StateObj> implements
   }
 
   render() {
-    const nodes = []
     const props = this.props
     const treeClass = 'theme' in props 
       ? 'eyzy-tree ' + props.theme
       : 'eyzy-tree eyzy-theme'
-
-    const stateNodes = this.state.nodes
-
-    for (let i = 0; i < this._state.length; i++) {
-      nodes.push(this.renderNode(stateNodes[i]))
-    }
 
     return (
       <ul 
         className={treeClass} 
         tabIndex={-1} 
         onKeyDown={this.handleKeyUp}>
-          { nodes }
+          {this.state.nodes.map((node: Node) => 
+             this.renderNode(node) 
+          )}
       </ul>
     )
   }

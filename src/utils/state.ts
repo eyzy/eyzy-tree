@@ -51,31 +51,6 @@ function getItemById(id: string, targetState: any): any {
     .find((k: string) => targetState[k].id === id) || null
 }
 
-function getNodeIndex(nodeId: string, parent: any, nodesLength: number): number | null {
-  if (parent.child) {
-    let childIndex: number | null = null
-
-    parent.child.some((node: Node, i: number): boolean => {
-      if (nodeId === node.id) {
-        childIndex = i
-        return true
-      }
-
-      return false
-    })
-
-    return childIndex
-  }
-
-  for (let i = 0; i < nodesLength; i++ ) {
-    if (parent[i].id === nodeId) {
-      return i
-    }
-  }
-
-  return null
-}
-
 function updateChildNodes(parentNode: Node) {
   parentNode.child.forEach((child: Node) => {
     child.parent = parentNode
@@ -84,14 +59,10 @@ function updateChildNodes(parentNode: Node) {
   return parentNode
 }
 
-export interface StateObject { stirng: Node }
+export default class State {
+  private nodes: Node[]
 
-export default class State<T> {
-  public length: number
-  private nodes: T
-
-  constructor(state: T, stateLength: number) {
-    this.length = stateLength
+  constructor(state: Node[]) {
     this.nodes = state
   }
 
@@ -119,7 +90,7 @@ export default class State<T> {
       return
     }
 
-    const index = getNodeIndex(node.id, parentNode, this.length)
+    const index = this.getNodeIndex(node)
 
     if (null === index) {
       return
@@ -135,7 +106,7 @@ export default class State<T> {
     this.updateRootNode(replaceChild(root))
   }
 
-  set(id: string, key: any, value?: any): T {
+  set(id: string, key: any, value?: any): Node[] {
     const node = this.getNodeById(id)
 
     if (!node) {
@@ -151,6 +122,34 @@ export default class State<T> {
     return this.nodes
   }
 
+  getNodeIndex(node: Node): number | null {
+    const parent: Node | null = node.parent
+    const nodeId: string = node.id
+
+    if (parent && parent.child) {
+      let childIndex: number | null = null
+  
+      parent.child.some((node: Node, i: number): boolean => {
+        if (nodeId === node.id) {
+          childIndex = i
+          return true
+        }
+  
+        return false
+      })
+  
+      return childIndex
+    }
+
+    for (let i = 0; i < this.nodes.length; i++ ) {
+      if (this.nodes[i].id === nodeId) {
+        return i
+      }
+    }
+  
+    return null
+  }
+
   getNodeById(id: string): Node | null {
     let node: Node | null = null
 
@@ -164,7 +163,7 @@ export default class State<T> {
     return node
   }
 
-  get(): T {
+  get(): Node[] {
     return this.nodes
   }
 
