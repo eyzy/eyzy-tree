@@ -3,6 +3,8 @@ import { Node } from './types/Node'
 import State from './utils/state'
 import { isNodeCheckable, isLeaf } from './utils/index'
 import { TreeComponent } from './types/TreeComponent'
+import { find } from './utils/find'
+import { walkBreadth } from './utils/traveler'
 
 type CheckboxValueConsistency = 'ALL' | 'BRANCH' | 'LEAF' | 'WITH_INDETERMINATE'
 
@@ -13,6 +15,14 @@ export class TreeAPI {
   constructor(tree: TreeComponent, state: State) {
     this.tree = tree
     this.state = state
+  }
+
+  find(...criterias: any): Node | null {
+    return find(this.state.get(), walkBreadth, false, criterias)
+  }
+
+  findAll(...criterias: any): Node | null {
+    return find(this.state.get(), walkBreadth, true, criterias)
   }
 
   selected(): Node[] {

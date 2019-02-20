@@ -32,13 +32,19 @@
           this.api = null
         }
 
+        handleReadyTree = (api) => {
+          this.api = api
+
+          console.log(api.find('Company A', 'Company B', { text: /Pers/} ))
+        }
+
         render() {
           return React.createElement(EyzyTree, {
             data,
             checkable: true,
             checkOnSelect: true,
             multiple: true,
-            onReady: (api) => {this.api = api}, 
+            onReady: this.handleReadyTree, 
             onCheck: () => {
               console.log(
                 this.api.checked('BRANCH', 1).map(t => t.text).join(', ')

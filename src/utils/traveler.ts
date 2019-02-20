@@ -7,13 +7,6 @@ export function recurseDown(obj: any, fn: (obj: Node, depth: number) => any, exc
     return obj.map(node => recurseDown(node, fn, false, depth))
   }
 
-  // TODO: get rid of it: create a State interface
-  if (obj[0]) {
-    return Object.keys(obj)
-      .filter(key => isFinite(+key))
-      .map(key => recurseDown(obj[key], fn, false, depth))
-  }
-
   if (!excludeSelf) {
     res = fn(obj, depth)
   }
@@ -103,4 +96,25 @@ export function flatMap(collection: Node[], ignoreCollapsed?: boolean): FlatMap 
   })
 
   return result
+}
+
+export function walkBreadth(items: Node[], cb: (node: Node) => boolean): boolean {
+  const levels = {}
+
+  recurseDown(items, (item: Node) => {
+    const depth = item.depth || 0
+
+    if (!levels[depth]) {
+      levels[depth] = []
+    }
+
+    levels[depth].push(item)
+  })
+
+  const nodes: Node[] = Object.keys(levels).reduce((nodes: Node[], level: string): Node[] => {
+    nodes.push(...levels[level])
+    return nodes
+  }, [])
+
+  return nodes.some((node: Node) => false === cb(node))
 }

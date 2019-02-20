@@ -573,7 +573,7 @@ export default class EyzyTree extends React.Component<Tree, TreeState> implement
     result.then((nodes: any[]) => {
       this.appendChild(id, nodes)
 
-      const selected: boolean = selectOnExpand ? true : !!node.selected
+      const selected: boolean = selectOnExpand ? true : !!~this.selectedNodes.indexOf(node.id)
 
       state.set(id, {
         loading: false,
