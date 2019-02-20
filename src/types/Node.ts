@@ -10,9 +10,9 @@ export interface Node {
   data?: any
   isBatch?: boolean
   checkable?: boolean
-  checkboxRenderer?: React.ReactNode
-  arrowRenderer?: React.ReactNode
-  textRenderer?: React.ReactNode
+  checkboxRenderer?: React.ReactType<{node: TreeNode}>
+  arrowRenderer?: React.ReactType<{node: TreeNode}>
+  textRenderer?: React.ReactType<{node: TreeNode}>
   selected?: boolean
   expanded?: boolean
   checked?: boolean
