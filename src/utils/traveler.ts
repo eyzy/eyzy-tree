@@ -46,9 +46,9 @@ export function traverseUp(obj: TreeNode, fn: (obj: TreeNode) => any): any {
 
 export function getFirstChild(node: TreeNode, onlyEnabled?: boolean): TreeNode | null {
   if (onlyEnabled) {
-    const enabledTreeNode: TreeNode[] = node.child.filter((n: TreeNode) => !n.disabled)
+    const enabledNodes: TreeNode[] = node.child.filter((n: TreeNode) => !n.disabled)
 
-    return enabledTreeNode.length ? enabledTreeNode[0] : null
+    return enabledNodes.length ? enabledNodes[0] : null
   }
 
   return node.child[0] || null
@@ -62,10 +62,10 @@ export function getLastChild(node: TreeNode, onlyEnabled?: boolean): TreeNode | 
   }
 
   if (onlyEnabled) {
-    const enabledTreeNode: TreeNode[] = node.child.filter((n: TreeNode) => !n.disabled)
-    const enabledTreeNodeLen: number = enabledTreeNode.length
+    const enabledNodes: TreeNode[] = node.child.filter((n: TreeNode) => !n.disabled)
+    const enabledNodeLen: number = enabledNodes.length
 
-    return enabledTreeNodeLen ? enabledTreeNode[enabledTreeNodeLen - 1] : null
+    return enabledNodeLen ? enabledNodes[enabledNodeLen - 1] : null
   }
 
   return node.child[len - 1]
