@@ -29,9 +29,13 @@ export interface Tree {
 }
 
 export interface TreeComponent {
-  selectedNodes: string[]
-  checkedNodes: string[]
-  indeterminateNodes: string[]
-  focusedNode: string
+  selected: string[]
+  checked: string[]
+  indeterminate: string[]
+  focused: string
   _state: State
+
+  updateState: (state: State) => void
+  select: (node: TreeNode, ignoreEvent?: boolean, extendSelection?: boolean) => void
+  unselect: (node: TreeNode) => void
 }

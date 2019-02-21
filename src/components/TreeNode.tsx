@@ -5,7 +5,7 @@ import cn from '../utils/cn'
 import { shallowEqual } from '../utils/shallowEqual'
 
 const hasChild = (node: TreeNodeProps): boolean => {
-  return node.isBatch || Array.isArray(node.child) && node.child.length > 0
+  return node.isBatch || node.child.length > 0
 }
 
 const comparingKeys = [

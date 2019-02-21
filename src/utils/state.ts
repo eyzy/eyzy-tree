@@ -1,4 +1,5 @@
 import { TreeNode } from '../types/Node'
+import { IterableValue } from '../types/State'
 
 import { recurseDown, rootElement } from './traveler'
 import {
@@ -7,8 +8,6 @@ import {
   copyArray,
   hasOwnProp
 } from './index'
-
-type IterableValue = [string, any]
 
 function iterable(key: any, value: any): IterableValue[] {
   if ('string' === typeof key) {
@@ -30,14 +29,14 @@ function iterable(key: any, value: any): IterableValue[] {
   return []
 }
 
-function replaceChild(node: TreeNode): TreeNode {
+function replace(node: TreeNode): TreeNode {
   if (!node || !node.child) {
     return node
   }
 
   node.child = copyArray(node.child)
   node.child.forEach((child: TreeNode) => {
-    const replaced = replaceChild(child)
+    const replaced = replace(child)
     replaced.parent = node
 
     return replaced
@@ -46,12 +45,12 @@ function replaceChild(node: TreeNode): TreeNode {
   return node
 }
 
-function getItemById(id: string, targetState: any): any {
+function itemById(id: string, targetState: any): any {
   return Object.keys(targetState)
     .find((k: string) => targetState[k].id === id) || null
 }
 
-function updateChildNodes(parentNode: TreeNode) {
+function updateChild(parentNode: TreeNode) {
   parentNode.child.forEach((child: TreeNode) => {
     child.parent = parentNode
   })
@@ -60,14 +59,14 @@ function updateChildNodes(parentNode: TreeNode) {
 }
 
 export default class State {
-  private nodes: TreeNode[]
+  nodes: TreeNode[]
 
   constructor(state: TreeNode[]) {
     this.nodes = state
   }
 
-  updateRootNode(node: TreeNode, iterableValue?: IterableValue[]) {
-    const i = getItemById(node.id, this.nodes)
+  updateRoot(node: TreeNode, iterableValue?: IterableValue[]) {
+    const i = itemById(node.id, this.nodes)
     const newObj = copyObject(node)
 
     if (iterableValue) {
@@ -78,11 +77,11 @@ export default class State {
     }
 
     if (null !== i) {
-      this.nodes[i] = updateChildNodes(newObj as TreeNode)
+      this.nodes[i] = updateChild(newObj as TreeNode)
     }
   }
 
-  updateLeafNode(node: TreeNode, iterableValue: IterableValue[]) {
+  updateLeaf(node: TreeNode, iterableValue: IterableValue[]) {
     const root: TreeNode | null = rootElement(node)
     const parentNode: TreeNode | null | undefined = node.parent
 
@@ -90,7 +89,7 @@ export default class State {
       return
     }
 
-    const index = this.getNodeIndex(node)
+    const index = this.getIndex(node)
 
     if (null === index) {
       return
@@ -103,26 +102,26 @@ export default class State {
       })
     }
 
-    this.updateRootNode(replaceChild(root))
+    this.updateRoot(replace(root))
   }
 
   set(id: string, key: any, value?: any): TreeNode[] {
-    const node = this.getNodeById(id)
+    const node = this.byId(id)
 
     if (!node) {
       return this.nodes
     }
 
     if (isRoot(node)) {
-      this.updateRootNode(node, iterable(key, value))
+      this.updateRoot(node, iterable(key, value))
     } else {
-      this.updateLeafNode(node, iterable(key, value))
+      this.updateLeaf(node, iterable(key, value))
     }
 
     return this.nodes
   }
 
-  getNodeIndex(node: TreeNode): number | null {
+  getIndex(node: TreeNode): number | null {
     const parent: TreeNode | null = node.parent
     const nodeId: string = node.id
 
@@ -150,7 +149,7 @@ export default class State {
     return null
   }
 
-  getNodeById(id: string): TreeNode | null {
+  byId(id: string): TreeNode | null {
     let node: TreeNode | null = null
 
     recurseDown(this.nodes, (obj: TreeNode): any => {
@@ -167,8 +166,8 @@ export default class State {
     return this.nodes
   }
 
-  toArray() {
-    const result = []
+  toArray(): TreeNode[] {
+    const result: TreeNode[] = []
     const state = this.nodes
 
     for (const i in state) {

@@ -26,13 +26,13 @@ export function linkedNode(node: TreeNode, state: any, ignoreExpanded?: boolean)
     const firstChild: TreeNode | null = getFirstChild(node, true)
 
     if (firstChild) {
-      result.next = state.getNodeById(firstChild.id)
+      result.next = state.byId(firstChild.id)
     }
   }
 
   while (i++ < neighborIds.length) {
     if (!result.next) {
-      const node: TreeNode | null = state.getNodeById(neighborIds[currentPos + i])
+      const node: TreeNode | null = state.byId(neighborIds[currentPos + i])
 
       if (node && !node.disabled) {
         result.next = node
@@ -40,14 +40,14 @@ export function linkedNode(node: TreeNode, state: any, ignoreExpanded?: boolean)
     }
 
     if (!result.prev) {
-      const node: TreeNode | null = state.getNodeById(neighborIds[currentPos - i])
+      const node: TreeNode | null = state.byId(neighborIds[currentPos - i])
 
       if (node && !node.disabled) {
         if (node.expanded) {
           const lastChild: TreeNode | null = getLastChild(node, true)
 
           if (lastChild) {
-            result.prev =  state.getNodeById(lastChild.id)
+            result.prev =  state.byId(lastChild.id)
           }
         } else {
           result.prev = node
@@ -58,7 +58,7 @@ export function linkedNode(node: TreeNode, state: any, ignoreExpanded?: boolean)
 
   if (parent) {
     if (!result.prev) {
-      result.prev = state.getNodeById(parent.id)
+      result.prev = state.byId(parent.id)
     }
 
     if (!result.next) {

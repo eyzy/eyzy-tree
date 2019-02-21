@@ -50,7 +50,7 @@ export function find(source: TreeNode[], traveler: Traveler, multiple: boolean, 
   traveler(source, seeker)
 
   if (!result.length) {
-    return null
+    return multiple ? [] : null
   }
 
   return multiple ? result : result[0]

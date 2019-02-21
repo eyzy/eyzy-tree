@@ -1,12 +1,11 @@
 import { TreeNode } from './types/Node'
 import { TreeComponent } from './types/Tree'
+import { CheckboxValueConsistency } from './types/TreeAPI'
 
 import State from './utils/state'
 import { isNodeCheckable, isLeaf } from './utils/index'
 import { find } from './utils/find'
 import { walkBreadth } from './utils/traveler'
-
-type CheckboxValueConsistency = 'ALL' | 'BRANCH' | 'LEAF' | 'WITH_INDETERMINATE'
 
 export class TreeAPI {
   private state: State
@@ -17,52 +16,66 @@ export class TreeAPI {
     this.state = state
   }
 
+  set(query: any, key: string, value: any): boolean {
+    const node = this.find(query)
+
+    if (!node) {
+      return false
+    }
+
+    // TODO: selected, checked should be dublicated in the tree state
+    this.state.set(node.id, key, value)
+    this.tree.updateState(this.state)
+
+    return true
+  }
+
   find(...criterias: any): TreeNode | null {
     return find(this.state.get(), walkBreadth, false, criterias)
   }
 
-  findAll(...criterias: any): TreeNode | null {
+  findAll(...criterias: any): TreeNode[] {
     return find(this.state.get(), walkBreadth, true, criterias)
   }
 
   selected(): TreeNode[] {
     const state = this.state
-    const selectedNodes: Array<TreeNode | null> = this.tree.selectedNodes
-      .map((id: string): TreeNode | null => state.getNodeById(id))
+    const selected: Array<TreeNode | null> = this.tree.selected
+      .map((id: string): TreeNode | null => state.byId(id))
 
-    return selectedNodes.filter((item: TreeNode | null) => null !== item) as TreeNode[]
+    return selected.filter((item: TreeNode | null) => null !== item) as TreeNode[]
   }
 
-  checked(valueConsistsOf: CheckboxValueConsistency, ignoreDisabled?: boolean): TreeNode[] {
+  checked(valueConsistsOf?: CheckboxValueConsistency, ignoreDisabled?: boolean): TreeNode[] {
     const state = this.state
-    let checkedNodes: TreeNode[] = []
+    let checked: TreeNode[] = []
 
-    this.tree.checkedNodes.forEach((id: string) => {
-      const node = state.getNodeById(id)
+    this.tree.checked.forEach((id: string) => {
+      const node = state.byId(id)
 
       if (node) {
-        checkedNodes.push(node)
+        checked.push(node)
       }
     })
 
     if ('WITH_INDETERMINATE' === valueConsistsOf) {
-      this.tree.indeterminateNodes.forEach((id: string) => {
-        const node = state.getNodeById(id)
+      this.tree.indeterminate.forEach((id: string) => {
+        const node = state.byId(id)
   
         if (node) {
-          checkedNodes.push(node)
+          checked.push(node)
         }
       })
     }
 
     if (ignoreDisabled) {
-      checkedNodes = checkedNodes.filter(isNodeCheckable)
+      checked = checked.filter(isNodeCheckable)
     }
 
     switch(valueConsistsOf) {
-      case 'LEAF': return checkedNodes.filter((node: TreeNode) => isLeaf(node))
+      case 'LEAF': return checked.filter((node: TreeNode) => isLeaf(node))
       case 'BRANCH': 
-        return checkedNodes.filter((node: TreeNode) => {
+        return checked.filter((node: TreeNode) => {
           if (node.parent && node.parent.checked) {
             return false
           }
@@ -71,6 +84,11 @@ export class TreeAPI {
         })
     }
 
-    return checkedNodes
+    return checked
+  }
+
+  // TODO:
+  toJSON(): TreeNode[] {
+    return []
   }
 }

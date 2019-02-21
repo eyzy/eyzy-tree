@@ -18,6 +18,37 @@ const banner = `
  * Released under the MIT License.
  */
 `
+const apiBanner = `
+/*!
+ * ${pkg.library}API v${version}
+ * (c) ${new Date().getFullYear()} amsik
+ * Released under the MIT License.
+ */
+`
+
+const externalApiConfig = {
+  input: 'src/EyzyAPI.ts',
+  output: [
+    {
+      file: 'es/eyzy-tree-api.js',
+      format: 'es',
+      banner: apiBanner
+    }, {
+      file: 'lib/eyzy-tree-api.js',
+      format: 'umd',
+      name: pkg.library,
+      banner: apiBanner
+    }, {
+      file: `dist/eyzy-tree-api.js`,
+      format: 'umd',
+      name: 'EyzyTreeAPI',
+      banner: apiBanner
+    }
+  ],
+  plugins: [
+    typescript()
+  ]
+}
 
 const config = {
   input: 'src/index.ts',
@@ -66,6 +97,8 @@ if ('production' === process.env.NODE_ENV) {
       }
     }
   }))
+
+  externalApiConfig.plugins.push(uglify())
 }
 
 if ('development' == process.env.NODE_ENV) {
@@ -76,4 +109,4 @@ if ('development' == process.env.NODE_ENV) {
   }))
 }
 
-export default config
+export default [config, externalApiConfig]
