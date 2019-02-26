@@ -1,8 +1,8 @@
 import { TreeNode } from './types/Node'
 import { TreeComponent } from './types/Tree'
+import { State } from './types/State'
 import { CheckboxValueConsistency } from './types/TreeAPI'
 
-import State from './utils/state'
 import { isNodeCheckable, isLeaf } from './utils/index'
 import { find } from './utils/find'
 import { walkBreadth } from './utils/traveler'

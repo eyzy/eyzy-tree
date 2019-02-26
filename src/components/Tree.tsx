@@ -8,6 +8,7 @@ import NodeComponent from './TreeNode'
 
 import { Node, TreeNode } from '../types/Node'
 import { Tree, TreeComponent } from '../types/Tree'
+import { State as StateType } from '../types/State'
 
 import { TreeAPI } from '../TreeAPI'
 
@@ -44,7 +45,7 @@ export default class EyzyTree extends React.Component<Tree, TreeState> implement
   focused: string
 
   // tslint:disable-next-line
-  _state: State
+  _state: StateType
 
   constructor(props: Tree) {
     super(props)
@@ -209,7 +210,7 @@ export default class EyzyTree extends React.Component<Tree, TreeState> implement
     })
   }
 
-  getState = (): State => {
+  getState = (): StateType => {
     return this._state
   }
 
@@ -223,7 +224,7 @@ export default class EyzyTree extends React.Component<Tree, TreeState> implement
     return this.getState().byId(lastSelectedNode)
   }
 
-  updateState = (state: State) => {
+  updateState = (state: StateType) => {
     this.setState({ nodes: state.get() })
   }
 
@@ -341,6 +342,26 @@ export default class EyzyTree extends React.Component<Tree, TreeState> implement
     fireEvents.forEach(([name, id]) => {
       this.fireEvent(name, id)
     })
+  }
+
+  uncheckAll = () => {
+    if (!this.props.checkable) {
+      return
+    }
+    
+    const state = this.getState()
+
+    this.checked = this.checked.filter((id: string) => {
+      state.set(id, 'checked', false)
+      return false
+    })
+
+    this.indeterminate = this.indeterminate.filter((id: string) => {
+      state.set(id, 'indeterminate', false)
+      return false
+    })
+
+    this.updateState(state)
   }
 
   check = (node: TreeNode) => {

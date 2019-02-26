@@ -5,7 +5,7 @@
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <script src="/eyzy-tree.js"></script>
     <script src="/eyzy-tree-api.js"></script>
-    <script src="/data/api.js"></script>
+    <script src="/data/example0.js"></script>
 
     <link rel="stylesheet" href="/style.css">
 
@@ -35,8 +35,38 @@
 
         handleReadyTree = (api) => {
           this.api = new EyzyTreeAPI(api)
+          this.mapi = new EyzyTreeAPI(api, true)
 
-          console.log(api.find('Company A', 'Company B', { text: /Pers/} ))
+          const searchExamples = {
+            'RegExp': this.api.find(/0\.\d{2}/),
+            'Simple Text (by id)': this.api.find(data[0].id),
+            'Simple Text': this.api.find('Babel'),
+            'Function (Math random)': this.api.find(node => Math.random() > 0.68),
+            'ONE Of criterias (OR operation)': this.api.find({text: 'nonexistent'}, {isBatch: true}, {lalalal: 10}),
+            'OR operation (array transfer DOESN\'T WORK!)': this.api.find([{text: 'nonexistent'}, {isBatch: true}, {lalalal: 10}]),
+            'OR with array (use spread)': this.api.find(...[{text: 'nonexistent'}, {isBatch: true}, {lalalal: 10}]),
+            'AND': this.api.find({
+              text: /Apache/, expanded: false
+            }),
+            'List': this.api.findAll(/^ba/i),
+            'doesn\'t match ': this.api.find(/^baaaaaaaa/i),
+            'doesn\'t match list': this.api.findAll(/^baaaaaaaa/i)
+          }
+
+          const consoleRes = Object.keys(searchExamples).reduce((res, i) => {
+            const val = searchExamples[i]
+
+            if (Array.isArray(val)) {
+              res[i] = val.length ? val.map(v => v.text).join(', ') : 'empty list[]'
+            } else {
+              res[i] = val ? val.text : null
+            }
+
+            return res
+          }, {})
+
+          console.table(consoleRes)
+          console.log(searchExamples)
         }
 
         render() {
@@ -50,6 +80,18 @@
               console.log(
                 this.api.checked('BRANCH', 1).map(t => t.text).join(', ')
               )
+            },
+            fetchData: (node) => {
+              return new Promise(resolve => {
+                setTimeout(() => {
+                  resolve([
+                    { text: node.text + ' Child-1', checked: 0 },
+                    { text: node.text + ' Child-2', checked: true },
+                    { text: node.text + ' Child-3', checked: 1, child: [node.text + ' Child-3-1', node.text + ' Child-3-2']},
+                    { text: node.text + ' Child-4', checked: 1 },
+                  ])
+                }, 400)
+              })
             }
           })
         }

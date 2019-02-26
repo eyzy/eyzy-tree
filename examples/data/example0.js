@@ -3,6 +3,7 @@ var data = [
     "text": "Angular.js",
     "expanded": true,
     "selected": true,
+    "id": "c1",
     "child": [
       {
         "text": "Angular.js 1.6"

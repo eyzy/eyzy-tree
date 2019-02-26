@@ -1,5 +1,5 @@
 import { TreeNode } from '../types/Node'
-import { IterableValue } from '../types/State'
+import { IterableValue, State as StateType } from '../types/State'
 
 import { recurseDown, rootElement } from './traveler'
 import {
@@ -105,11 +105,11 @@ export default class State {
     this.updateRoot(replace(root))
   }
 
-  set(id: string, key: any, value?: any): TreeNode[] {
+  set(id: string, key: any, value?: any): StateType {
     const node = this.byId(id)
 
     if (!node) {
-      return this.nodes
+      return this
     }
 
     if (isRoot(node)) {
@@ -118,7 +118,7 @@ export default class State {
       this.updateLeaf(node, iterable(key, value))
     }
 
-    return this.nodes
+    return this
   }
 
   getIndex(node: TreeNode): number | null {

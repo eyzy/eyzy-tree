@@ -1,5 +1,5 @@
 const data = [
-  { text: 'Company A', expanded: true, child: [
+  { text: 'Company A', id: 'c1', expanded: true, child: [
     { text: 'Team A-1', child: ['Member 1', 'Member 2'] },
     { text: 'Team A-2', expanded: true, child: ['Person 1', 'Person 2', { text: 'Person 3', checked: true }] },
     { text: 'Person: accountant' },

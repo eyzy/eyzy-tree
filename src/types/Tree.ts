@@ -1,6 +1,6 @@
 import { Node, TreeNode } from './Node'
 import { TreeAPI } from '../TreeAPI'
-import State from '../utils/state'
+import { State } from './State'
 
 export interface Tree {
   data: Array<Node | string>
@@ -29,13 +29,19 @@ export interface Tree {
 }
 
 export interface TreeComponent {
+  props: Tree
   selected: string[]
   checked: string[]
   indeterminate: string[]
   focused: string
   _state: State
 
+  getState: () => State
   updateState: (state: State) => void
+  check: (node: TreeNode) => void
   select: (node: TreeNode, ignoreEvent?: boolean, extendSelection?: boolean) => void
   unselect: (node: TreeNode) => void
+  uncheckAll: () => void
+  unselectAll: () => void
+  expand: (node: TreeNode) => void
 }
