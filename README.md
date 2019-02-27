@@ -7,7 +7,7 @@
 [![NPM total downloads](https://img.shields.io/npm/dt/eyzy-tree.svg?style=flat)](https://npmcharts.com/compare/eyzy-tree?minimal=true)
 [![NPM monthly downloads](https://img.shields.io/npm/dm/eyzy-tree.svg?style=flat)](https://npmcharts.com/compare/eyzy-tree?minimal=true)
 
-[Documentation](https://eyzy.gitbook.io/tree/) | [Examples](https://eyzy.gitbook.io/tree/examples/custom-theme)
+[Documentation](https://eyzy.gitbook.io/tree/) | [Examples](https://eyzy.gitbook.io/tree/examples)
 
 ### Features
 - flexible configuration
