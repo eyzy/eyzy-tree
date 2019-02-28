@@ -24,19 +24,17 @@
   </head>
   <body>
     <div id="example0"></div>
+    <div class="controls">
+      <button id="test-find">Test FIND</button>
+    </div>
 
     <script>
       class TreeWrapper extends React.Component {
-        constructor(props) {
-          super(props)
-
-          this.api = null
+        componentDidMount() {
+          document.querySelector('#test-find').addEventListener('click', this.testFind)
         }
 
-        handleReadyTree = (api) => {
-          this.api = new EyzyTreeAPI(api)
-          this.mapi = new EyzyTreeAPI(api, true)
-
+        testFind = () => {
           const searchExamples = {
             'RegExp': this.api.find(/0\.\d{2}/),
             'Simple Text (by id)': this.api.find(data[0].id),
@@ -67,6 +65,17 @@
 
           console.table(consoleRes)
           console.log(searchExamples)
+        }
+
+        handleReadyTree = (api) => {
+          this.api = new EyzyTreeAPI(api)
+          this.multipleApi = new EyzyTreeAPI(api, true)
+
+          const superNode = this.api.find({data: {isSuper: true}})
+
+          // superNode
+          //   .select()
+          //   .disable()
         }
 
         render() {

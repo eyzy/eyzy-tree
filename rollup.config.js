@@ -27,7 +27,7 @@ const apiBanner = `
 `
 
 const externalApiConfig = {
-  input: 'src/EyzyAPI.ts',
+  input: 'src/api/index.ts',
   output: [
     {
       file: 'es/eyzy-tree-api.js',

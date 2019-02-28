@@ -9,6 +9,7 @@
     ]
   },
   "rules": {
+    "noImplicitReturns": true,
     "member-access": false,
     "semicolon": false,
     "object-literal-sort-keys": false,

@@ -7,7 +7,7 @@ import '../assets/animations.scss'
 import NodeComponent from './TreeNode'
 
 import { Node, TreeNode } from '../types/Node'
-import { Tree, TreeComponent } from '../types/Tree'
+import { TreeProps, TreeComponent } from '../types/Tree'
 import { State as StateType } from '../types/State'
 
 import { TreeAPI } from '../TreeAPI'
@@ -35,7 +35,7 @@ interface TreeState {
   mutatingFields: {string: any}
 }
 
-export default class EyzyTree extends React.Component<Tree, TreeState> implements TreeComponent {
+export default class EyzyTree extends React.Component<TreeProps, TreeState> implements TreeComponent {
   static TreeNode = NodeComponent
 
   selected: string[] = []
@@ -47,7 +47,7 @@ export default class EyzyTree extends React.Component<Tree, TreeState> implement
   // tslint:disable-next-line
   _state: StateType
 
-  constructor(props: Tree) {
+  constructor(props: TreeProps) {
     super(props)
 
     const data = parseNode(props.data || [])
@@ -81,7 +81,7 @@ export default class EyzyTree extends React.Component<Tree, TreeState> implement
     }
   }
 
-  static getDerivedStateFromProps(nextProps: Tree, state: TreeState) {
+  static getDerivedStateFromProps(nextProps: TreeProps, state: TreeState) {
     if (!shallowEqual(nextProps, state.mutatingFields, mutatingFields)) {
       return {
         hash: uuid(),

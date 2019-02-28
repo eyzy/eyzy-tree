@@ -2,7 +2,7 @@ import { Node, TreeNode } from './Node'
 import { TreeAPI } from '../TreeAPI'
 import { State } from './State'
 
-export interface Tree {
+export interface TreeProps {
   data: Array<Node | string>
   fetchData?: (node: TreeNode) => PromiseLike<Node[] | null>
   checkboxRenderer?: any
@@ -29,7 +29,7 @@ export interface Tree {
 }
 
 export interface TreeComponent {
-  props: Tree
+  props: TreeProps
   selected: string[]
   checked: string[]
   indeterminate: string[]
@@ -44,4 +44,17 @@ export interface TreeComponent {
   uncheckAll: () => void
   unselectAll: () => void
   expand: (node: TreeNode) => void
+}
+
+export type CheckboxValueConsistency = 'ALL' | 'BRANCH' | 'LEAF' | 'WITH_INDETERMINATE'
+
+export interface TreeAPI {
+  state: State
+  tree: TreeComponent
+  set: (query: any, key: string, value: any) => boolean  
+  find: (...criterias: any) => TreeNode | null
+  findAll: (...criterias: any) => TreeNode[]
+  selected: () => TreeNode[]
+  checked: (valueConsistsOf?: CheckboxValueConsistency, ignoreDisabled?: boolean) => TreeNode[]
+  toJSON: () => TreeNode[]
 }

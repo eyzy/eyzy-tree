@@ -12,6 +12,7 @@
 ### Features
 - flexible configuration
 - rich options
+- rich API
 - events for every action
 - keyboard navigation
 - check boxes
