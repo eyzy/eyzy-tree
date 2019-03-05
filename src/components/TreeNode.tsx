@@ -26,20 +26,12 @@ export default class Node extends React.Component<TreeNodeProps> {
   }
 
   handleSelect = (event: React.MouseEvent) => {
-    if (this.props.disabled) {
-      return
-    }
-
     if (this.props.onSelect) {
       this.props.onSelect(this.getNode(), event)
     }
   }
 
   handleCheck = () => {
-    if (this.props.disabled || this.props.disabledCheckbox) {
-      return
-    }
-
     if (this.props.onCheck) {
       this.props.onCheck(this.getNode())
     }

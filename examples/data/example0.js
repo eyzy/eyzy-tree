@@ -2,7 +2,7 @@ var data = [
   {
     "text": "Angular.js",
     "expanded": true,
-    "selected": true,
+    "selected": true,disabled: 1, 
     "id": "c1",
     "child": [
       {

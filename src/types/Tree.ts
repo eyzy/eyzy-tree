@@ -37,6 +37,7 @@ export interface TreeComponent {
   _state: State
 
   getState: () => State
+  refreshIndeterminateState: (id: string, willBeChecked: boolean, shouldRender?: boolean) => void
   updateState: (state: State) => void
   check: (node: TreeNode) => void
   select: (node: TreeNode, ignoreEvent?: boolean, extendSelection?: boolean) => void

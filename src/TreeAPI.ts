@@ -38,10 +38,14 @@ export class TreeAPI {
     return find(this.state.get(), walkBreadth, true, criterias)
   }
 
-  selected(): TreeNode[] {
+  selected(): TreeNode[] | TreeNode | null {
     const state = this.state
     const selected: Array<TreeNode | null> = this.tree.selected
       .map((id: string): TreeNode | null => state.byId(id))
+
+    if (true !== this.tree.props.multiple) {
+      return selected.length ? selected[0] : null
+    }
 
     return selected.filter((item: TreeNode | null) => null !== item) as TreeNode[]
   }

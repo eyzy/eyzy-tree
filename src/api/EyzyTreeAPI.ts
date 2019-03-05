@@ -11,10 +11,6 @@ const callMethod = (api: IEyzyTreeAPI, name: string, criteria: any, args?: any[]
   })
 }
 
-export const hasChild = (node: TreeNode): boolean => {
-  return node.isBatch || node.child.length > 0
-}
-
 export default class EyzyTreeAPI implements IEyzyTreeAPI {
   _tree: TreeComponent
   _state: State
@@ -36,8 +32,8 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
 
   _operate(criteria: any, operator: (node: IEyzyNodeAPI) => any): boolean {
     const nodes: TreeNode[] | (TreeNode | null) = this.isMultiple
-      ? this.findAll(criteria)
-      : this.find(criteria)
+      ? this._api.findAll(criteria)
+      : this._api.find(criteria)
 
     if (!nodes || Array.isArray(nodes) && !nodes.length) {
       return false
@@ -46,12 +42,12 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     return operator(new EyzyNodeAPI(nodes, this))
   }
 
-  find(...criteria: any): TreeNode | null {
-    return this._api.find(...criteria)
+  find(...criteria: any): IEyzyNodeAPI | null {
+    return new EyzyNodeAPI(this._api.find(...criteria), this)
   }
 
-  findAll(...criteria: any): TreeNode[] {
-    return this._api.findAll(...criteria)
+  findAll(...criteria: any): IEyzyNodeAPI {
+    return new EyzyNodeAPI(this._api.findAll(...criteria), this)
   }
 
   remove(criteria: any): boolean {

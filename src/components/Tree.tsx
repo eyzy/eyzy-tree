@@ -285,17 +285,14 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
           state.set(node.id, 'selected', false)
           events.push(['onUnSelect', node.id])
         }
-        
+
         return false
       })
     }
 
     state.set(id, 'selected', true)
 
-    if (!extendSelection) {
-      this.focused = id
-    }
-
+    this.focused = id
     this.selected.push(id)
     this.updateState(state)
 
@@ -365,7 +362,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
   }
 
   check = (node: TreeNode) => {
-    if (!this.props.checkable) {
+    if (!this.props.checkable || node.disabled || node.disabledCheckbox) {
       return
     }
 
@@ -395,6 +392,10 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
   }
 
   expand = (node: TreeNode) => {
+    if (node.disabled) {
+      return
+    }
+
     if (node.isBatch) {
       return this.loadChild(node)
     }

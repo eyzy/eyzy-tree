@@ -49,7 +49,7 @@ function testKey(v0: any, v1: any): boolean {
   }
 
   if (isFalsy(v0) && isFalsy(v1)) {
-    return !!v0 == !!v1
+    return !!v0 === !!v1
   }
 
   return v0 === v1
@@ -60,6 +60,10 @@ function matchCriterias(node: TreeNode, criterias: Criteria[]): boolean {
 }
 
 export function find(source: TreeNode[], traveler: Traveler, multiple: boolean, criterias: any[]): any {
+  if (!criterias.length || !criterias[0]) {
+    return null
+  }
+
   const result: TreeNode[] = []
 
   const searchCriterias: Criteria[] = criterias.map(parseCriteria)

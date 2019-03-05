@@ -26,12 +26,43 @@
     <div id="example0"></div>
     <div class="controls">
       <button id="test-find">Test FIND</button>
+      <div>
+        <button id="test-empty">Empty</button>
+      </div>
     </div>
 
     <script>
       class TreeWrapper extends React.Component {
+        constructor() {
+          super()
+          this.ref = React.createRef()
+        }
+
         componentDidMount() {
           document.querySelector('#test-find').addEventListener('click', this.testFind)
+          document.querySelector('#test-empty').addEventListener('click', this.testEmpty)
+        }
+
+        testEmpty = () => {
+          const selected = this.api.selected()
+          const {current} = this.ref
+
+          if (!selected) {
+            return
+          }
+
+          console.log('BEFORE')
+          console.log(`selected: ${current.selected}`)
+          console.log(`checked: ${current.checked}`)
+          console.log(`indeterminate: ${current.indeterminate}`)
+
+          this.api.empty(selected)
+
+          console.log('AFTER')
+          console.log(`selected: ${current.selected}`)
+          console.log(`checked: ${current.checked}`)
+          console.log(`indeterminate: ${current.indeterminate}`)
+          console.log('------------------------------------------------------')
         }
 
         testFind = () => {
@@ -72,23 +103,24 @@
           this.multipleApi = new EyzyTreeAPI(api, true)
 
           const superNode = this.api.find({data: {isSuper: true}})
-
-          // superNode
-          //   .select()
-          //   .disable()
         }
 
         render() {
           return React.createElement(EyzyTree, {
+            ref: this.ref,
             data,
             checkable: true,
             checkOnSelect: true,
             multiple: true,
             onReady: this.handleReadyTree, 
-            onCheck: () => {
-              console.log(
-                this.api.checked('BRANCH', 1).map(t => t.text).join(', ')
-              )
+            onUnSelect: (node) => {
+              console.log('UNselect: ', node.text)
+            },
+            onSelect: (node) => {
+              console.log('select: ', node.text)
+            },
+            textRenderer: ({node}) => {
+              return React.createElement('div', null, `${node.text} - ${node.id}`)
             },
             fetchData: (node) => {
               return new Promise(resolve => {

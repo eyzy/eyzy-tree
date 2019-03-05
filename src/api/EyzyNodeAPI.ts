@@ -1,12 +1,13 @@
 import { IEyzyNodeAPI, IEyzyTreeAPI } from '../types/Api'
-import { TreeComponent } from '../types/Tree'
+import { TreeComponent, TreeProps } from '../types/Tree'
 import { TreeNode } from '../types/Node'
 import { State } from '../types/State'
 
-import { hasChild } from './EyzyTreeAPI'
+import { hasChild, recurseDown, removeArrItem } from './utils'
 
 export default class EyzyNode implements IEyzyNodeAPI {
   _tree: TreeComponent
+  _props: TreeProps
   _state: State
   _api: IEyzyTreeAPI
   _nodes: TreeNode[]
@@ -15,6 +16,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
     this._api = api
     this._state = api._state
     this._tree = api._tree
+    this._props = api._tree.props
     this._nodes = Array.isArray(nodes) 
       ? nodes 
       : (nodes ? [nodes] : [])
@@ -32,34 +34,56 @@ export default class EyzyNode implements IEyzyNodeAPI {
     return result
   }
 
+  private _clearKeys(node: TreeNode): void {
+    const selected: string[] = this._tree.selected
+    const checked: string[] = this._tree.checked
+    const indeterminate: string[] = this._tree.indeterminate
+
+    recurseDown(node, (child: TreeNode) => {
+      if (child.selected) {
+        removeArrItem(selected, child.id)
+      }
+
+      if (child.checked) {
+        removeArrItem(checked, child.id)
+      }
+
+      removeArrItem(indeterminate, child.id)
+    }, true)
+
+    removeArrItem(indeterminate, node.id)
+  }
+
   remove: () => boolean
 
-  // TODO: 
-  // - checked, selected, indeterminate nodes must be removed from the tree
   empty(): boolean {
-    return this._operate(true, (node: TreeNode, state: State) => {
-      if (!node.child.length) {
+    return this._operate(true, (node: TreeNode, state: State): any => {
+      if (!hasChild(node)) {
         return false
       }
 
-      state.set(node.id, 'child', [])
+      this._clearKeys(node)
+
+      state.set(node.id, {
+        child: [],
+        indeterminate: false,
+        isBatch: false
+      })
+
+      if (node.parent) {
+        this._tree.refreshIndeterminateState(node.id, !!node.checked, false)
+      }
     })
   }
 
   select(extendSelection?: boolean): boolean {
-    const multiple: boolean = !!this._tree.props.multiple
-
-    if (multiple && !extendSelection) {
-      this._api.unselectAll()
-    }
-
-    return this._operate(false, (node: TreeNode) => {
+    return this._operate(false, (node: TreeNode): any => {
       if (node.selected) {
         return false
       }
 
-      if (multiple) {
-        this._tree.select(node, false, false !== extendSelection)
+      if (this._props.multiple) {
+        this._tree.select(node, false, extendSelection)
       } else {
         this._tree.select(node)
       }
@@ -77,11 +101,11 @@ export default class EyzyNode implements IEyzyNodeAPI {
   }
 
   check(): boolean {
-    if (!this._tree.props.checkable) {
+    if (!this._props.checkable) {
       return false
     }
 
-    return this._operate(false, (node: TreeNode) => {
+    return this._operate(false, (node: TreeNode): any => {
       if (node.checked) {
         return false
       }
@@ -91,11 +115,11 @@ export default class EyzyNode implements IEyzyNodeAPI {
   }
 
   uncheck(): boolean {
-    if (!this._tree.props.checkable) {
+    if (!this._props.checkable) {
       return false
     }
 
-    return this._operate(false, (node: TreeNode, state: State) => {
+    return this._operate(false, (node: TreeNode, state: State): any => {
       if (!node.checked) {
         return false
       }
@@ -105,7 +129,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
   }
 
   disable(): boolean {
-    return this._operate(true, (node: TreeNode, state: State) => {
+    return this._operate(true, (node: TreeNode, state: State): any => {
       if (node.disabled) {
         return false
       }
@@ -115,7 +139,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
   }
 
   enable(): boolean {
-    return this._operate(true, (node: TreeNode, state: State) => {
+    return this._operate(true, (node: TreeNode, state: State): any => {
       if (!node.disabled) {
         return false
       }
@@ -123,13 +147,13 @@ export default class EyzyNode implements IEyzyNodeAPI {
       state.set(node.id, 'disabled', false)
     })
   }
-  
+
   disableCheckbox(): boolean {
-    if (!this._tree.props.checkable) {
+    if (!this._props.checkable) {
       return false
     }
 
-    return this._operate(true, (node: TreeNode, state: State) => {
+    return this._operate(true, (node: TreeNode, state: State): any => {
       if (node.disabledCheckbox) {
         return false
       }
@@ -137,23 +161,31 @@ export default class EyzyNode implements IEyzyNodeAPI {
       state.set(node.id, 'disabledCheckbox', true)
     })
   }
-  
+
   enableCheckbox(): boolean {
-    if (!this._tree.props.checkable) {
+    if (!this._props.checkable) {
       return false
     }
 
-    return this._operate(true, (node: TreeNode, state: State) => {
+    return this._operate(true, (node: TreeNode, state: State): any => {
       if (!node.disabledCheckbox) {
         return false
       }
 
       state.set(node.id, 'disabledCheckbox', false)
+
+      if (hasChild(node) && this._props.useIndeterminateState) {
+        const iNode: TreeNode = node.checked
+          ? node
+          : node.child[0]
+
+        this._tree.refreshIndeterminateState(iNode.id, !!iNode.checked, false)
+      }
     })
   }
-  
+
   expand(): boolean {
-    return this._operate(false, (node: TreeNode) => {
+    return this._operate(false, (node: TreeNode): any => {
       if (!hasChild(node) || node.expanded) {
         return false
       }
@@ -161,9 +193,9 @@ export default class EyzyNode implements IEyzyNodeAPI {
       this._tree.expand(node)
     })
   }
-  
+
   collapse(): boolean {
-    return this._operate(false, (node: TreeNode) => {
+    return this._operate(false, (node: TreeNode): any => {
       if (!hasChild(node) || !node.expanded) {
         return false
       }
