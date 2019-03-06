@@ -12,7 +12,6 @@ export interface IEyzyTreeAPI {
   isMultiple: boolean
   useMultiple: (isMultiple: boolean) => EyzyTreeAPI
 
-  remove: (criteria: any) => boolean
   empty: (criteria: any) => boolean
   select: (extendSelection?: boolean) => boolean
   unselect: (criteria: any) => boolean
@@ -33,11 +32,13 @@ export interface IEyzyNodeAPI {
   readonly _api: IEyzyTreeAPI
   readonly _nodes: TreeNode[]
 
+  length: number
+  result: TreeNode[] | null
+
   select: (extendSelection?: boolean) => boolean
   unselect: () => boolean
   check: () => boolean
   uncheck: () => boolean
-  remove: () => boolean
   empty: () => boolean
   disable: () => boolean
   enable: () => boolean

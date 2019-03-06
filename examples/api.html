@@ -36,6 +36,9 @@
         constructor() {
           super()
           this.ref = React.createRef()
+          this.state = {
+            multiple: true
+          }
         }
 
         componentDidMount() {
@@ -47,7 +50,7 @@
           const selected = this.api.selected()
           const {current} = this.ref
 
-          if (!selected) {
+          if (!selected || !selected.length) {
             return
           }
 
@@ -56,7 +59,7 @@
           console.log(`checked: ${current.checked}`)
           console.log(`indeterminate: ${current.indeterminate}`)
 
-          this.api.empty(selected)
+          this.api.empty(this.state.multiple ? selected[0] : selected)
 
           console.log('AFTER')
           console.log(`selected: ${current.selected}`)
@@ -67,17 +70,17 @@
 
         testFind = () => {
           const searchExamples = {
-            'RegExp': this.api.find(/0\.\d{2}/),
-            'Simple Text (by id)': this.api.find(data[0].id),
-            'Simple Text': this.api.find('Babel'),
-            'Function (Math random)': this.api.find(node => Math.random() > 0.68),
-            'ONE Of criterias (OR operation)': this.api.find({text: 'nonexistent'}, {isBatch: true}, {lalalal: 10}),
+            'RegExp': this.api.find(/0\.\d{2}/).result,
+            'Simple Text (by id)': this.api.find(data[0].id).result,
+            'Simple Text': this.api.find('Babel').result,
+            'Function (Math random)': this.api.find(node => Math.random() > 0.68).result,
+            'ONE Of criterias (OR operation)': this.api.find({text: 'nonexistent'}, {isBatch: true}, {lalalal: 10}).result,
             'OR operation (array transfer DOESN\'T WORK!)': this.api.find([{text: 'nonexistent'}, {isBatch: true}, {lalalal: 10}]),
-            'OR with array (use spread)': this.api.find(...[{text: 'nonexistent'}, {isBatch: true}, {lalalal: 10}]),
+            'OR with array (use spread)': this.api.find(...[{text: 'nonexistent'}, {isBatch: true}, {lalalal: 10}]).result,
             'AND': this.api.find({
               text: /Apache/, expanded: false
-            }),
-            'List': this.api.findAll(/^ba/i),
+            }).result,
+            'List': this.api.findAll(/^ba/i).result,
             'doesn\'t match ': this.api.find(/^baaaaaaaa/i),
             'doesn\'t match list': this.api.findAll(/^baaaaaaaa/i)
           }
@@ -111,7 +114,7 @@
             data,
             checkable: true,
             checkOnSelect: true,
-            multiple: true,
+            multiple: this.state.multiple,
             onReady: this.handleReadyTree, 
             onUnSelect: (node) => {
               console.log('UNselect: ', node.text)

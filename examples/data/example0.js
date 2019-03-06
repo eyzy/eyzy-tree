@@ -2,7 +2,8 @@ var data = [
   {
     "text": "Angular.js",
     "expanded": true,
-    "selected": true,disabled: 1, 
+    "selected": true,
+    "disabled": 1, 
     "id": "c1",
     "child": [
       {
@@ -30,13 +31,14 @@ var data = [
     ]
   },
   {
-    "text": "Ansible 2.4", "isBatch": true
+    "text": "Ansible 2.4", "isBatch": true, "data": { isSuperNode: 1 }
   },
   {
-    "text": "Apache HTTP Server"
+    "text": "Apache HTTP Server", "data": { isSuperNode: true }
   },
   {
     "text": "Apache Pig",
+    "data": { isSuperNode: false },
     "expanded": true,
     "child": [
       {

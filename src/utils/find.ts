@@ -1,5 +1,5 @@
 import { TreeNode } from '../types/Node'
-import { isString, isRegExp, isFunction } from './index'
+import { isString, isRegExp, isFunction, isBoolean } from './index'
 
 type Traveler = (source: TreeNode[], cb: (node: TreeNode) => boolean) => boolean
 type Criteria = (node: TreeNode) => boolean
@@ -38,9 +38,21 @@ function parseCriteria(criteria: any): Criteria {
     const keys: string[] = Object.keys(matches)
 
     return keys.every((key: string): boolean => {
+      if ('data' === key) {
+        return testData(matches[key], node[key])
+      }
+
       return testKey(matches[key], node[key])
     })
   }
+}
+
+function testData(v0: any, v1: any): boolean {
+  const keys: string[] = Object.keys(v0)
+
+  return keys.every((key: string): boolean => {
+    return testKey(v0[key], v1[key])
+  })
 }
 
 function testKey(v0: any, v1: any): boolean {
@@ -48,7 +60,7 @@ function testKey(v0: any, v1: any): boolean {
     return new RegExp(v0).test(v1)
   }
 
-  if (isFalsy(v0) && isFalsy(v1)) {
+  if (isBoolean(v0) || isFalsy(v0) && isFalsy(v1)) {
     return !!v0 === !!v1
   }
 

@@ -43,15 +43,23 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
   }
 
   find(...criteria: any): IEyzyNodeAPI | null {
-    return new EyzyNodeAPI(this._api.find(...criteria), this)
+    const result: TreeNode | null = this._api.find(...criteria)
+
+    if (!result) {
+      return null
+    }
+
+    return new EyzyNodeAPI(result, this)
   }
 
-  findAll(...criteria: any): IEyzyNodeAPI {
-    return new EyzyNodeAPI(this._api.findAll(...criteria), this)
-  }
+  findAll(...criteria: any): IEyzyNodeAPI | null {
+    const result: TreeNode[] = this._api.findAll(...criteria)
 
-  remove(criteria: any): boolean {
-    return true
+    if (!result || !result.length) {
+      return null
+    }
+
+    return new EyzyNodeAPI(result, this)
   }
 
   empty(criteria: any): boolean {

@@ -22,6 +22,14 @@ export default class EyzyNode implements IEyzyNodeAPI {
       : (nodes ? [nodes] : [])
   }
 
+  get length(): number {
+    return this._nodes.length
+  }
+
+  get result(): TreeNode[] | null {
+    return this._nodes.length ? this._nodes : null
+  }
+
   private _operate(updateState: boolean, operator: (node: TreeNode, state: State) => any): boolean {
     const result: boolean = this._nodes
       .map((node: TreeNode) => operator(node, this._state))
@@ -53,8 +61,6 @@ export default class EyzyNode implements IEyzyNodeAPI {
 
     removeArrItem(indeterminate, node.id)
   }
-
-  remove: () => boolean
 
   empty(): boolean {
     return this._operate(true, (node: TreeNode, state: State): any => {

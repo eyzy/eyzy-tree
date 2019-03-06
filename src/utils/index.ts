@@ -20,6 +20,10 @@ export function isRegExp(obj: any): boolean {
   return obj instanceof RegExp
 }
 
+export function isBoolean(obj: any): boolean {
+  return 'boolean' === typeof obj
+}
+
 export function isArray(obj: any): boolean {
   return Array.isArray(obj)
 }

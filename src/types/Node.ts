@@ -9,6 +9,7 @@ export interface Node {
   child?: Node[]
   data?: any
   isBatch?: boolean
+  className?: string
   checkable?: boolean
   checkboxRenderer?: React.ReactType<{node: TreeNode}>
   arrowRenderer?: React.ReactType<{node: TreeNode}>
