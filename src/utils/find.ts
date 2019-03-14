@@ -38,6 +38,7 @@ function parseCriteria(criteria: any): Criteria {
     const keys: string[] = Object.keys(matches)
 
     return keys.every((key: string): boolean => {
+      // TODO: call parseCriteria recursively
       if ('data' === key) {
         return testData(matches[key], node[key])
       }

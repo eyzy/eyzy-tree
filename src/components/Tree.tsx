@@ -500,7 +500,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
           if (isLeaf(selectedNode) || !selectedNode.expanded) {
             const parentNode = selectedNode.parent
 
-            if (parentNode) {
+            if (parentNode && !parentNode.disabled) {
               this.select(parentNode)
             }
           } else if (selectedNode.expanded) {

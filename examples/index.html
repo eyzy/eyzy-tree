@@ -33,6 +33,10 @@
     <script>
       const copy = JSON.parse(JSON.stringify(data))
 
+      copy[3].child[1].disabled = true
+      copy[3].child[2].disabled = true
+      copy[3].child[3].disabled = true
+
       class TreeWrapper extends React.Component {
         constructor(props) {
           super(props)
@@ -56,8 +60,8 @@
             onSelect: (node) => {console.log('select', node.text)},
             onUnSelect: (node) => {console.log('unselect', node.text)},
             textRenderer: ({node}) => {
-              // return React.createElement('div', null, `${node.text} - ${node.id}`)
-              return React.createElement('div', null, `${node.text} - (${node.depth})`)
+              return React.createElement('div', null, `${node.text} - ${node.id}`)
+              // return React.createElement('div', null, `${node.text} - (${node.depth})`)
             },
             fetchData: (node) => {
               return new Promise(resolve => {
@@ -87,6 +91,10 @@
           data: copy,
           theme: 'eyzy-theme-red',
           multiple: true,
+          textRenderer: ({node}) => {
+            return React.createElement('div', null, `${node.text} - ${node.id}`)
+            // return React.createElement('div', null, `${node.text} - (${node.depth})`)
+          },
           fetchData: (node) => {
             return new Promise(resolve => {
               setTimeout(() => {
