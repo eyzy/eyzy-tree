@@ -76,6 +76,11 @@ export interface FlatMap {
   ids: string[]
 }
 
+function isRootParentCollapsed(node: TreeNode) {
+  const root: TreeNode | null = rootElement(node)
+  return !root ? false : !root.expanded
+}
+
 export function flatMap(collection: TreeNode[], ignoreCollapsed?: boolean): FlatMap {
   const result = {
     nodes: [],
@@ -87,7 +92,7 @@ export function flatMap(collection: TreeNode[], ignoreCollapsed?: boolean): Flat
       return
     }
 
-    if (ignoreCollapsed && node.parent && !node.parent.expanded) {
+    if (ignoreCollapsed && node.parent && !node.parent.expanded || isRootParentCollapsed(node)) {
       return
     }
 

@@ -594,21 +594,34 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     result.then((nodes: any[]) => {
       this.appendChild(id, nodes)
 
-      const selected: boolean = selectOnExpand ? true : has(this.checked, id)
-
       state.set(id, {
         loading: false,
         expanded: true,
-        isBatch: false,
-        selected
+        isBatch: false
       })
 
       this.fireEvent('onExpand', id, true)
-      this.updateState(state)
 
-      if (selected && !this.checked.length) {
-        this.select(node)
+      if (selectOnExpand) {
+        this.selected = this.selected.filter((nodeId: string) => {
+          const node = state.byId(nodeId)
+  
+          if (node) {
+            state.set(node.id, 'selected', false)
+            this.fireEvent('onUnSelect', node.id, true)
+          }
+  
+          return false
+        })
+
+        this.selected.push(id)
+        this.focused = id
+
+        state.set(id, 'selected', true)
+        this.fireEvent('onSelect', id, true)
       }
+
+      this.updateState(state)
     })
 
     this.updateState(state)
