@@ -51,7 +51,9 @@
             multiple: false,
             onReady: (api) => {this.api = api},
             onDoubleClick: (node) => {console.log('dbl', node.text)},
-            onCheck: (node, isChecked) => {console.log('check', node.text, node.checked, isChecked)},
+            onCheck: (node, isChecked) => {
+              console.log(this.api.checked())  
+            },
             onExpand: (node, isExpanded) => {console.log('expand', node.text, node.expanded, isExpanded)},
             onSelect: (node) => {console.log('select', node.text)},
             onUnSelect: (node) => {console.log('unselect', node.text)},

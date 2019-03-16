@@ -50,7 +50,7 @@ export class TreeAPI {
     return selected.filter((item: TreeNode | null) => null !== item) as TreeNode[]
   }
 
-  checked(valueConsistsOf?: CheckboxValueConsistency, ignoreDisabled?: boolean): TreeNode[] {
+  checked(valueConsistsOf?: CheckboxValueConsistency, showDisabled?: boolean): TreeNode[] {
     const state = this.state
     let checked: TreeNode[] = []
 
@@ -72,7 +72,7 @@ export class TreeAPI {
       })
     }
 
-    if (ignoreDisabled) {
+    if (!showDisabled) {
       checked = checked.filter(isNodeCheckable)
     }
 
@@ -92,7 +92,7 @@ export class TreeAPI {
   }
 
   // TODO:
-  toJSON(): TreeNode[] {
-    return []
+  toArray(): TreeNode[] {
+    return this.state.get()
   }
 }
