@@ -3,7 +3,7 @@ import { TreeComponent } from './types/Tree'
 import { State } from './types/State'
 import { CheckboxValueConsistency } from './types/Tree'
 
-import { isNodeCheckable, isLeaf } from './utils/index'
+import { isString, isNodeCheckable, isLeaf } from './utils/index'
 import { find } from './utils/find'
 import { walkBreadth } from './utils/traveler'
 
@@ -14,6 +14,31 @@ export class TreeAPI {
   constructor(tree: TreeComponent, state: State) {
     this.tree = tree
     this.state = state
+  }
+
+  data(query: any, key: any, value?: any): any {
+    const node: TreeNode | null = this.find(query)
+
+    if (!node || !key) {
+      return
+    }
+
+    if (!isString(key)) {
+      this.state.set(node.id, 'data', key)
+      this.tree.updateState(this.state)
+      return node
+    }
+
+    if (undefined === value) {
+      return node.data[key]
+    }
+    
+    node.data[key] = value
+
+    this.state.set(node.id, 'data', node.data)
+    this.tree.updateState(this.state)
+
+    return node
   }
 
   set(query: any, key: string, value: any): boolean {

@@ -104,7 +104,7 @@
         handleReadyTree = (api) => {
           this.api = new EyzyTreeAPI(api)
           this.multipleApi = new EyzyTreeAPI(api, true)
-
+          this._simpleAPI = api
           const superNode = this.api.find({data: {isSuper: true}})
         }
 
@@ -123,7 +123,7 @@
               console.log('select: ', node.text)
             },
             textRenderer: ({node}) => {
-              return React.createElement('div', null, `${node.text} - ${node.id}`)
+              return React.createElement('div', null, `${node.text} - ${node.id} - ${node.data.a ? node.data.a : ""}`)
             },
             fetchData: (node) => {
               return new Promise(resolve => {
