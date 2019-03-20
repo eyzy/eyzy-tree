@@ -23,19 +23,20 @@ export class TreeAPI {
       return
     }
 
-    if (!isString(key)) {
-      this.state.set(node.id, 'data', key)
-      this.tree.updateState(this.state)
-      return node
-    }
-
-    if (undefined === value) {
+    if (undefined === value && isString(key)) {
       return node.data[key]
     }
-    
-    node.data[key] = value
 
-    this.state.set(node.id, 'data', node.data)
+    let data
+
+    if (!isString(key)) {
+      data = key
+    } else {
+      node.data[key] = value
+      data = node.data
+    }
+
+    this.state.set(node.id, 'data', data)
     this.tree.updateState(this.state)
 
     return node
