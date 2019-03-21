@@ -94,6 +94,7 @@ export default class Node extends React.Component<TreeNodeProps> {
       expanded,
       disabled,
       disabledCheckbox,
+      className,
       indeterminate,
       useIndeterminateState,
       textRenderer: TextRenderer
@@ -112,8 +113,14 @@ export default class Node extends React.Component<TreeNodeProps> {
       'indeterminate': !checked && indeterminate && false !== useIndeterminateState
     })
 
+    const containerClassNames = ['tree-node']
+
+    if (className) {
+      containerClassNames.push(className)
+    }
+
     return (
-      <li className="tree-node">
+      <li className={containerClassNames.join(' ')}>
         <div className={nodeContentClass}>
 
           { this.renderArrow() }

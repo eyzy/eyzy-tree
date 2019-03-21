@@ -3,7 +3,7 @@ import { TreeComponent } from './types/Tree'
 import { State } from './types/State'
 import { CheckboxValueConsistency } from './types/Tree'
 
-import { isString, isNodeCheckable, isLeaf } from './utils/index'
+import { isString, isNodeCheckable, isLeaf, has } from './utils/index'
 import { find } from './utils/find'
 import { walkBreadth } from './utils/traveler'
 
@@ -16,11 +16,76 @@ export class TreeAPI {
     this.state = state
   }
 
+  protected _addClass(node: TreeNode, ...classNames: string[]): TreeNode {
+    const className: string[] = (node.className || "").split(' ')  
+
+    classNames.forEach((klazz: string) => {
+      if (!has(className, "" + klazz)) {
+        className.push(klazz)
+      }
+    })
+
+    this.state.set(node.id, 'className', className.join(' '))
+    this.tree.updateState(this.state)
+
+    return node
+  }
+
+  protected _removeClass(node: TreeNode, ...classNames: string[]): TreeNode {
+    const className: string = (node.className || "")
+      .split(' ')  
+      .filter((klazz: string) => !has(classNames, klazz))
+      .join(' ')
+
+    this.state.set(node.id, 'className', className)
+    this.tree.updateState(this.state)
+
+    return node
+  }
+
+  protected _hasClass(node: TreeNode, className: string): boolean {
+    return !!node.className && new RegExp(className).test(node.className)
+  }
+
+  addClass(query: any, ...classNames: string[]): TreeNode | null {
+    const node: TreeNode | null = this.find(query)
+
+    if (!node) {
+      return null
+    }
+
+    return this._addClass(node, ...classNames)
+  }
+
+  removeClass(query: any, ...classNames: string[]): TreeNode | null {
+    const node: TreeNode | null = this.find(query)
+
+    if (!node) {
+      return null
+    }
+
+    return this._removeClass(node, ...classNames)
+  }
+
+  hasClass(query: any, className: string): boolean {
+    const node: TreeNode | null = this.find(query)
+
+    if (!node) {
+      return false
+    }
+
+    return this._hasClass(node, className)
+  }
+
   data(query: any, key: any, value?: any): any {
     const node: TreeNode | null = this.find(query)
 
     if (!node || !key) {
       return
+    }
+
+    if (!key && !value) {
+      return node.data
     }
 
     if (undefined === value && isString(key)) {
