@@ -31,15 +31,19 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
   }
 
   _operate(criteria: any, operator: (node: IEyzyNodeAPI) => any): boolean {
+    if (!Array.isArray(criteria)) {
+      criteria = [criteria]
+    }
+
     const nodes: TreeNode[] | (TreeNode | null) = this.isMultiple
-      ? this._api.findAll(criteria)
-      : this._api.find(criteria)
+      ? this._api.findAll(...criteria)
+      : this._api.find(...criteria)
 
     if (!nodes || Array.isArray(nodes) && !nodes.length) {
       return false
     }
 
-    return operator(new EyzyNodeAPI(nodes, this))
+    return operator(new EyzyNodeAPI(nodes, this._api))
   }
 
   find(...criteria: any): IEyzyNodeAPI | null {
@@ -49,7 +53,7 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
       return null
     }
 
-    return new EyzyNodeAPI(result, this)
+    return new EyzyNodeAPI(result, this._api)
   }
 
   findAll(...criteria: any): IEyzyNodeAPI | null {
@@ -59,14 +63,14 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
       return null
     }
 
-    return new EyzyNodeAPI(result, this)
+    return new EyzyNodeAPI(result, this._api)
   }
 
   empty(criteria: any): boolean {
     return callMethod(this, 'empty', criteria)
   }
 
-  selected(): TreeNode[] {
+  selected(): TreeNode | TreeNode[] | null {
     return this._api.selected()
   }
 
@@ -143,5 +147,21 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
   // TODO: collapseAll - api.find(node => new EyzyNodeAPI(node).hasChild())
   collapse(criteria: any): boolean {
     return callMethod(this, 'collapse', criteria)
+  }
+
+  data(criteria: any, key: any, value?: any): any {
+    return callMethod(this, 'data', criteria, [key, value])
+  }
+
+  hasClass(criteria: any, className: string): boolean {
+    return callMethod(this, 'hasClass', criteria, [className])
+  }
+
+  addClass(criteria: any, ...classNames: string[]): any {
+    return callMethod(this, 'addClass', criteria, classNames)
+  }
+
+  removeClass(criteria: any, ...classNames: string[]): any {
+    return callMethod(this, 'removeClass', criteria, classNames)
   }
 }

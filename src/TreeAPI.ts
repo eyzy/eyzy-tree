@@ -1,23 +1,23 @@
 import { TreeNode } from './types/Node'
 import { TreeComponent } from './types/Tree'
 import { State } from './types/State'
-import { CheckboxValueConsistency } from './types/Tree'
+import { CheckboxValueConsistency, TreeAPI as ITreeAPI } from './types/Tree'
 
 import { isString, isNodeCheckable, isLeaf, has } from './utils/index'
 import { find } from './utils/find'
 import { walkBreadth } from './utils/traveler'
 
-export class TreeAPI {
-  private state: State
-  private tree: TreeComponent
+export class TreeAPI implements ITreeAPI {
+  readonly state: State
+  readonly tree: TreeComponent
 
   constructor(tree: TreeComponent, state: State) {
     this.tree = tree
     this.state = state
   }
 
-  protected _addClass(node: TreeNode, ...classNames: string[]): TreeNode {
-    const className: string[] = (node.className || "").split(' ')  
+  _addClass(node: TreeNode, ...classNames: string[]): TreeNode {
+    const className: string[] = node.className ? node.className.split(' ') : []  
 
     classNames.forEach((klazz: string) => {
       if (!has(className, "" + klazz)) {
@@ -31,7 +31,7 @@ export class TreeAPI {
     return node
   }
 
-  protected _removeClass(node: TreeNode, ...classNames: string[]): TreeNode {
+  _removeClass(node: TreeNode, ...classNames: string[]): TreeNode {
     const className: string = (node.className || "")
       .split(' ')  
       .filter((klazz: string) => !has(classNames, klazz))
@@ -43,8 +43,32 @@ export class TreeAPI {
     return node
   }
 
-  protected _hasClass(node: TreeNode, className: string): boolean {
+  _hasClass(node: TreeNode, className: string): boolean {
     return !!node.className && new RegExp(className).test(node.className)
+  }
+
+  _data(node: TreeNode, key: any, value?: any): any {
+    if (!key && !value) {
+      return node.data
+    }
+
+    if (undefined === value && isString(key)) {
+      return node.data[key]
+    }
+
+    let data
+
+    if (!isString(key)) {
+      data = key
+    } else {
+      node.data[key] = value
+      data = node.data
+    }
+
+    this.state.set(node.id, 'data', data)
+    this.tree.updateState(this.state)
+
+    return node
   }
 
   addClass(query: any, ...classNames: string[]): TreeNode | null {
@@ -80,35 +104,15 @@ export class TreeAPI {
   data(query: any, key: any, value?: any): any {
     const node: TreeNode | null = this.find(query)
 
-    if (!node || !key) {
+    if (!node) {
       return
     }
 
-    if (!key && !value) {
-      return node.data
-    }
-
-    if (undefined === value && isString(key)) {
-      return node.data[key]
-    }
-
-    let data
-
-    if (!isString(key)) {
-      data = key
-    } else {
-      node.data[key] = value
-      data = node.data
-    }
-
-    this.state.set(node.id, 'data', data)
-    this.tree.updateState(this.state)
-
-    return node
+    return this._data(node, key, value)
   }
 
   set(query: any, key: string, value: any): boolean {
-    const node = this.find(query)
+    const node: TreeNode | null = this.find(query)
 
     if (!node) {
       return false

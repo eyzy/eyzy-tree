@@ -50,12 +50,23 @@ export interface TreeComponent {
 export type CheckboxValueConsistency = 'ALL' | 'BRANCH' | 'LEAF' | 'WITH_INDETERMINATE'
 
 export interface TreeAPI {
-  state: State
-  tree: TreeComponent
+  readonly state: State
+  readonly tree: TreeComponent
+
+  _data: (node: TreeNode, key?: any, value?: any) => any
+  _hasClass: (node: TreeNode, className: string) => boolean
+  _addClass: (node: TreeNode, ...classNames: string[]) => TreeNode
+  _removeClass: (node: TreeNode, ...classNames: string[]) => TreeNode
+
+  data: (criteria: any, key?: any, value?: any) => any
+  hasClass: (criteria: any, className: string) => boolean
+  addClass: (criteria: any, ...classNames: string[]) => TreeNode | null
+  removeClass: (criteria: any, ...classNames: string[]) => TreeNode | null
+
   set: (query: any, key: string, value: any) => boolean  
   find: (...criterias: any) => TreeNode | null
   findAll: (...criterias: any) => TreeNode[]
-  selected: () => TreeNode[]
+  selected: () => TreeNode[] | TreeNode | null
   checked: (valueConsistsOf?: CheckboxValueConsistency, ignoreDisabled?: boolean) => TreeNode[]
-  toJSON: () => TreeNode[]
+  toArray: () => TreeNode[]
 }

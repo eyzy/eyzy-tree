@@ -9,6 +9,7 @@
     ]
   },
   "rules": {
+    "member-ordering": false,
     "noImplicitReturns": true,
     "member-access": false,
     "semicolon": false,

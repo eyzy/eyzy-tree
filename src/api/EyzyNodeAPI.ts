@@ -1,5 +1,5 @@
-import { IEyzyNodeAPI, IEyzyTreeAPI } from '../types/Api'
-import { TreeComponent, TreeProps } from '../types/Tree'
+import { IEyzyNodeAPI } from '../types/Api'
+import { TreeComponent, TreeProps, TreeAPI } from '../types/Tree'
 import { TreeNode } from '../types/Node'
 import { State } from '../types/State'
 
@@ -9,14 +9,14 @@ export default class EyzyNode implements IEyzyNodeAPI {
   _tree: TreeComponent
   _props: TreeProps
   _state: State
-  _api: IEyzyTreeAPI
+  _api: TreeAPI
   _nodes: TreeNode[]
 
-  constructor(nodes: TreeNode[] | TreeNode | null, api: IEyzyTreeAPI) {
+  constructor(nodes: TreeNode[] | TreeNode | null, api: TreeAPI) {
     this._api = api
-    this._state = api._state
-    this._tree = api._tree
-    this._props = api._tree.props
+    this._state = api.state
+    this._tree = api.tree
+    this._props = api.tree.props
     this._nodes = Array.isArray(nodes) 
       ? nodes 
       : (nodes ? [nodes] : [])
@@ -207,6 +207,39 @@ export default class EyzyNode implements IEyzyNodeAPI {
       }
 
       this._tree.expand(node)
+    })
+  }
+
+  data(key: any, value?: any): any {
+    const nodes = this._nodes
+    
+    if (1 === nodes.length) {
+      return this._api._data(nodes[0], key, value)
+    }
+
+    return nodes.map((node: TreeNode) => this._api._data(node, key, value))
+  }
+
+  hasClass(className: string): boolean {
+    return this._nodes.some((node: TreeNode) => this._api._hasClass(node, className))
+  }
+
+  addClass(...classNames: string[]): boolean {
+    this._nodes.forEach((node: TreeNode) => this._api._addClass(node, ...classNames))
+
+    return true
+  }
+
+  removeClass(...classNames: string[]): boolean {
+    return this._operate(false, (node: TreeNode) => {
+      if (!node.className) {
+        return
+      }
+
+      const oldClassNames = node.className
+      const updatedNode = this._api._removeClass(node, ...classNames)
+
+      return oldClassNames !== updatedNode.className
     })
   }
 }

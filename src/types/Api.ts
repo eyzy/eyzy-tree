@@ -24,12 +24,16 @@ export interface IEyzyTreeAPI {
   enableCheckbox: (criteria: any) => boolean
   expand: (criteria: any) => boolean
   collapse: (criteria: any) => boolean
+  data: (criteria: any, key?: any, value?: any) => any
+  hasClass: (criteria: any, className: string) => boolean
+  addClass: (criteria: any, ...classNames: string[]) => boolean
+  removeClass: (criteria: any, ...classNames: string[]) => boolean
 }
 
 export interface IEyzyNodeAPI {
   readonly _tree: TreeComponent
   readonly _state: State
-  readonly _api: IEyzyTreeAPI
+  readonly _api: TreeAPI
   readonly _nodes: TreeNode[]
 
   length: number
@@ -46,6 +50,10 @@ export interface IEyzyNodeAPI {
   enableCheckbox: () => boolean
   expand: () => boolean
   collapse: () => boolean
+  data: (key?: any, value?: any) => any
+  hasClass: (className: string) => any
+  addClass: (...classNames: string[]) => boolean
+  removeClass: (...classNames: string[]) => boolean
 
   // TODO
   next?: () => IEyzyTreeAPI | null
