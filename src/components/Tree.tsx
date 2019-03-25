@@ -19,7 +19,7 @@ import { parseNode } from '../utils/parser'
 import { shallowEqual } from '../utils/shallowEqual'
 import { recurseDown, traverseUp, getFirstChild, flatMap } from '../utils/traveler'
 import { linkedNode } from '../utils/linkedNode'
-import { has, copyArray, isNodeIndeterminate, isFunction, isLeaf, isExpandable } from '../utils'
+import { has, copyArray, isNodeIndeterminate, callFetcher, isLeaf, isExpandable } from '../utils'
 
 const mutatingFields = [
   'checkable', 
@@ -267,7 +267,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     this.updateState(state)
   }
 
-  select = (node: TreeNode, ignoreEvent?: boolean, extendSelection?: boolean) => {
+  select = (node: TreeNode, ignoreEvent?: boolean, extendSelection?: boolean, ignoreUpdating?: boolean) => {
     const state = this.getState()
     const id: string = node.id
     const events: string[][] = []
@@ -298,7 +298,10 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
 
     this.focused = id
     this.selected.push(id)
-    this.updateState(state)
+
+    if (!ignoreUpdating) {
+      this.updateState(state)
+    }
 
     if (true !== ignoreEvent) {
       events.push(['onSelect', id])
@@ -558,11 +561,13 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
       if (obj.checked && !has(this.checked, obj.id)) {
         checked.push(obj.id)
       }
+
+      // TODO: last selected node will be selected
     })
 
     this.checked.push(...checked)
 
-    state.set(node.id, 'child', child)
+    state.set(node.id, 'child', node.child.concat(...child))
 
     if (cascadeCheck) {
       checked.forEach((id: string) => {
@@ -577,21 +582,15 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     return node
   }
 
-  loadChild = (node: TreeNode) => {
+  loadChild = (node: TreeNode): PromiseLike<TreeNode[]> | void => {
     const { fetchData, selectOnExpand } = this.props
-
-    if (!fetchData || !isFunction(fetchData)) {
-      return
-    }
-
-    const result = fetchData(node) 
-
-    if (!result || !result.then) {
-      throw new Error('`fetchData` property must return a Promise')
-    }
-
+    const result = callFetcher(node, fetchData)
     const state = this.getState()
     const id = node.id
+
+    if (!result) {
+      return
+    }
 
     state.set(id, 'loading', true)
 
@@ -607,28 +606,15 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
       this.fireEvent('onExpand', id, true)
 
       if (selectOnExpand) {
-        this.selected = this.selected.filter((nodeId: string) => {
-          const node = state.byId(nodeId)
-  
-          if (node) {
-            state.set(node.id, 'selected', false)
-            this.fireEvent('onUnSelect', node.id, true)
-          }
-  
-          return false
-        })
-
-        this.selected.push(id)
-        this.focused = id
-
-        state.set(id, 'selected', true)
-        this.fireEvent('onSelect', id, true)
+        this.select(node, false, false, true)
       }
 
       this.updateState(state)
     })
 
     this.updateState(state)
+
+    return result
   }
 
   renderNode = (node: TreeNode): ReactElement<Node> => {

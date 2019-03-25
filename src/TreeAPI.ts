@@ -3,9 +3,19 @@ import { TreeComponent } from './types/Tree'
 import { State } from './types/State'
 import { CheckboxValueConsistency, TreeAPI as ITreeAPI } from './types/Tree'
 
-import { isString, isNodeCheckable, isLeaf, has, remove } from './utils/index'
+import { isString, isNodeCheckable, isLeaf, isFunction, has, remove, callFetcher } from './utils/index'
 import { find } from './utils/find'
 import { walkBreadth, recurseDown } from './utils/traveler'
+
+/*
+this._api.append({selected: true}, 'AAAAAAa', true); // autoexpand
+this._api.append({selected: true}, {text: 'BBBBB', selected: true});
+this._api.append(/Angular/, (node) => {
+ return fetch(`/api/getChildren?id=${node.id}`).then(response => response.json())
+});
+
+*/
+
 
 export class TreeAPI implements ITreeAPI {
   readonly state: State
@@ -32,6 +42,31 @@ export class TreeAPI implements ITreeAPI {
 
       remove(indeterminate, child.id)
     })
+  }
+
+  _append(node: TreeNode, source: any): any {
+    if (isFunction(source)) {
+      const result = callFetcher(node, source)
+
+      if (result) {
+        this.state.set(node.id, 'loading', true)
+        this.tree.updateState(this.state)
+  
+        return result.then((nodes: any[]) => {
+          this.set(node.id, 'loading', false)
+          this.tree.appendChild(node.id, nodes)
+
+          if (true) {
+            this.tree.expand(node)
+          }
+
+          return nodes as TreeNode[]
+        })
+      }
+    } else {
+      this.tree.appendChild(node.id, source)
+      this.tree.updateState(this.state)
+    }
   }
 
   _remove(node: TreeNode): TreeNode | null {
@@ -99,6 +134,16 @@ export class TreeAPI implements ITreeAPI {
     this.tree.updateState(this.state)
 
     return node
+  }
+
+  append(query: any, source: any): any {
+    const node: TreeNode | null = this.find(query)
+
+    if (!node) {
+      return null
+    }
+
+    return this._append(node, source)
   }
 
   addClass(query: any, ...classNames: string[]): TreeNode | null {

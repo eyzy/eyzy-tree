@@ -9,7 +9,7 @@ const hasChild = (node: TreeNodeProps): boolean => {
 }
 
 const comparingKeys = [
-  'id', 'checked', 'selected', 'child', 'checked', 'expanded', 'hash'
+  'id', 'checked', 'selected', 'child', 'checked', 'expanded', 'hash', 'loading'
 ]
 
 export default class Node extends React.Component<TreeNodeProps> {

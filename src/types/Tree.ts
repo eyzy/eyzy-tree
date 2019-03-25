@@ -4,7 +4,7 @@ import { State } from './State'
 
 export interface TreeProps {
   data: Array<Node | string>
-  fetchData?: (node: TreeNode) => PromiseLike<Node[] | null>
+  fetchData?: (node: TreeNode) => PromiseLike<TreeNode[] | null>
   checkboxRenderer?: any
   arrowRenderer?: any
   textRenderer?: any
@@ -36,12 +36,14 @@ export interface TreeComponent {
   focused: string
   _state: State
 
+  loadChild: (node: TreeNode, customFetch: (node: TreeNode) => PromiseLike<TreeNode[] | null>) => PromiseLike<TreeNode[] | null> | void
+  appendChild: (id: string, nodes: any) => TreeNode | null
   fireEvent: (name: string, ...args: any) => void
   getState: () => State
   refreshIndeterminateState: (id: string, willBeChecked: boolean, shouldRender?: boolean) => void
   updateState: (state: State) => void
   check: (node: TreeNode) => void
-  select: (node: TreeNode, ignoreEvent?: boolean, extendSelection?: boolean) => void
+  select: (node: TreeNode, ignoreEvent?: boolean, extendSelection?: boolean, ignoreUpdating?: boolean) => void
   unselect: (node: TreeNode) => void
   uncheckAll: () => void
   unselectAll: () => void

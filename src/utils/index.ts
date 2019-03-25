@@ -2,6 +2,20 @@ import { TreeNode } from '../types/Node'
 
 export const hasOwnProp = {}.hasOwnProperty
 
+export function callFetcher(node: TreeNode, fn: any): PromiseLike<TreeNode[]> | undefined {
+  if (!fn || !isFunction(fn)) {
+    return
+  }
+
+  const result = fn(node) 
+
+  if (!result || !result.then) {
+    throw new TypeError('`fetchData` property must return a Promise')
+  }
+
+  return result
+}
+
 export function grapObjProps(obj: any, props: string[]) {
   return props.reduce((result: any, name: string) => {
     if (name in obj) {
