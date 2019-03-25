@@ -3,7 +3,7 @@ import { TreeComponent, TreeProps, TreeAPI } from '../types/Tree'
 import { TreeNode } from '../types/Node'
 import { State } from '../types/State'
 
-import { hasChild, recurseDown, removeArrItem } from './utils'
+import { hasChild } from './utils'
 
 export default class EyzyNode implements IEyzyNodeAPI {
   _tree: TreeComponent
@@ -42,24 +42,10 @@ export default class EyzyNode implements IEyzyNodeAPI {
     return result
   }
 
-  private _clearKeys(node: TreeNode): void {
-    const selected: string[] = this._tree.selected
-    const checked: string[] = this._tree.checked
-    const indeterminate: string[] = this._tree.indeterminate
-
-    recurseDown(node, (child: TreeNode) => {
-      if (child.selected) {
-        removeArrItem(selected, child.id)
-      }
-
-      if (child.checked) {
-        removeArrItem(checked, child.id)
-      }
-
-      removeArrItem(indeterminate, child.id)
-    }, true)
-
-    removeArrItem(indeterminate, node.id)
+  remove(): boolean {
+    return this._operate(false, (node: TreeNode, state: State): any => {
+      return this._api.remove(node.id)
+    })
   }
 
   empty(): boolean {
@@ -68,7 +54,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
         return false
       }
 
-      this._clearKeys(node)
+      this._api._clearKeys(node)
 
       state.set(node.id, {
         child: [],
@@ -97,7 +83,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
   }
 
   unselect(): boolean {
-    return this._operate(false, (node: TreeNode) => {
+    return this._operate(false, (node: TreeNode): any => {
       if (!node.selected) {
         return false
       }

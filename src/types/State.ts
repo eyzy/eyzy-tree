@@ -7,6 +7,7 @@ export interface State {
   updateRoot: (node: TreeNode, iterableValue?: IterableValue[]) => void
   updateLeaf: (node: TreeNode, iterableValue: IterableValue[]) => void
   set: (id: string, key: any, value?: any) => State
+  remove: (id: string) => TreeNode | null
   getIndex: (node: TreeNode) => number | null
   byId: (id: string) => TreeNode | null
   get: () => TreeNode[]

@@ -12,6 +12,7 @@ export interface IEyzyTreeAPI {
   isMultiple: boolean
   useMultiple: (isMultiple: boolean) => EyzyTreeAPI
 
+  remove: (criteria: any) => boolean
   empty: (criteria: any) => boolean
   select: (extendSelection?: boolean) => boolean
   unselect: (criteria: any) => boolean
@@ -44,6 +45,7 @@ export interface IEyzyNodeAPI {
   check: () => boolean
   uncheck: () => boolean
   empty: () => boolean
+  remove: () => boolean
   disable: () => boolean
   enable: () => boolean
   disableCheckbox: () => boolean
@@ -54,12 +56,4 @@ export interface IEyzyNodeAPI {
   hasClass: (className: string) => any
   addClass: (...classNames: string[]) => boolean
   removeClass: (...classNames: string[]) => boolean
-
-  // TODO
-  next?: () => IEyzyTreeAPI | null
-  prev?: () => IEyzyTreeAPI | null
-  parent?: () => IEyzyTreeAPI | null
-  recurseUp?: (node: IEyzyTreeAPI) => void 
-  recurseDown?: (node: IEyzyTreeAPI) => void
-  find?: (criteria: any) => void
 }

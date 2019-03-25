@@ -14,7 +14,7 @@ import { TreeAPI } from '../TreeAPI'
 
 import State from '../utils/state'
 import uuid from '../utils/uuid'
-import { grapObjProps } from '../utils/index'
+import { grapObjProps, isString } from '../utils/index'
 import { parseNode } from '../utils/parser'
 import { shallowEqual } from '../utils/shallowEqual'
 import { recurseDown, traverseUp, getFirstChild, flatMap } from '../utils/traveler'
@@ -100,17 +100,21 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     }
   }
 
-  fireEvent = (name: string, id: string, ...args: any) => {
+  fireEvent = (name: string, id: string | TreeNode, ...args: any) => {
     const eventCb = this.props[name]
 
     if (!eventCb) {
       return
     }
 
-    const node = this.getState().byId(id)
+    if (isString(id)) {
+      const node = this.getState().byId(id as string)
 
-    if (node) {
-      eventCb.call(null, node, ...args)
+      if (node) {
+        eventCb.call(null, node, ...args)
+      }
+    } else {
+      eventCb.call(null, id, ...args)
     }
   }
 

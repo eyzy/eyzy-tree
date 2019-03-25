@@ -81,7 +81,7 @@ export default class State {
     }
   }
 
-  updateLeaf(node: TreeNode, iterableValue: IterableValue[]) {
+  updateLeaf(node: TreeNode, iterableValue?: IterableValue[]) {
     const root: TreeNode | null = rootElement(node)
     const parentNode: TreeNode | null | undefined = node.parent
 
@@ -147,6 +147,32 @@ export default class State {
     }
   
     return null
+  }
+
+  remove(id: string): TreeNode | null {
+    const node: TreeNode | null = this.byId(id)
+
+    if (!node) {
+      return null
+    }
+
+    const index: number | null = this.getIndex(node)
+
+    if (null === index || !~index) {
+      return null
+    }
+
+    const parent: TreeNode | null = node.parent
+
+    if (!parent) {
+      this.nodes.splice(index, 1)
+    } else {
+      const child = copyArray(parent.child)
+      child.splice(index, 1)
+      this.set(parent.id, 'child', child)
+    }
+
+    return node
   }
 
   byId(id: string): TreeNode | null {

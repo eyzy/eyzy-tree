@@ -60,6 +60,14 @@ export function copyObject(obj: any) {
   return newObj
 }
 
+export function remove(targetArr: any[], targetItem: any) {
+  const index: number = targetArr.indexOf(targetItem)
+
+  if (~index) {
+    targetArr.splice(index, 1)
+  }
+}
+
 export function isRoot(node: TreeNode): boolean {
   return node && !node.parent
 }

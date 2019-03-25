@@ -66,6 +66,10 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     return new EyzyNodeAPI(result, this._api)
   }
 
+  remove(criteria: any): boolean {
+    return callMethod(this, 'remove', criteria)
+  }
+
   empty(criteria: any): boolean {
     return callMethod(this, 'empty', criteria)
   }

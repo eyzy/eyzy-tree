@@ -36,6 +36,7 @@ export interface TreeComponent {
   focused: string
   _state: State
 
+  fireEvent: (name: string, ...args: any) => void
   getState: () => State
   refreshIndeterminateState: (id: string, willBeChecked: boolean, shouldRender?: boolean) => void
   updateState: (state: State) => void
@@ -53,10 +54,12 @@ export interface TreeAPI {
   readonly state: State
   readonly tree: TreeComponent
 
+  _clearKeys: (node: TreeNode) => void
   _data: (node: TreeNode, key?: any, value?: any) => any
   _hasClass: (node: TreeNode, className: string) => boolean
   _addClass: (node: TreeNode, ...classNames: string[]) => TreeNode
   _removeClass: (node: TreeNode, ...classNames: string[]) => TreeNode
+  _remove: (node: TreeNode) => TreeNode | null  
 
   data: (criteria: any, key?: any, value?: any) => any
   hasClass: (criteria: any, className: string) => boolean
@@ -68,5 +71,6 @@ export interface TreeAPI {
   findAll: (...criterias: any) => TreeNode[]
   selected: () => TreeNode[] | TreeNode | null
   checked: (valueConsistsOf?: CheckboxValueConsistency, ignoreDisabled?: boolean) => TreeNode[]
+  remove: (query: any) => TreeNode | null  
   toArray: () => TreeNode[]
 }

@@ -3,9 +3,9 @@ import { TreeComponent } from './types/Tree'
 import { State } from './types/State'
 import { CheckboxValueConsistency, TreeAPI as ITreeAPI } from './types/Tree'
 
-import { isString, isNodeCheckable, isLeaf, has } from './utils/index'
+import { isString, isNodeCheckable, isLeaf, has, remove } from './utils/index'
 import { find } from './utils/find'
-import { walkBreadth } from './utils/traveler'
+import { walkBreadth, recurseDown } from './utils/traveler'
 
 export class TreeAPI implements ITreeAPI {
   readonly state: State
@@ -14,6 +14,36 @@ export class TreeAPI implements ITreeAPI {
   constructor(tree: TreeComponent, state: State) {
     this.tree = tree
     this.state = state
+  }
+
+  _clearKeys(node: TreeNode): void {
+    const selected: string[] = this.tree.selected
+    const checked: string[] = this.tree.checked
+    const indeterminate: string[] = this.tree.indeterminate
+
+    recurseDown(node, (child: TreeNode) => {
+      if (child.selected) {
+        remove(selected, child.id)
+      }
+
+      if (child.checked) {
+        remove(checked, child.id)
+      }
+
+      remove(indeterminate, child.id)
+    })
+  }
+
+  _remove(node: TreeNode): TreeNode | null {
+    const removedNode: TreeNode | null = this.state.remove(node.id)
+
+    if (removedNode) {
+      this._clearKeys(removedNode)
+      this.tree.updateState(this.state)
+      this.tree.fireEvent('onRemove', removedNode)
+    }
+
+    return removedNode
   }
 
   _addClass(node: TreeNode, ...classNames: string[]): TreeNode {
@@ -184,6 +214,16 @@ export class TreeAPI implements ITreeAPI {
     }
 
     return checked
+  }
+
+  remove(query: any): TreeNode | null {
+    const node: TreeNode | null = this.find(query)
+
+    if (!node) {
+      return null
+    }
+
+    return this._remove(node)
   }
 
   // TODO:
