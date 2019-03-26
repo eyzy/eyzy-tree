@@ -33,6 +33,10 @@
       <div>
         <button id="test-empty">Empty</button>
       </div>
+      <div>
+        <button id="test-append">Append</button>&nbsp;
+        <button id="test-prepend">Prepend</button>
+      </div>
     </div>
 
     <script>
@@ -47,7 +51,37 @@
 
         componentDidMount() {
           document.querySelector('#test-find').addEventListener('click', this.testFind)
+          document.querySelector('#test-append').addEventListener('click', this.testAppend)
+          document.querySelector('#test-prepend').addEventListener('click', this.testPrepend)
           document.querySelector('#test-empty').addEventListener('click', this.testEmpty)
+        }
+
+        testPrepend = () => {
+          // const node = this.api.find(node => Math.random() > 0.8).result[0]
+          const node = this.api.find('Babel').result[0]
+
+          this._simpleAPI.prepend(node, (node) => {
+            return new Promise(resolve => {
+              setTimeout(_ => {
+                resolve([`${node.text} - Prepended 1`, `${node.text} - Prepended 2`, `${node.text} - Prepended 3`])
+              }, 1500)
+            })
+          })
+          console.log(node)
+        }
+
+        testAppend = () => {
+          // const node = this.api.find(node => Math.random() > 0.8).result[0]
+          const node = this.api.find('Babel').result[0]
+
+          this._simpleAPI.append(node, (node) => {
+            return new Promise(resolve => {
+              setTimeout(_ => {
+                resolve([`${node.text} - Item 1`, `${node.text} - Item 2`, `${node.text} - Item 3`])
+              }, 1500)
+            })
+          }, true)
+          console.log(node)
         }
 
         testEmpty = () => {

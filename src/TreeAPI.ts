@@ -6,6 +6,7 @@ import { CheckboxValueConsistency, TreeAPI as ITreeAPI } from './types/Tree'
 import { isString, isNodeCheckable, isLeaf, isFunction, has, remove, callFetcher } from './utils/index'
 import { find } from './utils/find'
 import { walkBreadth, recurseDown } from './utils/traveler'
+import { parseNode } from './utils/parser';
 
 /*
 this._api.append({selected: true}, 'AAAAAAa', true); // autoexpand
@@ -16,7 +17,6 @@ this._api.append(/Angular/, (node) => {
 
 */
 
-
 export class TreeAPI implements ITreeAPI {
   readonly state: State
   readonly tree: TreeComponent
@@ -24,6 +24,17 @@ export class TreeAPI implements ITreeAPI {
   constructor(tree: TreeComponent, state: State) {
     this.tree = tree
     this.state = state
+  }
+
+  _loadItems(node: TreeNode, source: (node: TreeNode) => PromiseLike<any>): PromiseLike<TreeNode[]> {
+    const result = callFetcher(node, source)
+
+    this.set(node.id, 'loading', true)
+
+    return result.then((items: any) => {
+      this.state.set(node.id, 'loading', false)
+      return parseNode(items)
+    })
   }
 
   _clearKeys(node: TreeNode): void {
@@ -44,28 +55,45 @@ export class TreeAPI implements ITreeAPI {
     })
   }
 
-  _append(node: TreeNode, source: any): any {
+  _append(node: TreeNode, source: any, expand?: boolean): any {
+    const id: string = node.id
+
     if (isFunction(source)) {
-      const result = callFetcher(node, source)
+      return this._loadItems(node, source).then((nodes: TreeNode[]) => {
+        this.tree.addChild(id, nodes)
 
-      if (result) {
-        this.state.set(node.id, 'loading', true)
-        this.tree.updateState(this.state)
-  
-        return result.then((nodes: any[]) => {
-          this.set(node.id, 'loading', false)
-          this.tree.appendChild(node.id, nodes)
+        const updatedNode: TreeNode | null = this.state.byId(id)
 
-          if (true) {
-            this.tree.expand(node)
-          }
-
-          return nodes as TreeNode[]
-        })
-      }
+        if (updatedNode && expand && !node.expanded) {
+          this.tree.expand(updatedNode)
+        } else {
+          this.tree.updateState()
+        }
+      })
     } else {
-      this.tree.appendChild(node.id, source)
-      this.tree.updateState(this.state)
+      this.tree.addChild(id, source)
+      this.tree.updateState()
+    }
+  }
+
+  _prepend(node: TreeNode, source: any, expand?: boolean): any {
+    const id: string = node.id
+
+    if (isFunction(source)) {
+      return this._loadItems(node, source).then((nodes: TreeNode[]) => {
+        this.tree.addChild(id, nodes, 'PREPEND')
+
+        const updatedNode: TreeNode | null = this.state.byId(id)
+
+        if (updatedNode && expand && !node.expanded) {
+          this.tree.expand(updatedNode)
+        } else {
+          this.tree.updateState()
+        }
+      })
+    } else {
+      this.tree.addChild(id, source)
+      this.tree.updateState()
     }
   }
 
@@ -74,7 +102,7 @@ export class TreeAPI implements ITreeAPI {
 
     if (removedNode) {
       this._clearKeys(removedNode)
-      this.tree.updateState(this.state)
+      this.tree.updateState()
       this.tree.fireEvent('onRemove', removedNode)
     }
 
@@ -91,7 +119,7 @@ export class TreeAPI implements ITreeAPI {
     })
 
     this.state.set(node.id, 'className', className.join(' '))
-    this.tree.updateState(this.state)
+    this.tree.updateState()
 
     return node
   }
@@ -103,7 +131,7 @@ export class TreeAPI implements ITreeAPI {
       .join(' ')
 
     this.state.set(node.id, 'className', className)
-    this.tree.updateState(this.state)
+    this.tree.updateState()
 
     return node
   }
@@ -131,19 +159,29 @@ export class TreeAPI implements ITreeAPI {
     }
 
     this.state.set(node.id, 'data', data)
-    this.tree.updateState(this.state)
+    this.tree.updateState()
 
     return node
   }
 
-  append(query: any, source: any): any {
+  append(query: any, source: any, expand?: boolean): any {
     const node: TreeNode | null = this.find(query)
 
     if (!node) {
       return null
     }
 
-    return this._append(node, source)
+    return this._append(node, source, expand)
+  }
+
+  prepend(query: any, source: any, expand?: boolean): any {
+    const node: TreeNode | null = this.find(query)
+
+    if (!node) {
+      return null
+    }
+
+    return this._prepend(node, source, expand)
   }
 
   addClass(query: any, ...classNames: string[]): TreeNode | null {
@@ -195,7 +233,7 @@ export class TreeAPI implements ITreeAPI {
 
     // TODO: selected, checked should be dublicated in the tree state
     this.state.set(node.id, key, value)
-    this.tree.updateState(this.state)
+    this.tree.updateState()
 
     return true
   }

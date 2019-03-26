@@ -2,9 +2,9 @@ import { TreeNode } from '../types/Node'
 
 export const hasOwnProp = {}.hasOwnProperty
 
-export function callFetcher(node: TreeNode, fn: any): PromiseLike<TreeNode[]> | undefined {
+export function callFetcher(node: TreeNode, fn: (node: TreeNode) => PromiseLike<any>): PromiseLike<any> {
   if (!fn || !isFunction(fn)) {
-    return
+    throw new TypeError('`fetch` must be a Function')
   }
 
   const result = fn(node) 

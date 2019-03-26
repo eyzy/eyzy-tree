@@ -84,7 +84,8 @@
     }
 
     &.loading {
-      > .node-arrow {
+      > .node-arrow,
+      > .node-noop {
         position: relative;
 
         &:after {

@@ -206,7 +206,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     this.indeterminate = indeterminate
 
     if (false !== shouldRender) {
-      this.updateState(state)
+      this.updateState()
     }
 
     nodesForEvent.forEach((id: string) => {
@@ -228,7 +228,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     return this.getState().byId(lastSelectedNode)
   }
 
-  updateState = (state: StateType) => {
+  updateState = (state: StateType = this._state) => {
     this.setState({ nodes: state.get() })
   }
 
@@ -240,7 +240,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
       return false
     })
 
-    this.updateState(state)
+    this.updateState()
   }
 
   unselect = (node: TreeNode) => {
@@ -264,7 +264,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
       return false
     })
 
-    this.updateState(state)
+    this.updateState()
   }
 
   select = (node: TreeNode, ignoreEvent?: boolean, extendSelection?: boolean, ignoreUpdating?: boolean) => {
@@ -300,7 +300,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     this.selected.push(id)
 
     if (!ignoreUpdating) {
-      this.updateState(state)
+      this.updateState()
     }
 
     if (true !== ignoreEvent) {
@@ -341,7 +341,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
       return id
     })
 
-    this.updateState(state)
+    this.updateState()
  
     fireEvents.forEach(([name, id]) => {
       this.fireEvent(name, id)
@@ -365,7 +365,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
       return false
     })
 
-    this.updateState(state)
+    this.updateState()
   }
 
   check = (node: TreeNode) => {
@@ -393,7 +393,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
       this.refreshIndeterminateState(node.id, willBeChecked)
       this.fireEvent('onCheck', id, willBeChecked)
     } else {
-      this.updateState(state)
+      this.updateState()
       this.fireEvent('onCheck', id, willBeChecked)
     }
   }
@@ -420,7 +420,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
       this.select(node)
     }
 
-    this.updateState(state)
+    this.updateState()
     this.fireEvent('onExpand', node.id, !node.expanded)
   }
 
@@ -534,7 +534,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     }
   }
 
-  appendChild = (id: string, nodes: any[]): TreeNode | null => {
+  addChild = (id: string, nodes: any[], strategy?: string): TreeNode | null => {
     const state = this.getState()
     const node = state.byId(id)
 
@@ -567,7 +567,11 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
 
     this.checked.push(...checked)
 
-    state.set(node.id, 'child', node.child.concat(...child))
+    if (!strategy) {
+      state.set(node.id, 'child', node.child.concat(...child))
+    } else if ('PREPEND' === strategy) {
+      state.set(node.id, 'child', child.concat(node.child))
+    }
 
     if (cascadeCheck) {
       checked.forEach((id: string) => {
@@ -584,18 +588,19 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
 
   loadChild = (node: TreeNode): PromiseLike<TreeNode[]> | void => {
     const { fetchData, selectOnExpand } = this.props
+
+    if (!fetchData) {
+      return
+    }
+
     const result = callFetcher(node, fetchData)
     const state = this.getState()
     const id = node.id
 
-    if (!result) {
-      return
-    }
-
     state.set(id, 'loading', true)
 
     result.then((nodes: any[]) => {
-      this.appendChild(id, nodes)
+      this.addChild(id, nodes)
 
       state.set(id, {
         loading: false,
@@ -609,10 +614,10 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
         this.select(node, false, false, true)
       }
 
-      this.updateState(state)
+      this.updateState()
     })
 
-    this.updateState(state)
+    this.updateState()
 
     return result
   }
