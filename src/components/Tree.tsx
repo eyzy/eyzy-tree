@@ -534,7 +534,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     }
   }
 
-  addChild = (id: string, nodes: any[], strategy?: string): TreeNode | null => {
+  addChild = (id: string, nodes: any[], insertIndex?: number): TreeNode | null => {
     const state = this.getState()
     const node = state.byId(id)
 
@@ -543,11 +543,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     }
 
     const parentDepth: number = node.depth || 0
-    const child = parseNode(nodes).map((obj: TreeNode) => {
-      obj.parent = node
-      return obj
-    })
-
+    const child = parseNode(nodes, node)
     const cascadeCheck: boolean = true !== this.props.noCascade
     const checked: string[] = []
 
@@ -567,11 +563,14 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
 
     this.checked.push(...checked)
 
-    if (!strategy) {
-      state.set(node.id, 'child', node.child.concat(...child))
-    } else if ('PREPEND' === strategy) {
-      state.set(node.id, 'child', child.concat(node.child))
-    }
+    const index: number = undefined === insertIndex 
+      ? node.child.length
+      : insertIndex
+
+    const childNodes: TreeNode[] = copyArray(node.child)
+
+    childNodes.splice(index, 0, ...child)
+    state.set(node.id, 'child', childNodes)
 
     if (cascadeCheck) {
       checked.forEach((id: string) => {

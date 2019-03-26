@@ -37,7 +37,7 @@ export interface TreeComponent {
   _state: State
 
   loadChild: (node: TreeNode, customFetch: (node: TreeNode) => PromiseLike<TreeNode[] | null>) => PromiseLike<TreeNode[] | null> | void
-  addChild: (id: string, nodes: any, strategy?: string) => TreeNode | null
+  addChild: (id: string, nodes: any, insertIndex?: number) => TreeNode | null
   fireEvent: (name: string, ...args: any) => void
   getState: () => State
   refreshIndeterminateState: (id: string, willBeChecked: boolean, shouldRender?: boolean) => void

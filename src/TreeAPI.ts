@@ -55,12 +55,12 @@ export class TreeAPI implements ITreeAPI {
     })
   }
 
-  _append(node: TreeNode, source: any, expand?: boolean): any {
+  _addChild(node: TreeNode, source: any, expand?: boolean, insertIndex?: number): any {
     const id: string = node.id
 
     if (isFunction(source)) {
       return this._loadItems(node, source).then((nodes: TreeNode[]) => {
-        this.tree.addChild(id, nodes)
+        this.tree.addChild(id, nodes, insertIndex)
 
         const updatedNode: TreeNode | null = this.state.byId(id)
 
@@ -76,25 +76,12 @@ export class TreeAPI implements ITreeAPI {
     }
   }
 
+  _append(node: TreeNode, source: any, expand?: boolean): any {
+    return this._addChild(node, source, expand)
+  }
+
   _prepend(node: TreeNode, source: any, expand?: boolean): any {
-    const id: string = node.id
-
-    if (isFunction(source)) {
-      return this._loadItems(node, source).then((nodes: TreeNode[]) => {
-        this.tree.addChild(id, nodes, 'PREPEND')
-
-        const updatedNode: TreeNode | null = this.state.byId(id)
-
-        if (updatedNode && expand && !node.expanded) {
-          this.tree.expand(updatedNode)
-        } else {
-          this.tree.updateState()
-        }
-      })
-    } else {
-      this.tree.addChild(id, source)
-      this.tree.updateState()
-    }
+    return this._addChild(node, source, expand, 0)
   }
 
   _remove(node: TreeNode): TreeNode | null {

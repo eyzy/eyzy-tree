@@ -1,16 +1,13 @@
-import { Node, TreeNode } from '../types/Node'
+import { TreeNode } from '../types/Node'
 import uuid from './uuid'
+import { isArray } from './index'
 
-export function parseNode(data: Array<string | Node>, parentNode?: TreeNode | null): TreeNode[] {
-  if (!data || !Array.isArray(data)) {
-    return []
+export function parseNode(data: any, parentNode?: TreeNode | null): TreeNode[] {
+  if (!isArray(data)) {
+    return parseNode([data], parentNode)
   }
 
   const parent = parentNode || null
-
-  if ('string' === typeof data) {
-    return parseNode([data], parent)
-  }
 
   return data.map((node: TreeNode): TreeNode => {
     if ('string' === typeof node) {

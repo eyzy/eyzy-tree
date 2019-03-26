@@ -131,7 +131,7 @@ export default class Node extends React.Component<TreeNodeProps> {
           </span>
         </div>
 
-        { hasChild(this.props) && expanded &&
+        { children && expanded &&
           <ul className="node-child">{ children }</ul>
         }
       </li>
