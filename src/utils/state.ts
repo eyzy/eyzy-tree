@@ -127,7 +127,7 @@ export default class State {
 
     if (parent && parent.child) {
       let childIndex: number | null = null
-  
+
       parent.child.some((node: TreeNode, i: number): boolean => {
         if (nodeId === node.id) {
           childIndex = i
@@ -147,6 +147,17 @@ export default class State {
     }
   
     return null
+  }
+
+  insertAt(parent: TreeNode | null, nodes: TreeNode[], index: number): TreeNode[] | TreeNode {
+    if (parent && parent.child) {
+      const child: TreeNode[] = copyArray(parent.child)
+      child.splice(index, 0, ...nodes)
+    } else {
+      this.nodes.splice(index, 0, ...nodes)
+    }
+
+    return nodes
   }
 
   remove(id: string): TreeNode | null {

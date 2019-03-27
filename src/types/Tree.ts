@@ -56,7 +56,7 @@ export interface TreeAPI {
   readonly state: State
   readonly tree: TreeComponent
 
-  _clearKeys: (node: TreeNode) => void
+  _clearKeys: (node: TreeNode, excludeSelf: boolean) => void
   _data: (node: TreeNode, key?: any, value?: any) => any
   _hasClass: (node: TreeNode, className: string) => boolean
   _addClass: (node: TreeNode, ...classNames: string[]) => TreeNode

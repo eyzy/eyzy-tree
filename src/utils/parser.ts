@@ -10,7 +10,7 @@ export function parseNode(data: any, parentNode?: TreeNode | null): TreeNode[] {
   const parent = parentNode || null
 
   return data.map((node: TreeNode): TreeNode => {
-    if ('string' === typeof node) {
+    if ('string' === typeof node || 'number' === typeof node) {
       return {
         id: uuid(),
         text: node,

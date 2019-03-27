@@ -9,6 +9,7 @@ export interface State {
   set: (id: string, key: any, value?: any) => State
   remove: (id: string) => TreeNode | null
   getIndex: (node: TreeNode) => number | null
+  insertAt: (parent: TreeNode | null, nodes: TreeNode[] | TreeNode, index: number) => TreeNode[] | TreeNode
   byId: (id: string) => TreeNode | null
   get: () => TreeNode[]
   toArray: () => TreeNode[]

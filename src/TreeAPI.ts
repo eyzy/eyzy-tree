@@ -8,15 +8,6 @@ import { find } from './utils/find'
 import { walkBreadth, recurseDown } from './utils/traveler'
 import { parseNode } from './utils/parser';
 
-/*
-this._api.append({selected: true}, 'AAAAAAa', true); // autoexpand
-this._api.append({selected: true}, {text: 'BBBBB', selected: true});
-this._api.append(/Angular/, (node) => {
- return fetch(`/api/getChildren?id=${node.id}`).then(response => response.json())
-});
-
-*/
-
 export class TreeAPI implements ITreeAPI {
   readonly state: State
   readonly tree: TreeComponent
@@ -26,18 +17,23 @@ export class TreeAPI implements ITreeAPI {
     this.state = state
   }
 
-  _loadItems(node: TreeNode, source: (node: TreeNode) => PromiseLike<any>): PromiseLike<TreeNode[]> {
+  _loadItems(node: TreeNode, source: (node: TreeNode) => PromiseLike<any>, skipLoading?: boolean): PromiseLike<TreeNode[]> {
     const result = callFetcher(node, source)
 
-    this.set(node.id, 'loading', true)
+    if (!skipLoading) {
+      this.set(node.id, 'loading', true)
+    }
 
     return result.then((items: any) => {
-      this.state.set(node.id, 'loading', false)
+      if (!skipLoading) {
+        this.state.set(node.id, 'loading', false)
+      }
+
       return parseNode(items)
     })
   }
 
-  _clearKeys(node: TreeNode): void {
+  _clearKeys(node: TreeNode, includeSelf: boolean = false): void {
     const selected: string[] = this.tree.selected
     const checked: string[] = this.tree.checked
     const indeterminate: string[] = this.tree.indeterminate
@@ -52,7 +48,35 @@ export class TreeAPI implements ITreeAPI {
       }
 
       remove(indeterminate, child.id)
-    })
+    }, includeSelf)
+  }
+
+  _insertAt(targetNode: TreeNode, source: any, insertIndex: number): TreeNode[] | PromiseLike<TreeNode[]> {
+    const parent: TreeNode | null = targetNode.parent
+
+    if (isFunction(source)) {
+      return this._loadItems(targetNode, source, true).then((nodes: TreeNode[]) => {
+        this.state.insertAt(
+          parent ? parent : null,
+          nodes,
+          insertIndex
+        )
+        this.tree.updateState()
+
+        return nodes
+      })
+    } else {
+      const nodes = parseNode(source)
+
+      this.state.insertAt(
+        parent ? parent : null,
+        nodes,
+        insertIndex
+      )
+      this.tree.updateState()
+
+      return nodes
+    }
   }
 
   _addChild(node: TreeNode, source: any, expand?: boolean, insertIndex?: number): any {
@@ -149,6 +173,38 @@ export class TreeAPI implements ITreeAPI {
     this.tree.updateState()
 
     return node
+  }
+
+  after(query: any, source: any): TreeNode[] | PromiseLike<TreeNode[]> | null {
+    const node: TreeNode | null = this.find(query)
+
+    if (!node) {
+      return null
+    }
+
+    const insertIndex: number | null = this.state.getIndex(node)
+
+    if (!insertIndex) {
+      return null
+    }
+
+    return this._insertAt(node, source, insertIndex + 1)
+  }
+
+  before(query: any, source: any): TreeNode[] | PromiseLike<TreeNode[]> | null {
+    const node: TreeNode | null = this.find(query)
+
+    if (!node) {
+      return null
+    }
+
+    const insertIndex: number | null = this.state.getIndex(node)
+
+    if (!insertIndex) {
+      return null
+    }
+
+    return this._insertAt(node, source, insertIndex)
   }
 
   append(query: any, source: any, expand?: boolean): any {

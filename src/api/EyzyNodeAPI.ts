@@ -54,7 +54,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
         return false
       }
 
-      this._api._clearKeys(node)
+      this._api._clearKeys(node, true)
 
       state.set(node.id, {
         child: [],
