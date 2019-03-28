@@ -1,36 +1,23 @@
 import { TreeNode } from './types/Node'
 import { TreeComponent } from './types/Tree'
 import { State } from './types/State'
+import { Core } from './types/Core'
 import { CheckboxValueConsistency, TreeAPI as ITreeAPI } from './types/Tree'
 
-import { isString, isNodeCheckable, isLeaf, isFunction, has, remove, callFetcher } from './utils/index'
+import { isString, isNodeCheckable, isLeaf, isFunction, has, remove } from './utils/index'
 import { find } from './utils/find'
 import { walkBreadth, recurseDown } from './utils/traveler'
-import { parseNode } from './utils/parser';
+import { parseNode } from './utils/parser'
 
 export class TreeAPI implements ITreeAPI {
   readonly state: State
   readonly tree: TreeComponent
+  private core: Core
 
-  constructor(tree: TreeComponent, state: State) {
+  constructor(tree: TreeComponent, state: State, core: Core) {
     this.tree = tree
     this.state = state
-  }
-
-  _loadItems(node: TreeNode, source: (node: TreeNode) => PromiseLike<any>, skipLoading?: boolean): PromiseLike<TreeNode[]> {
-    const result = callFetcher(node, source)
-
-    if (!skipLoading) {
-      this.set(node.id, 'loading', true)
-    }
-
-    return result.then((items: any) => {
-      if (!skipLoading) {
-        this.state.set(node.id, 'loading', false)
-      }
-
-      return parseNode(items)
-    })
+    this.core = core
   }
 
   _clearKeys(node: TreeNode, includeSelf: boolean = false): void {
@@ -55,7 +42,7 @@ export class TreeAPI implements ITreeAPI {
     const parent: TreeNode | null = targetNode.parent
 
     if (isFunction(source)) {
-      return this._loadItems(targetNode, source, true).then((nodes: TreeNode[]) => {
+      return this.core.load(targetNode, source, true).then((nodes: TreeNode[]) => {
         this.state.insertAt(
           parent ? parent : null,
           nodes,
@@ -83,7 +70,7 @@ export class TreeAPI implements ITreeAPI {
     const id: string = node.id
 
     if (isFunction(source)) {
-      return this._loadItems(node, source).then((nodes: TreeNode[]) => {
+      return this.core.load(node, source).then((nodes: TreeNode[]) => {
         this.tree.addChild(id, nodes, insertIndex)
 
         const updatedNode: TreeNode | null = this.state.byId(id)
@@ -114,7 +101,7 @@ export class TreeAPI implements ITreeAPI {
     if (removedNode) {
       this._clearKeys(removedNode)
       this.tree.updateState()
-      this.tree.fireEvent('onRemove', removedNode)
+      this.tree.$emit('onRemove', removedNode)
     }
 
     return removedNode

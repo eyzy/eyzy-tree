@@ -9,10 +9,12 @@ import NodeComponent from './TreeNode'
 import { Node, TreeNode } from '../types/Node'
 import { TreeProps, TreeComponent } from '../types/Tree'
 import { State as StateType } from '../types/State'
+import { Core } from '../types/Core'
 
 import { TreeAPI } from '../TreeAPI'
+import State from '../core/State'
+import CoreTree from '../core/Core'
 
-import State from '../utils/state'
 import uuid from '../utils/uuid'
 import { grapObjProps, isString } from '../utils/index'
 import { parseNode } from '../utils/parser'
@@ -44,6 +46,8 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
 
   focused: string
 
+  core: Core
+
   // tslint:disable-next-line
   _state: StateType
 
@@ -65,6 +69,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     })
 
     this._state = new State(data)
+    this.core = new CoreTree(this, this._state)
 
     this.checked.forEach((id: string) => {
       const node = this._state.byId(id)
@@ -95,12 +100,12 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
   componentDidMount() {
     if (this.props.onReady) {
       this.props.onReady(
-        new TreeAPI(this as TreeComponent, this._state)
+        new TreeAPI(this as TreeComponent, this._state, this.core)
       )
     }
   }
 
-  fireEvent = (name: string, id: string | TreeNode, ...args: any) => {
+  $emit = (name: string, id: string | TreeNode, ...args: any) => {
     const eventCb = this.props[name]
 
     if (!eventCb) {
@@ -210,7 +215,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     }
 
     nodesForEvent.forEach((id: string) => {
-      this.fireEvent('onCheck', id, willBeChecked)
+      this.$emit('onCheck', id, willBeChecked)
     })
   }
 
@@ -258,7 +263,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
 
       if (state.byId(id)) {
         state.set(id, 'selected', false)
-        this.fireEvent('onUnSelect', id)
+        this.$emit('onUnSelect', id)
       }
 
       return false
@@ -305,7 +310,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
 
     if (true !== ignoreEvent) {
       events.push(['onSelect', id])
-      events.forEach((event: string[]) => this.fireEvent(event[0], event[1]))
+      events.forEach((event: string[]) => this.$emit(event[0], event[1]))
     }
   }
 
@@ -323,19 +328,19 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     const end = Math.max(focusedIndex, targetIndex) + 1
     const state = this.getState()
     const willBeSelected: string[] = nodes.slice(start, end).map((node: TreeNode) => node.id) 
-    const fireEvents: string[][] = []
+    const $emits: string[][] = []
 
     this.selected.forEach((id: string) => {
       if (!has(willBeSelected, id)) {
         state.set(id, 'selected', false)
-        fireEvents.push(['onUnSelect', id])
+        $emits.push(['onUnSelect', id])
       }
     })
 
     this.selected = willBeSelected.map((id: string) => {
       if (!has(this.selected, id)) {
         state.set(id, 'selected', true)
-        fireEvents.push(['onSelect', id])
+        $emits.push(['onSelect', id])
       }
 
       return id
@@ -343,8 +348,8 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
 
     this.updateState()
  
-    fireEvents.forEach(([name, id]) => {
-      this.fireEvent(name, id)
+    $emits.forEach(([name, id]) => {
+      this.$emit(name, id)
     })
   }
 
@@ -391,10 +396,10 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
 
     if (this.props.noCascade !== true) {
       this.refreshIndeterminateState(node.id, willBeChecked)
-      this.fireEvent('onCheck', id, willBeChecked)
+      this.$emit('onCheck', id, willBeChecked)
     } else {
       this.updateState()
-      this.fireEvent('onCheck', id, willBeChecked)
+      this.$emit('onCheck', id, willBeChecked)
     }
   }
 
@@ -421,11 +426,11 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     }
 
     this.updateState()
-    this.fireEvent('onExpand', node.id, !node.expanded)
+    this.$emit('onExpand', node.id, !node.expanded)
   }
 
   handleDoubleClick = (node: TreeNode) => {
-    this.fireEvent('onDoubleClick', node.id)
+    this.$emit('onDoubleClick', node.id)
 
     if (node.disabled || isLeaf(node) || this.props.expandOnSelect) {
       return
@@ -607,7 +612,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
         isBatch: false
       })
 
-      this.fireEvent('onExpand', id, true)
+      this.$emit('onExpand', id, true)
 
       if (selectOnExpand) {
         this.select(node, false, false, true)

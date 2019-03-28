@@ -1,13 +1,13 @@
 import { TreeNode } from '../types/Node'
 import { IterableValue, State as StateType } from '../types/State'
 
-import { recurseDown, rootElement } from './traveler'
+import { recurseDown, rootElement } from '../utils/traveler'
 import {
   isRoot,
   copyObject,
   copyArray,
   hasOwnProp
-} from './index'
+} from '../utils/index'
 
 function iterable(key: any, value: any): IterableValue[] {
   if ('string' === typeof key) {
