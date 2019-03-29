@@ -66,7 +66,7 @@
                 resolve([`${node.text} - Prepended 1`, `${node.text} - Prepended 2`, `${node.text} - Prepended 3`])
               }, 1500)
             })
-          })
+          }, {loading: false, expand: true})
           console.log(node)
         }
 
@@ -80,7 +80,7 @@
                 resolve([`${node.text} - Item 1`, `${node.text} - Item 2`, `${node.text} - Item 3`])
               }, 1500)
             })
-          }, true)
+          }, {expand: true})
           console.log(node)
         }
 

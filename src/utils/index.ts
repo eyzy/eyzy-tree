@@ -2,15 +2,15 @@ import { TreeNode } from '../types/Node'
 
 export const hasOwnProp = {}.hasOwnProperty
 
-export function callFetcher(node: TreeNode, fn: (node: TreeNode) => PromiseLike<any>): PromiseLike<any> {
-  if (!fn || !isFunction(fn)) {
-    throw new TypeError('`fetch` must be a Function')
+export function callFetcher(node: TreeNode, fn: any): PromiseLike<any> {
+  if (!isCallable(fn)) {
+    throw new TypeError('"fetcher" it must be either function or promise')
   }
 
-  const result = fn(node) 
+  const result = isFunction(fn) ? fn(node) : fn
 
   if (!result || !result.then) {
-    throw new TypeError('`fetchData` property must return a Promise')
+    throw new TypeError('"fetcher" property must return a Promise')
   }
 
   return result
@@ -52,6 +52,10 @@ export function isNodeCheckable(node: TreeNode): boolean {
 
 export function isFunction(value: any): boolean {
   return 'function' === typeof value 
+}
+
+export function isCallable(value: any): boolean {
+  return isFunction(value) || (value && !!value.then)
 }
 
 export function has(targetArray: any[], targetValue: any): boolean {

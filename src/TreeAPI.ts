@@ -1,13 +1,12 @@
 import { TreeNode } from './types/Node'
 import { TreeComponent } from './types/Tree'
 import { State } from './types/State'
-import { Core } from './types/Core'
+import { Core, PromiseNodes, InsertOptions } from './types/Core'
 import { CheckboxValueConsistency, TreeAPI as ITreeAPI } from './types/Tree'
 
-import { isString, isNodeCheckable, isLeaf, isFunction, has, remove } from './utils/index'
+import { isString, isNodeCheckable, isLeaf, has, remove } from './utils/index'
 import { find } from './utils/find'
 import { walkBreadth, recurseDown } from './utils/traveler'
-import { parseNode } from './utils/parser'
 
 export class TreeAPI implements ITreeAPI {
   readonly state: State
@@ -36,63 +35,6 @@ export class TreeAPI implements ITreeAPI {
 
       remove(indeterminate, child.id)
     }, includeSelf)
-  }
-
-  _insertAt(targetNode: TreeNode, source: any, insertIndex: number): TreeNode[] | PromiseLike<TreeNode[]> {
-    const parent: TreeNode | null = targetNode.parent
-
-    if (isFunction(source)) {
-      return this.core.load(targetNode, source, true).then((nodes: TreeNode[]) => {
-        this.state.insertAt(
-          parent ? parent : null,
-          nodes,
-          insertIndex
-        )
-        this.tree.updateState()
-
-        return nodes
-      })
-    } else {
-      const nodes = parseNode(source)
-
-      this.state.insertAt(
-        parent ? parent : null,
-        nodes,
-        insertIndex
-      )
-      this.tree.updateState()
-
-      return nodes
-    }
-  }
-
-  _addChild(node: TreeNode, source: any, expand?: boolean, insertIndex?: number): any {
-    const id: string = node.id
-
-    if (isFunction(source)) {
-      return this.core.load(node, source).then((nodes: TreeNode[]) => {
-        this.tree.addChild(id, nodes, insertIndex)
-
-        const updatedNode: TreeNode | null = this.state.byId(id)
-
-        if (updatedNode && expand && !node.expanded) {
-          this.tree.expand(updatedNode)
-        } else {
-          this.tree.updateState()
-        }
-      })
-    } else {
-      this.tree.addChild(id, source)
-      this.tree.updateState()
-    }
-  }
-
-  _append(node: TreeNode, source: any, expand?: boolean): any {
-    return this._addChild(node, source, expand)
-  }
-
-  _prepend(node: TreeNode, source: any, expand?: boolean): any {
-    return this._addChild(node, source, expand, 0)
   }
 
   _remove(node: TreeNode): TreeNode | null {
@@ -162,7 +104,7 @@ export class TreeAPI implements ITreeAPI {
     return node
   }
 
-  after(query: any, source: any): TreeNode[] | PromiseLike<TreeNode[]> | null {
+  after(query: any, source: any): TreeNode[] | PromiseNodes | null {
     const node: TreeNode | null = this.find(query)
 
     if (!node) {
@@ -175,10 +117,10 @@ export class TreeAPI implements ITreeAPI {
       return null
     }
 
-    return this._insertAt(node, source, insertIndex + 1)
+    return this.core.insertAt(node, source, insertIndex + 1)
   }
 
-  before(query: any, source: any): TreeNode[] | PromiseLike<TreeNode[]> | null {
+  before(query: any, source: any): TreeNode[] | PromiseNodes | null {
     const node: TreeNode | null = this.find(query)
 
     if (!node) {
@@ -191,27 +133,27 @@ export class TreeAPI implements ITreeAPI {
       return null
     }
 
-    return this._insertAt(node, source, insertIndex)
+    return this.core.insertAt(node, source, insertIndex)
   }
 
-  append(query: any, source: any, expand?: boolean): any {
+  append(query: any, source: any, opts?: InsertOptions): any {
     const node: TreeNode | null = this.find(query)
 
     if (!node) {
       return null
     }
 
-    return this._append(node, source, expand)
+    return this.core.addChild(node, source, undefined, opts)
   }
 
-  prepend(query: any, source: any, expand?: boolean): any {
+  prepend(query: any, source: any, opts?: InsertOptions): any {
     const node: TreeNode | null = this.find(query)
 
     if (!node) {
       return null
     }
 
-    return this._prepend(node, source, expand)
+    return this.core.addChild(node, source, 0, opts)
   }
 
   addClass(query: any, ...classNames: string[]): TreeNode | null {

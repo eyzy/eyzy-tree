@@ -539,6 +539,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     }
   }
 
+  // TODO: move to core
   addChild = (id: string, nodes: any[], insertIndex?: number): TreeNode | null => {
     const state = this.getState()
     const node = state.byId(id)
