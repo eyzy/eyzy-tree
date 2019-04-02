@@ -1,6 +1,7 @@
 import { Node, TreeNode } from './Node'
 import { TreeAPI } from '../TreeAPI'
 import { State } from './State'
+import { InsertOptions, PromiseNodes, Core } from './Core'
 
 export interface TreeProps {
   data: Array<Node | string>
@@ -55,19 +56,16 @@ export type CheckboxValueConsistency = 'ALL' | 'BRANCH' | 'LEAF' | 'WITH_INDETER
 export interface TreeAPI {
   readonly state: State
   readonly tree: TreeComponent
+  readonly core: Core
 
-  _clearKeys: (node: TreeNode, excludeSelf: boolean) => void
-  _data: (node: TreeNode, key?: any, value?: any) => any
-  _hasClass: (node: TreeNode, className: string) => boolean
-  _addClass: (node: TreeNode, ...classNames: string[]) => TreeNode
-  _removeClass: (node: TreeNode, ...classNames: string[]) => TreeNode
-  _remove: (node: TreeNode) => TreeNode | null  
-
-  data: (criteria: any, key?: any, value?: any) => any
-  hasClass: (criteria: any, className: string) => boolean
+  after: (query: any, source: any) => TreeNode[] | PromiseNodes | null
+  before: (query: any, source: any) => TreeNode[] | PromiseNodes | null
+  append: (query: any, source: any, opts?: InsertOptions) => PromiseNodes | TreeNode | null
+  prepend: (query: any, source: any, opts?: InsertOptions) => PromiseNodes | TreeNode | null
   addClass: (criteria: any, ...classNames: string[]) => TreeNode | null
   removeClass: (criteria: any, ...classNames: string[]) => TreeNode | null
-
+  hasClass: (criteria: any, className: string) => boolean | null
+  data: (criteria: any, key?: any, value?: any) => any
   set: (query: any, key: string, value: any) => boolean  
   find: (...criterias: any) => TreeNode | null
   findAll: (...criterias: any) => TreeNode[]

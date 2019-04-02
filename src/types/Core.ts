@@ -10,7 +10,13 @@ export interface InsertOptions {
 }
 
 export interface Core {
+  clearKeys: (node: TreeNode, excludeSelf: boolean) => void
   load(node: TreeNode, resource: PromiseCallback, showLoading?: boolean): PromiseNodes
   insertAt(targetNode: TreeNode, resource: Resource, insertIndex: number): PromiseNodes | TreeNode[]
   addChild(targetNode: TreeNode, resource: Resource, insertIndex: number | undefined, opts?: InsertOptions): PromiseNodes | TreeNode
+  remove(targetNode: TreeNode): TreeNode | null
+  data(targetNode: TreeNode, key?: any, value?: any): any
+  hasClass(targetNode: TreeNode, className: string): boolean
+  removeClass(targetNode: TreeNode, classNames: string[]): TreeNode
+  addClass(targetNode: TreeNode, classNames: string[]): TreeNode
 }

@@ -54,7 +54,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
         return false
       }
 
-      this._api._clearKeys(node, true)
+      this._api.core.clearKeys(node, true)
 
       state.set(node.id, {
         child: [],
@@ -200,18 +200,18 @@ export default class EyzyNode implements IEyzyNodeAPI {
     const nodes = this._nodes
     
     if (1 === nodes.length) {
-      return this._api._data(nodes[0], key, value)
+      return this._api.core.data(nodes[0], key, value)
     }
 
-    return nodes.map((node: TreeNode) => this._api._data(node, key, value))
+    return nodes.map((node: TreeNode) => this._api.core.data(node, key, value))
   }
 
   hasClass(className: string): boolean {
-    return this._nodes.some((node: TreeNode) => this._api._hasClass(node, className))
+    return this._nodes.some((node: TreeNode) => this._api.core.hasClass(node, className))
   }
 
   addClass(...classNames: string[]): boolean {
-    this._nodes.forEach((node: TreeNode) => this._api._addClass(node, ...classNames))
+    this._nodes.forEach((node: TreeNode) => this._api.core.addClass(node, classNames))
 
     return true
   }
@@ -223,7 +223,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
       }
 
       const oldClassNames = node.className
-      const updatedNode = this._api._removeClass(node, ...classNames)
+      const updatedNode = this._api.core.removeClass(node, classNames)
 
       return oldClassNames !== updatedNode.className
     })

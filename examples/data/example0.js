@@ -66,7 +66,7 @@ var data = [
     "text": "Async", "isBatch": true
   },
   {
-    "text": "Babel"
+    "text": "Babel", className: "aa"
   },
   {
     "text": "Backbone.js"
