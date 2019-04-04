@@ -1,6 +1,6 @@
 import { TreeNode } from '../types/Node'
 import uuid from './uuid'
-import { isArray } from './index'
+import { isArray, isString } from './index'
 
 export function parseNode(data: any, parentNode?: TreeNode | null): TreeNode[] {
   if (!isArray(data)) {
@@ -9,28 +9,38 @@ export function parseNode(data: any, parentNode?: TreeNode | null): TreeNode[] {
 
   const parent = parentNode || null
 
-  return data.map((node: TreeNode): TreeNode => {
-    if ('string' === typeof node || 'number' === typeof node) {
-      return {
-        id: uuid(),
-        text: node,
-        parent,
-        child: [],
-        data: {}
+  return data
+    .reduce((result: TreeNode[], node: TreeNode): TreeNode[] => {
+      if ('number' === typeof node || !node) {
+        return result
       }
-    }
+      
+      if ('string' === typeof node) {
+        result.push({
+          id: uuid(),
+          text: node,
+          parent,
+          child: [],
+          data: {}
+        })
+      } else if (isArray(node)) {
+        result.push(...parseNode(node, parentNode))
+      } else {
+        node.id = node.id || uuid()
+        node.child = isArray(node.child)
+          ? parseNode(node.child, node)
+          : []
 
-    node.id = node.id || uuid()
-    node.child = Array.isArray(node.child) 
-      ? parseNode(node.child, node)
-      : []
+        if (!node.data) {
+          node.data = {}
+        }
 
-    if (!node.data) {
-      node.data = {}
-    }
+        node.parent = parent
 
-    node.parent = parent
+        result.push(node)
+      }
 
-    return node
-  })
+      return result
+    }, [])
+  .filter((node: TreeNode) => node.text && isString(node.text))
 }
