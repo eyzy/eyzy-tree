@@ -71,5 +71,5 @@ var data = [
   {
     "text": "Backbone.js"
   },
-  { text: 'Has Child', expanded: true, child: [1,2,,3,4, 't'] }
+  { text: 'Has Child', expanded: true, child: [1, 2, , 3, 4, 'Child 1'] }
 ]

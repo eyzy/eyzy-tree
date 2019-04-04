@@ -11,6 +11,7 @@ export interface Node {
   isBatch?: boolean
   className?: string
   checkable?: boolean
+  loading?: boolean
   checkboxRenderer?: React.ReactType<{node: TreeNode}>
   arrowRenderer?: React.ReactType<{node: TreeNode}>
   textRenderer?: React.ReactType<{node: TreeNode}>

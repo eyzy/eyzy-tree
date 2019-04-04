@@ -594,7 +594,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
   loadChild = (node: TreeNode): PromiseLike<TreeNode[]> | void => {
     const { fetchData, selectOnExpand } = this.props
 
-    if (!fetchData) {
+    if (!fetchData || node.loading) {
       return
     }
 
