@@ -39,7 +39,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
       this._tree.updateState(this._state)
     }
 
-    return result
+    return this._nodes.length == 0 ? false : result
   }
 
   remove(): boolean {
@@ -227,5 +227,29 @@ export default class EyzyNode implements IEyzyNodeAPI {
 
       return oldClassNames !== updatedNode.className
     })
+  }
+
+  find(...query: any): IEyzyNodeAPI {
+    const core = this._api.core
+    const nodes = core
+      .flatMap(this._nodes)
+      .nodes
+      .filter((node: TreeNode) => !~this._nodes.indexOf(node))
+
+    const node: TreeNode | null = core.find<TreeNode>(nodes, false, query)
+
+    return new EyzyNode(node ? [node] : [], this._api)
+  }
+
+  findAll(...query: any): IEyzyNodeAPI {
+    const core = this._api.core
+    const nodes = core
+      .flatMap(this._nodes)
+      .nodes
+      .filter((node: TreeNode) => !~this._nodes.indexOf(node))
+
+    const node: TreeNode[] | null = core.find<TreeNode[]>(nodes, true, query)
+
+    return new EyzyNode(node && node.length ? node : [], this._api)
   }
 }

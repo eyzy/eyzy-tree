@@ -1,5 +1,6 @@
 import { TreeNode } from '../types/Node'
 import { isString, isRegExp, isFunction, isBoolean } from './index'
+import { SSL_OP_LEGACY_SERVER_CONNECT } from 'constants';
 
 type Traveler = (source: TreeNode[], cb: (node: TreeNode) => boolean) => boolean
 type Criteria = (node: TreeNode) => boolean
@@ -16,7 +17,7 @@ type Criteria = (node: TreeNode) => boolean
  */
 
 function isFalsy(val: any): boolean {
-  return !!!val // yeah
+  return !val
 }
 
 function parseCriteria(criteria: any): Criteria {
@@ -36,6 +37,10 @@ function parseCriteria(criteria: any): Criteria {
 
   return (node: TreeNode): boolean => {
     const keys: string[] = Object.keys(matches)
+
+    if (!keys.length) {
+      return false
+    }
 
     return keys.every((key: string): boolean => {
       // TODO: call parseCriteria recursively

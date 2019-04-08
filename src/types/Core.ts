@@ -1,4 +1,5 @@
 import { TreeNode } from "./Node"
+import { FlatMap } from '../utils/traveler'
 
 export type PromiseNodes = PromiseLike<TreeNode[] | TreeNode>
 export type PromiseCallback = (node: TreeNode) => PromiseNodes
@@ -10,6 +11,8 @@ export interface InsertOptions {
 }
 
 export interface Core {
+  flatMap: (collection: TreeNode[], ignoreCollapsed?: boolean) => FlatMap
+  find: <T>(target: TreeNode[], multiple: boolean, ...criterias: any) => T | null
   clearKeys: (node: TreeNode, excludeSelf: boolean) => void
   load(node: TreeNode, resource: PromiseCallback, showLoading?: boolean): PromiseNodes
   insertAt(targetNode: TreeNode, resource: Resource, insertIndex: number): PromiseNodes | TreeNode[]

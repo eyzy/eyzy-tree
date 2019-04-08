@@ -4,7 +4,8 @@ import { State } from '../types/State'
 import { Core, PromiseCallback, PromiseNodes, Resource, InsertOptions } from '../types/Core'
 import { callFetcher, isCallable, isString, remove, has } from '../utils'
 import { parseNode } from '../utils/parser'
-import { recurseDown } from '../utils/traveler'
+import { recurseDown, walkBreadth, FlatMap, flatMap } from '../utils/traveler'
+import { find } from '../utils/find'
 
 function parseOpts(opts?: InsertOptions): InsertOptions {
   try {
@@ -23,6 +24,14 @@ export default class CoreTree implements Core {
   constructor(tree: TreeComponent, state: State) {
     this.state = state
     this.tree = tree
+  }
+
+  flatMap = (collection: TreeNode[], ignoreCollapsed?: boolean): FlatMap => {
+    return flatMap(collection, ignoreCollapsed)
+  }
+
+  find<T>(target: TreeNode[], multiple: boolean, criterias: any): T | null {
+    return find(target, walkBreadth, multiple, criterias)
   }
 
   set = (node: TreeNode, key: string, value: any): void => {
