@@ -1,6 +1,5 @@
 import { TreeNode } from '../types/Node'
 import { isString, isRegExp, isFunction, isBoolean } from './index'
-import { SSL_OP_LEGACY_SERVER_CONNECT } from 'constants';
 
 type Traveler = (source: TreeNode[], cb: (node: TreeNode) => boolean) => boolean
 type Criteria = (node: TreeNode) => boolean
