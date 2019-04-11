@@ -4,6 +4,7 @@ dist
 es
 lib
 style.css
+api.js
 
 package-lock.json
 

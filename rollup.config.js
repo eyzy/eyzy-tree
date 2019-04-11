@@ -30,16 +30,21 @@ const externalApiConfig = {
   input: 'src/api/index.ts',
   output: [
     {
-      file: 'es/eyzy-tree-api.js',
+      file: 'es/api.js',
       format: 'es',
       banner: apiBanner
     }, {
-      file: 'lib/eyzy-tree-api.js',
+      file: 'lib/api.js',
       format: 'umd',
       name: pkg.library,
       banner: apiBanner
     }, {
-      file: `dist/eyzy-tree-api.js`,
+      file: `dist/api.js`,
+      format: 'umd',
+      name: 'EyzyTreeAPI',
+      banner: apiBanner
+    }, {
+      file: `api.js`,
       format: 'umd',
       name: 'EyzyTreeAPI',
       banner: apiBanner

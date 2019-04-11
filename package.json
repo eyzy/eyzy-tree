@@ -1,6 +1,6 @@
 {
   "name": "eyzy-tree",
-  "version": "0.0.28",
+  "version": "0.0.31",
   "author": "Kostiantyn <phlyze@gmail.com>",
   "description": "React tree component",
   "homepage": "https://eyzy.gitbook.io/tree/",
@@ -47,12 +47,14 @@
     "react-tree",
     "treeview",
     "structure",
-    "tree-component"
+    "tree-component",
+    "checkbox-tree"
   ],
   "files": [
     "src",
     "dist",
     "style.css",
+    "api.js",
     "lib",
     "es"
   ],
