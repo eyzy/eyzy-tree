@@ -56,4 +56,6 @@ export interface IEyzyNodeAPI {
   hasClass: (className: string) => any
   addClass: (...classNames: string[]) => boolean
   removeClass: (...classNames: string[]) => boolean
+  find: (...query: any) => IEyzyNodeAPI
+  findAll: (...query: any) => IEyzyNodeAPI
 }

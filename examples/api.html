@@ -4,7 +4,7 @@
     <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <script src="/eyzy-tree.js"></script>
-    <script src="/eyzy-tree-api.js"></script>
+    <script src="/api.js"></script>
     <script src="/data/example0.js"></script>
 
     <link rel="stylesheet" href="/style.css">
@@ -153,7 +153,7 @@
             checkable: true,
             checkOnSelect: true,
             selectOnCheck: true,
-            selectOnExpand: true,
+            selectOnExpand: !true,
             multiple: this.state.multiple,
             onReady: this.handleReadyTree, 
             onUnSelect: (node) => {
@@ -169,7 +169,7 @@
               return new Promise(resolve => {
                 setTimeout(() => {
                   resolve([
-                    { text: node.text + ' Child-1', checked: 0 },
+                    { text: node.text + ' Child-1', checked: 0, selected: 1 },
                     { text: node.text + ' Child-2', checked: true },
                     { text: node.text + ' Child-3', checked: 1, child: [node.text + ' Child-3-1', node.text + ' Child-3-2']},
                     { text: node.text + ' Child-4', checked: 1 },

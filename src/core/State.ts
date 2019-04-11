@@ -153,6 +153,7 @@ export default class State {
     if (parent && parent.child) {
       const child: TreeNode[] = copyArray(parent.child)
       child.splice(index, 0, ...nodes)
+      return child
     } else {
       this.nodes.splice(index, 0, ...nodes)
     }

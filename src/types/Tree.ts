@@ -37,8 +37,7 @@ export interface TreeComponent {
   focused: string
   _state: State
 
-  loadChild: (node: TreeNode, customFetch: (node: TreeNode) => PromiseLike<TreeNode[] | null>) => PromiseLike<TreeNode[] | null> | void
-  addChild: (id: string, nodes: any, insertIndex?: number) => TreeNode | null
+  loadChild: (node: TreeNode, customFetch: (node: TreeNode) => PromiseLike<TreeNode[] | null>) => PromiseNodes | void
   $emit: (name: string, ...args: any) => void
   getState: () => State
   refreshIndeterminateState: (id: string, willBeChecked: boolean, shouldRender?: boolean) => void
@@ -46,7 +45,6 @@ export interface TreeComponent {
   check: (node: TreeNode) => void
   select: (node: TreeNode, ignoreEvent?: boolean, extendSelection?: boolean, ignoreUpdating?: boolean) => void
   unselect: (node: TreeNode) => void
-  uncheckAll: () => void
   unselectAll: () => void
   expand: (node: TreeNode) => void
 }
@@ -60,8 +58,8 @@ export interface TreeAPI {
 
   after: (query: any, source: any) => TreeNode[] | PromiseNodes | null
   before: (query: any, source: any) => TreeNode[] | PromiseNodes | null
-  append: (query: any, source: any, opts?: InsertOptions) => PromiseNodes | TreeNode | null
-  prepend: (query: any, source: any, opts?: InsertOptions) => PromiseNodes | TreeNode | null
+  append: (query: any, source: any, opts?: InsertOptions) => PromiseNodes | null
+  prepend: (query: any, source: any, opts?: InsertOptions) => PromiseNodes | null
   addClass: (criteria: any, ...classNames: string[]) => TreeNode | null
   removeClass: (criteria: any, ...classNames: string[]) => TreeNode | null
   hasClass: (criteria: any, className: string) => boolean | null

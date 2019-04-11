@@ -2,7 +2,7 @@ import { TreeNode } from '../types/Node'
 import { TreeComponent } from '../types/Tree'
 import { State } from '../types/State'
 import { Core, PromiseCallback, PromiseNodes, Resource, InsertOptions } from '../types/Core'
-import { callFetcher, isCallable, isString, remove, has } from '../utils'
+import { callFetcher, isCallable, isString, remove, has, isLeaf } from '../utils'
 import { parseNode } from '../utils/parser'
 import { recurseDown, walkBreadth, FlatMap, flatMap } from '../utils/traveler'
 import { find } from '../utils/find'
@@ -40,6 +40,57 @@ export default class CoreTree implements Core {
     this.tree.updateState()
   }
 
+  updateKeys = (nodes: TreeNode[]): void => {
+    const tree = this.tree
+    const state = tree.getState()
+    const checked = tree.checked
+    const cascadeCheck: boolean = true !== tree.props.noCascade
+
+    let selected: string
+
+    nodes.forEach((node: TreeNode) => {
+      const parentDepth: number = node.depth || 0
+
+      recurseDown(node.child, (obj: TreeNode, depth: number) => {
+        obj.depth = parentDepth + depth + 1
+  
+        if (cascadeCheck && obj.parent && obj.parent.checked) {
+          obj.checked = true
+        }
+  
+        if (obj.checked && !has(checked, obj.id)) {
+          checked.push(obj.id)
+        }
+
+        if (obj.selected) {
+          selected = obj.id
+        }
+      })
+
+      if (selected) {
+        if (tree.selected.length) {
+          const selectedNode = state.byId(tree.selected[0])
+
+          if (selectedNode) {
+            state.set(selectedNode.id, 'selected', false)
+          }
+        }
+
+        tree.selected = [selected]
+      }
+
+      if (cascadeCheck) {
+        checked.forEach((id: string) => {
+          const node: TreeNode | null = state.byId(id)
+
+          if (node && isLeaf(node)) {
+            tree.refreshIndeterminateState(id, true, false)
+          }
+        })
+      }
+    })
+  }
+
   clearKeys = (node: TreeNode, includeSelf: boolean = false): void => {
     const selected: string[] = this.tree.selected
     const checked: string[] = this.tree.checked
@@ -66,62 +117,94 @@ export default class CoreTree implements Core {
     }
 
     return result.then((items: any) => {
-      if (showLoading) {
-        this.state.set(node.id, 'loading', false)
-      }
+      this.state.set(node.id, {
+        isBatch: false,
+        loading: false
+      })
 
-      return parseNode(items)
+      return parseNode(items, node)
     })
   }
 
-  insertAt = (node: TreeNode, resource: Resource, insertIndex: number): PromiseNodes | TreeNode[] => {
-    const parent: TreeNode | null = node.parent || null
-    const insert = (nodes: TreeNode[]) => {
-      this.state.insertAt(
-        parent ? parent : null,
-        nodes,
-        insertIndex
-      )
-      this.tree.updateState()
-      return nodes
+  beside = (targetNode: TreeNode, resource: Resource, shift: number): PromiseNodes => {
+    const insertIndex: number | null = this.state.getIndex(targetNode)
+
+    if (null === insertIndex) {
+      return Promise.resolve([])
+    }
+
+    const parent: TreeNode | null = targetNode.parent
+    const insert = (nodes: Resource) => {
+      return this.insert(parent, nodes, { 
+        expand: parent ? parent.expanded : false, 
+        loading: false, 
+        index: insertIndex + shift 
+      })
     }
 
     if (isCallable(resource)) {
-      return this.load(node, resource as PromiseCallback, false).then(insert)
+      return this.load(targetNode, resource, false).then((nodes: TreeNode[]) => {
+        return insert(nodes)
+      })
     } else {
-      return insert(parseNode(resource))
+      return insert(resource)
     }
   }
 
-  addChild = (node: TreeNode, resource: Resource, insertIndex: number | undefined, opts?: InsertOptions): PromiseNodes | TreeNode => {
-    const id: string = node.id
-    const {expand, loading} = parseOpts(opts)
+  insert = (parent: TreeNode | null, resource: Resource, opts: InsertOptions): PromiseNodes => {
+    opts = parseOpts(opts)
 
-    if (isCallable(resource)) {
-      return this.load(node, resource, loading).then((nodes: TreeNode[]) => {
-        this.tree.addChild(id, nodes, insertIndex)
+    const tree = this.tree
+    const state = tree.getState()
 
-        const updatedNode: TreeNode | null = this.state.byId(id)
+    const insert = (nodes: TreeNode[]) => {
+      const index: number = undefined !== opts.index 
+        ? opts.index 
+        : (parent && parent.child ? parent.child.length : 0)
 
-        if (expand && updatedNode && !updatedNode.expanded) {
-          this.tree.expand(updatedNode)
+      const child = state.insertAt(
+        parent,
+        nodes,
+        index
+      )
+
+      if (parent) {
+        state.set(parent.id, {
+          child,
+          expanded: opts.expand
+        })
+
+        const updatedItem = state.byId(parent.id)
+
+        if (opts.expand) {
+          tree.$emit('Expand', updatedItem)
         }
 
-        this.tree.updateState()
+        if (updatedItem) {
+          // it must be called before checking 'selectOnExpand'
+          this.updateKeys([updatedItem])
 
-        return node
-      })
-    } else {
-      this.tree.addChild(id, resource)
-
-      if (expand && !node.expanded) {
-        this.tree.expand(node)
+          if (tree.props.selectOnExpand) {
+            tree.select(updatedItem, false, false, true)
+          }
+        }
+      } else {
+        this.updateKeys(nodes)
       }
 
-      this.tree.updateState()
+      tree.$emit('Add', parent, nodes)
+      tree.updateState()
+
+      return nodes
     }
 
-    return node
+    if (parent && isCallable(resource)) {
+      return this.load(parent, resource as PromiseCallback, opts.loading).then(insert)
+    } else {
+      return Promise.resolve(
+        insert(parseNode(resource))
+      )
+    }
   }
 
   remove = (node: TreeNode): TreeNode | null => {
@@ -132,7 +215,7 @@ export default class CoreTree implements Core {
 
       this.clearKeys(removedNode)
       this.tree.updateState()
-      this.tree.$emit('onRemove', removedNode)
+      this.tree.$emit('Remove', removedNode)
     }
 
     return removedNode
@@ -191,4 +274,25 @@ export default class CoreTree implements Core {
     return node
   }
 
+  uncheckAll = () => {
+    const tree = this.tree
+
+    if (!tree.props.checkable) {
+      return
+    }
+
+    const state = tree.getState()
+
+    tree.checked = tree.checked.filter((id: string) => {
+      state.set(id, 'checked', false)
+      return false
+    })
+
+    tree.indeterminate = tree.indeterminate.filter((id: string) => {
+      state.set(id, 'indeterminate', false)
+      return false
+    })
+
+    tree.updateState()
+  }
 }

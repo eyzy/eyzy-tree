@@ -31,37 +31,25 @@ export class TreeAPI implements ITreeAPI {
 
   after(query: any, source: any): TreeNode[] | PromiseNodes | null {
     return this._operate<TreeNode[] | PromiseNodes>(query, (node: TreeNode) => {
-      const insertIndex: number | null = this.state.getIndex(node)
-
-      if (null === insertIndex) {
-        return null
-      }
-  
-      return this.core.insertAt(node, source, insertIndex + 1)
+      return this.core.beside(node, source, 1)
     })
   }
 
   before(query: any, source: any): TreeNode[] | PromiseNodes | null {
     return this._operate<TreeNode[] | PromiseNodes>(query, (node: TreeNode) => {
-      const insertIndex: number | null = this.state.getIndex(node)
-
-      if (null === insertIndex) {
-        return null
-      }
-  
-      return this.core.insertAt(node, source, insertIndex)
+      return this.core.beside(node, source, 0)
     })
   }
 
-  append(query: any, source: any, opts?: InsertOptions): PromiseNodes | TreeNode | null {
-    return this._operate<PromiseNodes | TreeNode>(query, (node: TreeNode) => {
-      return this.core.addChild(node, source, undefined, opts)
+  append(query: any, source: any, opts?: InsertOptions): PromiseNodes | null {
+    return this._operate<PromiseNodes>(query, (node: TreeNode) => {
+      return this.core.insert(node, source, opts)
     })
   }
 
-  prepend(query: any, source: any, opts?: InsertOptions): PromiseNodes | TreeNode | null {
-    return this._operate<PromiseNodes | TreeNode>(query, (node: TreeNode) => {
-      return this.core.addChild(node, source, 0, opts)
+  prepend(query: any, source: any, opts?: InsertOptions): PromiseNodes | null {
+    return this._operate<PromiseNodes>(query, (node: TreeNode) => {
+      return this.core.insert(node, source, Object.assign({}, opts, {index: 0}))
     })
   }
 

@@ -229,27 +229,23 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  find(...query: any): IEyzyNodeAPI {
+  _find<T>(multiple: boolean, query: any): T | null {
     const core = this._api.core
     const nodes = core
       .flatMap(this._nodes)
       .nodes
       .filter((node: TreeNode) => !~this._nodes.indexOf(node))
 
-    const node: TreeNode | null = core.find<TreeNode>(nodes, false, query)
+    return core.find<T>(nodes, multiple, query)
+  }
 
+  find(...query: any): IEyzyNodeAPI {
+    const node: TreeNode | null = this._find<TreeNode>(false, query)
     return new EyzyNode(node ? [node] : [], this._api)
   }
 
   findAll(...query: any): IEyzyNodeAPI {
-    const core = this._api.core
-    const nodes = core
-      .flatMap(this._nodes)
-      .nodes
-      .filter((node: TreeNode) => !~this._nodes.indexOf(node))
-
-    const node: TreeNode[] | null = core.find<TreeNode[]>(nodes, true, query)
-
-    return new EyzyNode(node && node.length ? node : [], this._api)
+    const nodes: TreeNode[] | null = this._find<TreeNode[]>(true, query)
+    return new EyzyNode(nodes && nodes.length ? nodes : [], this._api)
   }
 }
