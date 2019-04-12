@@ -58,6 +58,25 @@ export function isCallable(value: any): boolean {
   return isFunction(value) || (value && !!value.then)
 }
 
+export function get(obj: any, path: any): any {
+  if (!obj) {
+    return void 0
+  }
+
+  if (!isArray(path)) {
+    path = path.split('.')
+  }
+
+  const len: number = path.length
+  let i: number = 0
+
+  while (obj != null && i < len) {
+    obj = obj[path[i++]]
+  }
+
+  return i && i === len ? obj : undefined
+}
+
 export function has(targetArray: any[], targetValue: any): boolean {
   return !!~targetArray.indexOf(targetValue)
 }

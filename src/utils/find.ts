@@ -1,5 +1,5 @@
 import { TreeNode } from '../types/Node'
-import { isString, isRegExp, isFunction, isBoolean } from './index'
+import { isString, isRegExp, isFunction, get } from './index'
 
 type Traveler = (source: TreeNode[], cb: (node: TreeNode) => boolean) => boolean
 type Criteria = (node: TreeNode) => boolean
@@ -14,10 +14,6 @@ type Criteria = (node: TreeNode) => boolean
  *  - api.find({text: 'item 1'}, {text: 'item 2'}, {disabled: true}) // OR
  *  - api.find([{text: /item/}, {selected: true}]) // OR
  */
-
-function isFalsy(val: any): boolean {
-  return !val
-}
 
 function parseCriteria(criteria: any): Criteria {
   if (isFunction(criteria)) {
@@ -42,31 +38,14 @@ function parseCriteria(criteria: any): Criteria {
     }
 
     return keys.every((key: string): boolean => {
-      // TODO: call parseCriteria recursively
-      if ('data' === key) {
-        return testData(matches[key], node[key])
-      }
-
-      return testKey(matches[key], node[key])
+      return testKey(matches[key], get(node, key))
     })
   }
-}
-
-function testData(v0: any, v1: any): boolean {
-  const keys: string[] = Object.keys(v0)
-
-  return keys.every((key: string): boolean => {
-    return testKey(v0[key], v1[key])
-  })
 }
 
 function testKey(v0: any, v1: any): boolean {
   if (isRegExp(v0)) {
     return new RegExp(v0).test(v1)
-  }
-
-  if (isBoolean(v0) || isFalsy(v0) && isFalsy(v1)) {
-    return !!v0 === !!v1
   }
 
   return v0 === v1
