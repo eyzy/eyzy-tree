@@ -103,7 +103,6 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     return callMethod(this, 'uncheck', criteria)
   }
 
-  // exclusive method that not implemented in component;
   uncheckAll(): boolean {
     if (!this._tree.props.checkable) {
       return false

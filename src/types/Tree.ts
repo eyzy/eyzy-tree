@@ -27,6 +27,8 @@ export interface TreeProps {
   onCheck?: (node: TreeNode, isChecked: boolean) => void
   onExpand?: (node: TreeNode, isExpanded: boolean) => void
   onDoubleClick?: (node: TreeNode) => void
+  onRemove?: (node: TreeNode) => void
+  onAdd?: (node: TreeNode) => void
 }
 
 export interface TreeComponent {
@@ -40,7 +42,7 @@ export interface TreeComponent {
   loadChild: (node: TreeNode, customFetch: (node: TreeNode) => PromiseLike<TreeNode[] | null>) => PromiseNodes | void
   $emit: (name: string, ...args: any) => void
   getState: () => State
-  refreshIndeterminateState: (id: string, willBeChecked: boolean, shouldRender?: boolean) => void
+  refreshDefinite: (id: string, willBeChecked: boolean, shouldRender?: boolean) => void
   updateState: (state?: State) => void
   check: (node: TreeNode) => void
   select: (node: TreeNode, ignoreEvent?: boolean, extendSelection?: boolean, ignoreUpdating?: boolean) => void

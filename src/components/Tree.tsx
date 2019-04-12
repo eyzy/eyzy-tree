@@ -75,7 +75,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
       const node = this._state.byId(id)
 
       if (node && isLeaf(node) && this.props.noCascade !== true) {
-        this.refreshIndeterminateState(id, true, false)
+        this.refreshDefinite(id, true, false)
       }
     })
 
@@ -123,7 +123,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     }
   }
 
-  refreshIndeterminateState = (id: string, willBeChecked: boolean, shouldRender?: boolean) => {
+  refreshDefinite = (id: string, willBeChecked: boolean, shouldRender?: boolean) => {
     let checked: string[] = copyArray(this.checked)
     let indeterminate = copyArray(this.indeterminate)
 
@@ -375,7 +375,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     }
 
     if (this.props.noCascade !== true) {
-      this.refreshIndeterminateState(node.id, willBeChecked)
+      this.refreshDefinite(node.id, willBeChecked)
     } else {
       this.updateState()
     }

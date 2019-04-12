@@ -40,13 +40,21 @@ export default class CoreTree implements Core {
     this.tree.updateState()
   }
 
-  updateKeys = (nodes: TreeNode[]): void => {
+  updateKeys = (nodes: TreeNode[], targetNodes?: TreeNode[]): void => {
     const tree = this.tree
     const state = tree.getState()
     const checked = tree.checked
     const cascadeCheck: boolean = true !== tree.props.noCascade
 
-    let selected: string
+    let lastSelected: string
+
+    if (targetNodes) {
+      targetNodes.forEach((node: TreeNode) => {
+        if (node.selected) {
+          lastSelected = node.id
+        }
+      })
+    }
 
     nodes.forEach((node: TreeNode) => {
       const parentDepth: number = node.depth || 0
@@ -63,20 +71,22 @@ export default class CoreTree implements Core {
         }
 
         if (obj.selected) {
-          selected = obj.id
+          tree.selected.push(obj.id)
+
+          if (!lastSelected) {
+            lastSelected = obj.id
+          }
         }
       })
 
-      if (selected) {
-        if (tree.selected.length) {
-          const selectedNode = state.byId(tree.selected[0])
-
-          if (selectedNode) {
-            state.set(selectedNode.id, 'selected', false)
+      if (lastSelected) {
+        tree.selected = tree.selected.filter((id: string) => {
+          if (id !== lastSelected) {
+            state.set(id, 'selected', false)
           }
-        }
 
-        tree.selected = [selected]
+          return id === lastSelected
+        })
       }
 
       if (cascadeCheck) {
@@ -84,7 +94,7 @@ export default class CoreTree implements Core {
           const node: TreeNode | null = state.byId(id)
 
           if (node && isLeaf(node)) {
-            tree.refreshIndeterminateState(id, true, false)
+            tree.refreshDefinite(id, true, false)
           }
         })
       }
@@ -169,23 +179,16 @@ export default class CoreTree implements Core {
       )
 
       if (parent) {
-        state.set(parent.id, {
-          child,
-          expanded: opts.expand
+        const updatedItem = state.set(parent.id, {
+          child
         })
-
-        const updatedItem = state.byId(parent.id)
-
-        if (opts.expand) {
-          tree.$emit('Expand', updatedItem)
-        }
 
         if (updatedItem) {
           // it must be called before checking 'selectOnExpand'
-          this.updateKeys([updatedItem])
+          this.updateKeys([updatedItem], nodes)
 
-          if (tree.props.selectOnExpand) {
-            tree.select(updatedItem, false, false, true)
+          if (opts.expand && !updatedItem.expanded) {
+            this.tree.expand(updatedItem)
           }
         }
       } else {

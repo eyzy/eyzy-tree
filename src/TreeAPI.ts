@@ -158,6 +158,10 @@ export class TreeAPI implements ITreeAPI {
     })
   }
 
+  uncheckAll() {
+    return this.core.uncheckAll()
+  }
+
   toArray(): TreeNode[] {
     return this.state.get()
   }

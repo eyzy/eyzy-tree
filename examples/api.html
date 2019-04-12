@@ -66,7 +66,7 @@
                 resolve([`${node.text} - Prepended 1`, `${node.text} - Prepended 2`, `${node.text} - Prepended 3`])
               }, 1500)
             })
-          }, {loading: false, expand: true})
+          }, {loading: false, expand: false})
           console.log(node)
         }
 
@@ -155,7 +155,10 @@
             selectOnCheck: true,
             selectOnExpand: !true,
             multiple: this.state.multiple,
-            onReady: this.handleReadyTree, 
+            onReady: this.handleReadyTree,
+            onAdd: (parent, child) => {
+              console.log('add:', parent, child)
+            },  
             onUnSelect: (node) => {
               console.log('UNselect: ', node.text)
             },

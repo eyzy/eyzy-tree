@@ -29,6 +29,7 @@ export interface IEyzyTreeAPI {
   hasClass: (criteria: any, className: string) => boolean
   addClass: (criteria: any, ...classNames: string[]) => boolean
   removeClass: (criteria: any, ...classNames: string[]) => boolean
+  uncheckAll: () => void
 }
 
 export interface IEyzyNodeAPI {

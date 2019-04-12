@@ -58,14 +58,14 @@ function updateChild(parentNode: TreeNode) {
   return parentNode
 }
 
-export default class State {
+export default class State implements StateType {
   nodes: TreeNode[]
 
   constructor(state: TreeNode[]) {
     this.nodes = state
   }
 
-  updateRoot(node: TreeNode, iterableValue?: IterableValue[]) {
+  updateRoot(node: TreeNode, iterableValue?: IterableValue[]): TreeNode | void {
     const i = itemById(node.id, this.nodes)
     const newObj = copyObject(node)
 
@@ -78,12 +78,13 @@ export default class State {
 
     if (null !== i) {
       this.nodes[i] = updateChild(newObj as TreeNode)
+      return this.nodes[i]
     }
   }
 
-  updateLeaf(node: TreeNode, iterableValue?: IterableValue[]) {
+  updateLeaf(node: TreeNode, iterableValue?: IterableValue[]): TreeNode | void {
     const root: TreeNode | null = rootElement(node)
-    const parentNode: TreeNode | null | undefined = node.parent
+    const parentNode: TreeNode | null = node.parent
 
     if (!parentNode || !root || !parentNode.child) {
       return
@@ -103,22 +104,22 @@ export default class State {
     }
 
     this.updateRoot(replace(root))
+
+    return node
   }
 
-  set(id: string, key: any, value?: any): StateType {
+  set(id: string, key: any, value?: any): TreeNode | void {
     const node = this.byId(id)
 
     if (!node) {
-      return this
+      return
     }
 
     if (isRoot(node)) {
-      this.updateRoot(node, iterable(key, value))
-    } else {
-      this.updateLeaf(node, iterable(key, value))
+      return this.updateRoot(node, iterable(key, value))
     }
 
-    return this
+    return this.updateLeaf(node, iterable(key, value))
   }
 
   getIndex(node: TreeNode): number | null {
@@ -149,7 +150,7 @@ export default class State {
     return null
   }
 
-  insertAt(parent: TreeNode | null, nodes: TreeNode[], index: number): TreeNode[] | TreeNode {
+  insertAt(parent: TreeNode | null, nodes: TreeNode[], index: number): TreeNode[] {
     if (parent && parent.child) {
       const child: TreeNode[] = copyArray(parent.child)
       child.splice(index, 0, ...nodes)

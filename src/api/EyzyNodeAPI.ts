@@ -63,7 +63,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
       })
 
       if (node.parent) {
-        this._tree.refreshIndeterminateState(node.id, !!node.checked, false)
+        this._tree.refreshDefinite(node.id, !!node.checked, false)
       }
     })
   }
@@ -171,7 +171,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
           ? node
           : node.child[0]
 
-        this._tree.refreshIndeterminateState(iNode.id, !!iNode.checked, false)
+        this._tree.refreshDefinite(iNode.id, !!iNode.checked, false)
       }
     })
   }
