@@ -3,13 +3,18 @@ import { TreeComponent, TreeAPI } from './Tree'
 import { TreeNode } from './Node'
 import EyzyTreeAPI from '../api/EyzyTreeAPI'
 
+export interface APIOpts {
+  multiple?: boolean
+  silence?: boolean
+}
+
 export interface IEyzyTreeAPI {
   readonly _tree: TreeComponent
   readonly _state: State
   readonly _api: TreeAPI
   readonly _operate: (criteria: any, operator: (node: IEyzyNodeAPI) => any) => boolean
 
-  isMultiple: boolean
+  opts: APIOpts
   useMultiple: (isMultiple: boolean) => EyzyTreeAPI
 
   remove: (criteria: any) => boolean
@@ -23,8 +28,8 @@ export interface IEyzyTreeAPI {
   enable: (criteria: any) => boolean
   disableCheckbox: (criteria: any) => boolean
   enableCheckbox: (criteria: any) => boolean
-  expand: (criteria: any) => boolean
-  collapse: (criteria: any) => boolean
+  expand: (criteria: any, includingDisabled?: boolean) => boolean
+  collapse: (criteria: any, includingDisabled?: boolean) => boolean
   data: (criteria: any, key?: any, value?: any) => any
   hasClass: (criteria: any, className: string) => boolean
   addClass: (criteria: any, ...classNames: string[]) => boolean
@@ -51,8 +56,8 @@ export interface IEyzyNodeAPI {
   enable: () => boolean
   disableCheckbox: () => boolean
   enableCheckbox: () => boolean
-  expand: () => boolean
-  collapse: () => boolean
+  expand: (includingDisabled?: boolean) => boolean
+  collapse: (includingDisabled?: boolean) => boolean
   data: (key?: any, value?: any) => any
   hasClass: (className: string) => any
   addClass: (...classNames: string[]) => boolean

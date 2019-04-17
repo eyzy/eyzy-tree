@@ -40,6 +40,8 @@ interface TreeState {
 export default class EyzyTree extends React.Component<TreeProps, TreeState> implements TreeComponent {
   static TreeNode = NodeComponent
 
+  silence: boolean = false
+
   selected: string[] = []
   checked: string[] = []
   indeterminate: string[] = []
@@ -106,6 +108,10 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
   }
 
   $emit = (name: string, id: string | TreeNode, ...args: any) => {
+    if (this.silence) {
+      return
+    }
+
     const eventCb = this.props['on' + name]
 
     if (!eventCb) {
@@ -383,8 +389,8 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     this.$emit('Check', id, willBeChecked)
   }
 
-  expand = (node: TreeNode) => {
-    if (node.disabled) {
+  expand = (node: TreeNode, includingDisabled?: boolean) => {
+    if (node.disabled && !includingDisabled) {
       return
     }
 

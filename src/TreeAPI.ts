@@ -4,7 +4,7 @@ import { State } from './types/State'
 import { Core, PromiseNodes, InsertOptions } from './types/Core'
 import { CheckboxValueConsistency, TreeAPI as ITreeAPI } from './types/Tree'
 
-import { isNodeCheckable, isLeaf } from './utils/index'
+import { isCheckable, isLeaf } from './utils/index'
 import { find } from './utils/find'
 import { walkBreadth } from './utils/traveler'
 
@@ -134,7 +134,7 @@ export class TreeAPI implements ITreeAPI {
     }
 
     if (!showDisabled) {
-      checked = checked.filter(isNodeCheckable)
+      checked = checked.filter(isCheckable)
     }
 
     switch(valueConsistsOf) {

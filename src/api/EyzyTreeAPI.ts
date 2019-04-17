@@ -1,7 +1,7 @@
 import { TreeComponent, TreeAPI, CheckboxValueConsistency } from '../types/Tree'
 import { State } from '../types/State'
 import { TreeNode } from '../types/Node'
-import { IEyzyTreeAPI, IEyzyNodeAPI } from '../types/Api'
+import { IEyzyTreeAPI, IEyzyNodeAPI, APIOpts } from '../types/Api'
 
 import EyzyNodeAPI from './EyzyNodeAPI'
 
@@ -16,17 +16,18 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
   _state: State
   _api: TreeAPI
 
-  isMultiple: boolean
+  opts: APIOpts
 
-  constructor(api: TreeAPI, isMultiple: boolean = false) {
+  constructor(api: TreeAPI, opts?: APIOpts) {
     this._tree = api.tree
     this._state = api.state
     this._api = api
-    this.isMultiple = isMultiple
+
+    this.opts = opts || {}
   }
 
   useMultiple(isMultiple: boolean): EyzyTreeAPI {
-    this.isMultiple = isMultiple
+    this.opts.multiple = isMultiple
     return this
   }
 
@@ -35,7 +36,7 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
       criteria = [criteria]
     }
 
-    const nodes: TreeNode[] | (TreeNode | null) = this.isMultiple
+    const nodes: TreeNode[] | (TreeNode | null) = this.opts.multiple
       ? this._api.findAll(...criteria)
       : this._api.find(...criteria)
 
@@ -43,27 +44,15 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
       return false
     }
 
-    return operator(new EyzyNodeAPI(nodes, this._api))
+    return operator(new EyzyNodeAPI(nodes, this._api, this.opts))
   }
 
-  find(...criteria: any): IEyzyNodeAPI | null {
-    const result: TreeNode | null = this._api.find(...criteria)
-
-    if (!result) {
-      return null
-    }
-
-    return new EyzyNodeAPI(result, this._api)
+  find(...criteria: any): IEyzyNodeAPI {
+    return new EyzyNodeAPI(this._api.find(...criteria), this._api, this.opts)
   }
 
-  findAll(...criteria: any): IEyzyNodeAPI | null {
-    const result: TreeNode[] = this._api.findAll(...criteria)
-
-    if (!result || !result.length) {
-      return null
-    }
-
-    return new EyzyNodeAPI(result, this._api)
+  findAll(...criteria: any): IEyzyNodeAPI {
+    return new EyzyNodeAPI(this._api.findAll(...criteria), this._api, this.opts)
   }
 
   remove(criteria: any): boolean {
@@ -142,14 +131,12 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     return callMethod(this, 'enableCheckbox', criteria)
   }
 
-  // TODO: expandAll - api.findAll({ expanded: true }).expand()
-  expand(criteria: any): boolean {
-    return callMethod(this, 'expand', criteria)
+  expand(criteria: any, includingDisabled?: boolean): boolean {
+    return callMethod(this, 'expand', criteria, [includingDisabled])
   }
 
-  // TODO: collapseAll - api.find(node => new EyzyNodeAPI(node).hasChild())
-  collapse(criteria: any): boolean {
-    return callMethod(this, 'collapse', criteria)
+  collapse(criteria: any, includingDisabled?: boolean): boolean {
+    return callMethod(this, 'collapse', criteria, [includingDisabled])
   }
 
   data(criteria: any, key: any, value?: any): any {

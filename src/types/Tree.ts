@@ -33,6 +33,7 @@ export interface TreeProps {
 
 export interface TreeComponent {
   props: TreeProps
+  silence: boolean
   selected: string[]
   checked: string[]
   indeterminate: string[]
@@ -48,7 +49,7 @@ export interface TreeComponent {
   select: (node: TreeNode, ignoreEvent?: boolean, extendSelection?: boolean, ignoreUpdating?: boolean) => void
   unselect: (node: TreeNode) => void
   unselectAll: () => void
-  expand: (node: TreeNode) => void
+  expand: (node: TreeNode, includingDisabled?: boolean) => void
 }
 
 export type CheckboxValueConsistency = 'ALL' | 'BRANCH' | 'LEAF' | 'WITH_INDETERMINATE'

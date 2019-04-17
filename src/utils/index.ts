@@ -46,7 +46,7 @@ export function isExpandable(node: TreeNode): boolean {
   return !!(node.child && node.child.length) || !!node.isBatch
 }
 
-export function isNodeCheckable(node: TreeNode): boolean {
+export function isCheckable(node: TreeNode): boolean {
   return !(!!node.disabled || !!node.disabledCheckbox)
 }
 

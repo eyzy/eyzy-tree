@@ -1,4 +1,4 @@
-import { IEyzyNodeAPI } from '../types/Api'
+import { IEyzyNodeAPI, APIOpts } from '../types/Api'
 import { TreeComponent, TreeProps, TreeAPI } from '../types/Tree'
 import { TreeNode } from '../types/Node'
 import { State } from '../types/State'
@@ -11,8 +11,9 @@ export default class EyzyNode implements IEyzyNodeAPI {
   _state: State
   _api: TreeAPI
   _nodes: TreeNode[]
+  _opts: APIOpts
 
-  constructor(nodes: TreeNode[] | TreeNode | null, api: TreeAPI) {
+  constructor(nodes: TreeNode[] | TreeNode | null, api: TreeAPI, opts: APIOpts) {
     this._api = api
     this._state = api.state
     this._tree = api.tree
@@ -20,6 +21,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
     this._nodes = Array.isArray(nodes) 
       ? nodes 
       : (nodes ? [nodes] : [])
+    this._opts = opts
   }
 
   get length(): number {
@@ -30,13 +32,25 @@ export default class EyzyNode implements IEyzyNodeAPI {
     return this._nodes.length ? this._nodes : null
   }
 
+  private isSilence() {
+    return this._opts && this._opts.silence
+  }
+
   private _operate(updateState: boolean, operator: (node: TreeNode, state: State) => any): boolean {
+    if (this.isSilence()) {
+      this._tree.silence = true
+    }
+
     const result: boolean = this._nodes
       .map((node: TreeNode) => operator(node, this._state))
       .every(res => false !== res)
 
     if (updateState) {
       this._tree.updateState(this._state)
+    }
+
+    if (this.isSilence()) {
+      this._tree.silence = false
     }
 
     return this._nodes.length == 0 ? false : result
@@ -176,23 +190,23 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  expand(): boolean {
+  expand(includingDisabled?: boolean): boolean {
     return this._operate(false, (node: TreeNode): any => {
       if (!hasChild(node) || node.expanded) {
         return false
       }
 
-      this._tree.expand(node)
+      this._tree.expand(node, includingDisabled)
     })
   }
 
-  collapse(): boolean {
+  collapse(includingDisabled?: boolean): boolean {
     return this._operate(false, (node: TreeNode): any => {
       if (!hasChild(node) || !node.expanded) {
         return false
       }
 
-      this._tree.expand(node)
+      this._tree.expand(node, includingDisabled)
     })
   }
 
@@ -241,11 +255,11 @@ export default class EyzyNode implements IEyzyNodeAPI {
 
   find(...query: any): IEyzyNodeAPI {
     const node: TreeNode | null = this._find<TreeNode>(false, query)
-    return new EyzyNode(node ? [node] : [], this._api)
+    return new EyzyNode(node ? [node] : [], this._api, this._opts)
   }
 
   findAll(...query: any): IEyzyNodeAPI {
     const nodes: TreeNode[] | null = this._find<TreeNode[]>(true, query)
-    return new EyzyNode(nodes && nodes.length ? nodes : [], this._api)
+    return new EyzyNode(nodes && nodes.length ? nodes : [], this._api, this._opts)
   }
 }

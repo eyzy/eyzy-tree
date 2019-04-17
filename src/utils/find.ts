@@ -1,5 +1,5 @@
 import { TreeNode } from '../types/Node'
-import { isString, isRegExp, isFunction, get } from './index'
+import { isArray, isString, isRegExp, isFunction, get, isExpandable, isCheckable } from './index'
 
 type Traveler = (source: TreeNode[], cb: (node: TreeNode) => boolean) => boolean
 type Criteria = (node: TreeNode) => boolean
@@ -14,6 +14,30 @@ type Criteria = (node: TreeNode) => boolean
  *  - api.find({text: 'item 1'}, {text: 'item 2'}, {disabled: true}) // OR
  *  - api.find([{text: /item/}, {selected: true}]) // OR
  */
+
+const specials = {
+  disabledCheckbox: (node: TreeNode, value: any) => value === !!node.disabledCheckbox,
+  disabled: (node: TreeNode, value: any) => value === !!node.disabled,
+  expandable: (node: TreeNode, value: any) => value === isExpandable(node),
+  expanded: (node: TreeNode, value: any) => {
+    if (value) {
+      return !!node.expanded
+    }
+
+    return isExpandable(node) && !node.expanded
+  },
+  checkable: (node: TreeNode, value: any) => value === isCheckable(node),
+  isLeaf: (node: TreeNode, value: any) => value !== isExpandable(node),
+  $not: (node: TreeNode, value: any) => {
+    const searchCriterias: Criteria[] = convertCriterias(value).map(parseCriteria)
+    const result: boolean = false === matchCriterias(node, searchCriterias)
+    return result
+  }
+}
+
+function convertCriterias(criteria: any) {
+  return isArray(criteria) ? criteria : [criteria]
+}
 
 function parseCriteria(criteria: any): Criteria {
   if (isFunction(criteria)) {
@@ -38,9 +62,21 @@ function parseCriteria(criteria: any): Criteria {
     }
 
     return keys.every((key: string): boolean => {
+      if (key in specials) {
+        return testSpecial(
+          specials[key],
+          matches[key],
+          node
+        )
+      }
+
       return testKey(matches[key], get(node, key))
     })
   }
+}
+
+function testSpecial(s: (node: TreeNode, value: any) => boolean, value: any, node: TreeNode): boolean {
+  return true === s(node, value)
 }
 
 function testKey(v0: any, v1: any): boolean {
