@@ -8,22 +8,22 @@ const collection = [
   { text: 'Item 3', someProperty: 'AWESOMEProperty' }
 ]
 
-const callFind = (isMultiple: boolean = false, query: any) => {
+const callFind = (query: any, isMultiple: boolean = false) => {
   return find(collection as TreeNode[], walkBreadth, isMultiple, query)
 }
 
 describe('Find', () => {
   it('Nothing found', () => {
-    expect(callFind(undefined, 'Item 55')).toBeNull()
-    expect(callFind(undefined, { text: 'Item 33' })).toBeNull()
-    expect(callFind(undefined, { lalal: /Item 33/ })).toBeNull()
+    expect(callFind('Item 55')).toBeNull()
+    expect(callFind({ text: 'Item 33' })).toBeNull()
+    expect(callFind({ lalal: /Item 33/ })).toBeNull()
   })
 
   it('RegExp', () => {
-    expect(callFind(undefined, /^Item/)).toBe(collection[0])
-    expect(callFind(undefined, { text: /2$/ })).toBe(collection[1])
-    expect(callFind(undefined, { someProperty: /awesome/ })).toBeNull()
-    expect(callFind(undefined, { someProperty: /awesome/i })).toBe(collection[2])
-    expect(callFind(undefined, { someProperty: /false/ })).toBe(collection[1])  // ... !nice case! ...
+    expect(callFind(/^Item/)).toBe(collection[0])
+    expect(callFind({ text: /2$/ })).toBe(collection[1])
+    expect(callFind({ someProperty: /awesome/ })).toBeNull()
+    expect(callFind({ someProperty: /awesome/i })).toBe(collection[2])
+    expect(callFind({ someProperty: /false/ })).toBe(collection[1])  // ... !nice case! ...
   })
 })
