@@ -167,13 +167,6 @@
             onSelect: (node) => {
               console.log('select: ', node.text)
             },
-            onExpand: (node) => {
-              this.multipleApi.collapse({
-                depth: node.depth,
-                expanded: true,
-                $not: node.id
-              }, true)
-            },
             textRenderer: ({node}) => {
               return React.createElement('div', null, `${node.text} - ${node.id} - ${node.data.a ? node.data.a : ""}`)
             },

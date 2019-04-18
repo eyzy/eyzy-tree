@@ -21,7 +21,7 @@ export interface Core {
   remove(targetNode: TreeNode): TreeNode | null
   data(targetNode: TreeNode, key?: any, value?: any): any
   hasClass(targetNode: TreeNode, className: string): boolean
-  removeClass(targetNode: TreeNode, classNames: string[]): TreeNode
-  addClass(targetNode: TreeNode, classNames: string[]): TreeNode
+  removeClass(targetNode: TreeNode, classNames: string | string[]): TreeNode
+  addClass(targetNode: TreeNode, classNames: string | string[]): TreeNode
   uncheckAll(): void
 }

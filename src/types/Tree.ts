@@ -55,21 +55,21 @@ export interface TreeComponent {
 export type CheckboxValueConsistency = 'ALL' | 'BRANCH' | 'LEAF' | 'WITH_INDETERMINATE'
 
 export interface TreeAPI {
-  readonly state: State
-  readonly tree: TreeComponent
-  readonly core: Core
+  state: State
+  tree: TreeComponent
+  core: Core
 
   after: (query: any, source: any) => TreeNode[] | PromiseNodes | null
   before: (query: any, source: any) => TreeNode[] | PromiseNodes | null
   append: (query: any, source: any, opts?: InsertOptions) => PromiseNodes | null
   prepend: (query: any, source: any, opts?: InsertOptions) => PromiseNodes | null
-  addClass: (criteria: any, ...classNames: string[]) => TreeNode | null
-  removeClass: (criteria: any, ...classNames: string[]) => TreeNode | null
+  addClass: (criteria: any, classNames: string | string[]) => TreeNode | null
+  removeClass: (criteria: any, classNames: string | string[]) => TreeNode | null
   hasClass: (criteria: any, className: string) => boolean | null
   data: (criteria: any, key?: any, value?: any) => any
   set: (query: any, key: string, value: any) => boolean  
-  find: (...criterias: any) => TreeNode | null
-  findAll: (...criterias: any) => TreeNode[]
+  find: (criteria: any) => TreeNode | null
+  findAll: (criteria: any) => TreeNode[]
   selected: () => TreeNode[] | TreeNode | null
   checked: (valueConsistsOf?: CheckboxValueConsistency, ignoreDisabled?: boolean) => TreeNode[]
   remove: (query: any) => TreeNode | null  

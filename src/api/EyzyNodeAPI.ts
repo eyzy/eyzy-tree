@@ -224,13 +224,13 @@ export default class EyzyNode implements IEyzyNodeAPI {
     return this._nodes.some((node: TreeNode) => this._api.core.hasClass(node, className))
   }
 
-  addClass(...classNames: string[]): boolean {
+  addClass(classNames: string | string[]): boolean {
     this._nodes.forEach((node: TreeNode) => this._api.core.addClass(node, classNames))
 
     return true
   }
 
-  removeClass(...classNames: string[]): boolean {
+  removeClass(classNames: string | string[]): boolean {
     return this._operate(false, (node: TreeNode) => {
       if (!node.className) {
         return
@@ -243,7 +243,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  _find<T>(multiple: boolean, query: any): T | null {
+  _find<T>(query: any, multiple: boolean): T | null {
     const core = this._api.core
     const nodes = core
       .flatMap(this._nodes)
@@ -253,13 +253,13 @@ export default class EyzyNode implements IEyzyNodeAPI {
     return core.find<T>(nodes, multiple, query)
   }
 
-  find(...query: any): IEyzyNodeAPI {
-    const node: TreeNode | null = this._find<TreeNode>(false, query)
+  find(query: any): IEyzyNodeAPI {
+    const node: TreeNode | null = this._find<TreeNode>(query, false)
     return new EyzyNode(node ? [node] : [], this._api, this._opts)
   }
 
-  findAll(...query: any): IEyzyNodeAPI {
-    const nodes: TreeNode[] | null = this._find<TreeNode[]>(true, query)
+  findAll(query: any): IEyzyNodeAPI {
+    const nodes: TreeNode[] | null = this._find<TreeNode[]>(query, true)
     return new EyzyNode(nodes && nodes.length ? nodes : [], this._api, this._opts)
   }
 }

@@ -12,29 +12,31 @@ export interface IEyzyTreeAPI {
   readonly _tree: TreeComponent
   readonly _state: State
   readonly _api: TreeAPI
-  readonly _operate: (criteria: any, operator: (node: IEyzyNodeAPI) => any) => boolean
+  readonly _operate: (query: any, operator: (node: IEyzyNodeAPI) => any) => boolean
 
   opts: APIOpts
   useMultiple: (isMultiple: boolean) => EyzyTreeAPI
 
-  remove: (criteria: any) => boolean
-  empty: (criteria: any) => boolean
+  remove: (query: any) => boolean
+  empty: (query: any) => boolean
   select: (extendSelection?: boolean) => boolean
-  unselect: (criteria: any) => boolean
+  unselect: (query: any) => boolean
   unselectAll: () => boolean
-  check: (criteria: any) => boolean
-  uncheck: (criteria: any) => boolean
-  disable: (criteria: any) => boolean
-  enable: (criteria: any) => boolean
-  disableCheckbox: (criteria: any) => boolean
-  enableCheckbox: (criteria: any) => boolean
-  expand: (criteria: any, includingDisabled?: boolean) => boolean
-  collapse: (criteria: any, includingDisabled?: boolean) => boolean
-  data: (criteria: any, key?: any, value?: any) => any
-  hasClass: (criteria: any, className: string) => boolean
-  addClass: (criteria: any, ...classNames: string[]) => boolean
-  removeClass: (criteria: any, ...classNames: string[]) => boolean
+  check: (query: any) => boolean
+  uncheck: (query: any) => boolean
+  disable: (query: any) => boolean
+  enable: (query: any) => boolean
+  disableCheckbox: (query: any) => boolean
+  enableCheckbox: (query: any) => boolean
+  expand: (query: any, includingDisabled?: boolean) => boolean
+  collapse: (query: any, includingDisabled?: boolean) => boolean
+  data: (query: any, key?: any, value?: any) => any
+  hasClass: (query: any, className: string) => boolean
+  addClass: (query: any, classNames: string | string[]) => boolean
+  removeClass: (query: any, classNames: string | string[]) => boolean
   uncheckAll: () => void
+  find: (query: any) => IEyzyNodeAPI
+  findAll: (query: any) => IEyzyNodeAPI
 }
 
 export interface IEyzyNodeAPI {
@@ -60,8 +62,8 @@ export interface IEyzyNodeAPI {
   collapse: (includingDisabled?: boolean) => boolean
   data: (key?: any, value?: any) => any
   hasClass: (className: string) => any
-  addClass: (...classNames: string[]) => boolean
-  removeClass: (...classNames: string[]) => boolean
-  find: (...query: any) => IEyzyNodeAPI
-  findAll: (...query: any) => IEyzyNodeAPI
+  addClass: (classNames: string | string[]) => boolean
+  removeClass: (classNames: string | string[]) => boolean
+  find: (query: any) => IEyzyNodeAPI
+  findAll: (query: any) => IEyzyNodeAPI
 }

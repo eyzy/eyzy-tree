@@ -5,8 +5,8 @@ import { IEyzyTreeAPI, IEyzyNodeAPI, APIOpts } from '../types/Api'
 
 import EyzyNodeAPI from './EyzyNodeAPI'
 
-const callMethod = (api: IEyzyTreeAPI, name: string, criteria: any, args?: any[]): boolean => {
-  return api._operate(criteria, (node: IEyzyNodeAPI) => {
+const call = (api: IEyzyTreeAPI, name: string, query: any, args?: any[]): boolean => {
+  return api._operate(query, (node: IEyzyNodeAPI) => {
     return args ? node[name].apply(node, args) : node[name]()
   })
 }
@@ -31,14 +31,10 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     return this
   }
 
-  _operate(criteria: any, operator: (node: IEyzyNodeAPI) => any): boolean {
-    if (!Array.isArray(criteria)) {
-      criteria = [criteria]
-    }
-
+  _operate(query: any, operator: (node: IEyzyNodeAPI) => any): boolean {
     const nodes: TreeNode[] | (TreeNode | null) = this.opts.multiple
-      ? this._api.findAll(...criteria)
-      : this._api.find(...criteria)
+      ? this._api.findAll(query)
+      : this._api.find(query)
 
     if (!nodes || Array.isArray(nodes) && !nodes.length) {
       return false
@@ -47,28 +43,28 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     return operator(new EyzyNodeAPI(nodes, this._api, this.opts))
   }
 
-  find(...criteria: any): IEyzyNodeAPI {
-    return new EyzyNodeAPI(this._api.find(...criteria), this._api, this.opts)
+  find(query: any): IEyzyNodeAPI {
+    return new EyzyNodeAPI(this._api.find(query), this._api, this.opts)
   }
 
-  findAll(...criteria: any): IEyzyNodeAPI {
-    return new EyzyNodeAPI(this._api.findAll(...criteria), this._api, this.opts)
+  findAll(query: any): IEyzyNodeAPI {
+    return new EyzyNodeAPI(this._api.findAll(query), this._api, this.opts)
   }
 
-  remove(criteria: any): boolean {
-    return callMethod(this, 'remove', criteria)
+  remove(query: any): boolean {
+    return call(this, 'remove', query)
   }
 
-  empty(criteria: any): boolean {
-    return callMethod(this, 'empty', criteria)
+  empty(query: any): boolean {
+    return call(this, 'empty', query)
   }
 
   selected(): TreeNode | TreeNode[] | null {
     return this._api.selected()
   }
 
-  select(criteria: any, extendSelection?: boolean): boolean {
-    return callMethod(this, 'select', criteria, [extendSelection])
+  select(query: any, extendSelection?: boolean): boolean {
+    return call(this, 'select', query, [extendSelection])
   }
 
   unselectAll(): boolean {
@@ -76,20 +72,20 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     return true
   }
 
-  unselect(criteria: any): boolean {
-    return callMethod(this, 'unselect', criteria)
+  unselect(query: any): boolean {
+    return call(this, 'unselect', query)
   }
 
   checked(valueConsistsOf?: CheckboxValueConsistency, ignoreDisabled?: boolean): TreeNode[] {
     return this._api.checked(valueConsistsOf, ignoreDisabled)
   }
 
-  check(criteria: any): boolean {
-    return callMethod(this, 'check', criteria)
+  check(query: any): boolean {
+    return call(this, 'check', query)
   }
 
-  uncheck(criteria: any): boolean {
-    return callMethod(this, 'uncheck', criteria)
+  uncheck(query: any): boolean {
+    return call(this, 'uncheck', query)
   }
 
   uncheckAll(): boolean {
@@ -115,43 +111,43 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     return true
   }
 
-  disable(criteria: any): boolean {
-    return callMethod(this, 'disable', criteria)
+  disable(query: any): boolean {
+    return call(this, 'disable', query)
   }
 
-  enable(criteria: any): boolean {
-    return callMethod(this, 'enable', criteria)
+  enable(query: any): boolean {
+    return call(this, 'enable', query)
   }
 
-  disableCheckbox(criteria: any): boolean {
-    return callMethod(this, 'disableCheckbox', criteria)
+  disableCheckbox(query: any): boolean {
+    return call(this, 'disableCheckbox', query)
   }
 
-  enableCheckbox(criteria: any): boolean {
-    return callMethod(this, 'enableCheckbox', criteria)
+  enableCheckbox(query: any): boolean {
+    return call(this, 'enableCheckbox', query)
   }
 
-  expand(criteria: any, includingDisabled?: boolean): boolean {
-    return callMethod(this, 'expand', criteria, [includingDisabled])
+  expand(query: any, includingDisabled?: boolean): boolean {
+    return call(this, 'expand', query, [includingDisabled])
   }
 
-  collapse(criteria: any, includingDisabled?: boolean): boolean {
-    return callMethod(this, 'collapse', criteria, [includingDisabled])
+  collapse(query: any, includingDisabled?: boolean): boolean {
+    return call(this, 'collapse', query, [includingDisabled])
   }
 
-  data(criteria: any, key: any, value?: any): any {
-    return callMethod(this, 'data', criteria, [key, value])
+  data(query: any, key: any, value?: any): any {
+    return call(this, 'data', query, [key, value])
   }
 
-  hasClass(criteria: any, className: string): boolean {
-    return callMethod(this, 'hasClass', criteria, [className])
+  hasClass(query: any, className: string): boolean {
+    return call(this, 'hasClass', query, [className])
   }
 
-  addClass(criteria: any, ...classNames: string[]): any {
-    return callMethod(this, 'addClass', criteria, classNames)
+  addClass(query: any, classNames: string | string[]): any {
+    return call(this, 'addClass', query, [classNames])
   }
 
-  removeClass(criteria: any, ...classNames: string[]): any {
-    return callMethod(this, 'removeClass', criteria, classNames)
+  removeClass(query: any, classNames: string | string[]): any {
+    return call(this, 'removeClass', query, [classNames])
   }
 }

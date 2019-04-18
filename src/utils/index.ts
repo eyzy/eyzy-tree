@@ -2,6 +2,10 @@ import { TreeNode } from '../types/Node'
 
 export const hasOwnProp = {}.hasOwnProperty
 
+export function toArray(value: any): any[] {
+  return isArray(value) ? value : [value]
+} 
+
 export function callFetcher(node: TreeNode, fn: any): PromiseLike<any> {
   if (!isCallable(fn)) {
     throw new TypeError('"fetcher" it must be either function or promise')
@@ -56,6 +60,14 @@ export function isFunction(value: any): boolean {
 
 export function isCallable(value: any): boolean {
   return isFunction(value) || (value && !!value.then)
+}
+
+export function isEmpty(value: any): boolean {
+  if (isArray(value)) {
+    return value.length === 0
+  }
+
+  return !value
 }
 
 export function get(obj: any, path: any): any {

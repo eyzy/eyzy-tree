@@ -53,13 +53,13 @@ export class TreeAPI implements ITreeAPI {
     })
   }
 
-  addClass(query: any, ...classNames: string[]): TreeNode | null {
+  addClass(query: any, classNames: string | string[]): TreeNode | null {
     return this._operate<TreeNode>(query, (node: TreeNode) => {
       return this.core.addClass(node, classNames)
     })
   }
 
-  removeClass(query: any, ...classNames: string[]): TreeNode | null {
+  removeClass(query: any, classNames: string | string[]): TreeNode | null {
     return this._operate<TreeNode>(query, (node: TreeNode) => {
       return this.core.removeClass(node, classNames)
     })
@@ -91,12 +91,12 @@ export class TreeAPI implements ITreeAPI {
     return true
   }
 
-  find(...criterias: any): TreeNode | null {
-    return find(this.state.get(), walkBreadth, false, criterias)
+  find(criteria: any): TreeNode | null {
+    return find(this.state.get(), walkBreadth, false, criteria)
   }
 
-  findAll(...criterias: any): TreeNode[] {
-    return find(this.state.get(), walkBreadth, true, criterias)
+  findAll(criteria: any): TreeNode[] {
+    return find(this.state.get(), walkBreadth, true, criteria)
   }
 
   selected(): TreeNode[] | TreeNode | null {

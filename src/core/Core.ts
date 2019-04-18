@@ -2,7 +2,7 @@ import { TreeNode } from '../types/Node'
 import { TreeComponent } from '../types/Tree'
 import { State } from '../types/State'
 import { Core, PromiseCallback, PromiseNodes, Resource, InsertOptions } from '../types/Core'
-import { callFetcher, isCallable, isString, remove, has, isLeaf } from '../utils'
+import { callFetcher, isCallable, isString, remove, has, isLeaf, toArray } from '../utils'
 import { parseNode } from '../utils/parser'
 import { recurseDown, walkBreadth, FlatMap, flatMap } from '../utils/traveler'
 import { find } from '../utils/find'
@@ -254,10 +254,10 @@ export default class CoreTree implements Core {
     return !!node.className && new RegExp(className).test(node.className)
   }
 
-  removeClass(node: TreeNode, classNames: string[]): TreeNode {
+  removeClass(node: TreeNode, classNames: string | string[]): TreeNode {
     const className: string = (node.className || "")
       .split(' ')  
-      .filter((klazz: string) => !has(classNames, klazz))
+      .filter((klazz: string) => !has(toArray(classNames), klazz))
       .join(' ')
 
     this.set(node, 'className', className)
@@ -265,10 +265,10 @@ export default class CoreTree implements Core {
     return node
   }
 
-  addClass(node: TreeNode, classNames: string[]): TreeNode {
+  addClass(node: TreeNode, classNames: string | string[]): TreeNode {
     const className: string[] = node.className ? node.className.split(' ') : []  
 
-    classNames.forEach((klazz: string) => {
+    toArray(classNames).forEach((klazz: string) => {
       if (!has(className, "" + klazz)) {
         className.push(klazz)
       }
