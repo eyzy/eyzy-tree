@@ -1,5 +1,5 @@
 import { TreeNode } from '../types/Node'
-import { isArray, isString, isRegExp, isFunction, get, isExpandable, isCheckable, isEmpty, toArray } from './index'
+import { isString, isRegExp, isFunction, get, isExpandable, isCheckable, isEmpty, toArray } from './index'
 
 type Traveler = (source: TreeNode[], cb: (node: TreeNode) => boolean) => boolean
 type Query = (node: TreeNode) => boolean
@@ -89,18 +89,18 @@ function testKey(v0: any, v1: any): boolean {
   return v0 === v1
 }
 
-function matchQuery(node: TreeNode, querys: Query[]): boolean {
-  return querys.some(query => true === query(node))
+function matchQuery(node: TreeNode, query: Query[]): boolean {
+  return query.some(query => true === query(node))
 }
 
-export function find(source: TreeNode[], traveler: Traveler, multiple: boolean, querys: any[]): any {
-  if (isEmpty(querys)) {
+export function find(source: TreeNode[], traveler: Traveler, multiple: boolean, query: any[]): any {
+  if (isEmpty(query)) {
     return null
   }
 
   const result: TreeNode[] = []
 
-  const searchQuery: Query[] = toArray(querys).map(parseQuery)
+  const searchQuery: Query[] = toArray(query).map(parseQuery)
   const seeker = (node: TreeNode): boolean => {
     if (matchQuery(node, searchQuery)) {
       result.push(node)
