@@ -16,8 +16,8 @@ type Query = (node: TreeNode) => boolean
  */
 
 const specials = {
-  disabledCheckbox: (node: TreeNode, value: any) => value === !!node.disabledCheckbox,
-  disabled: (node: TreeNode, value: any) => value === !!node.disabled,
+  disabledCheckbox: (node: TreeNode, value: any) => !value === !node.disabledCheckbox,
+  disabled: (node: TreeNode, value: any) => !value === !node.disabled,
   expandable: (node: TreeNode, value: any) => value === isExpandable(node),
   expanded: (node: TreeNode, value: any) => {
     if (value) {
@@ -26,12 +26,18 @@ const specials = {
 
     return isExpandable(node) && !node.expanded
   },
+  selected: (node: TreeNode, value: any) => !value === !node.selected,
+  checked: (node: TreeNode, value: any) => !value === !node.checked,
   checkable: (node: TreeNode, value: any) => value === isCheckable(node),
   isLeaf: (node: TreeNode, value: any) => value !== isExpandable(node),
   $not: (node: TreeNode, value: any) => {
     const searchQuery: Query[] = toArray(value).map(parseQuery)
-    const result: boolean = false === matchQuery(node, searchQuery)
-    return result
+
+    if ('expanded' in value) {
+      searchQuery.push(parseQuery({expandable: false}))
+    }
+
+    return false === matchQuery(node, searchQuery)
   }
 }
 
@@ -72,7 +78,8 @@ function parseQuery(query: any): Query {
         )
       }
 
-      return testKey(matches[key], get(node, key))
+      return toArray(matches[key])
+        .some((value: any) => testKey(value, get(node, key)))
     })
   }
 }

@@ -70,13 +70,10 @@ describe('Find', () => {
 
   it('"and" condition', () => {
     expect(callFind({ selected: true, className: /class/ })).toBe(collection[4])
-    expect(callFind({ selected: false, someProperty: 'AWESOMEProperty' })).toBeNull()
+    expect(callFind({ selected: false, someProperty: 'AWESOMEProperty' })).toBe(collection[2])
+    expect(callFind({ selected: undefined, someProperty: 'AWESOMEProperty' })).toBe(collection[2])
 
-    // TODO: should it works? create specific condition or let it be...
-    // expect(callFind({ selected: undefined, someProperty: 'AWESOMEProperty' })).toBeNull()
-
-    // TODO
-    // expect(callFind({ expanded: true, checked: false })).toBe(collection[5])
+    expect(callFind( { expanded: true, checked: false } )).toBe(collection[5])
     expect(callFind( { checked: true, isLeaf: false } )).toBe(collection[3])
     expect(callFind( { checked: true, isLeaf: true } )).toBe(collection[8])
     expect(callFind( { checked: true, expanded: true } )).toBeNull()
@@ -98,7 +95,7 @@ describe('Find', () => {
     expect(callFind({ expandable: false })).toBe(collection[0])
 
     expect(callFind({ expanded: true })).toBe(collection[5])
-    // expect(callFind({ expanded: false })).toBe(collection[0])
+    expect(callFind({ expanded: false })).toBe(collection[3])
 
     expect(callFind({ disabledCheckbox: false })).toBe(collection[0])
     expect(callFind({ disabledCheckbox: true })).toBeNull()
@@ -109,32 +106,34 @@ describe('Find', () => {
     expect(callFind({ checkable: true })).toBe(collection[0])
     expect(callFind({ checkable: false })).toBe(collection[6])
     
-    // expect(callFind({ checked: false })).toBe(collection[0])
+    expect(callFind({ checked: false })).toBe(collection[0])
     expect(callFind({ checked: true })).toBe(collection[3])
 
-    // expect(callFind({ selected: false })).toBe(collection[0])
+    expect(callFind({ selected: false })).toBe(collection[0])
     expect(callFind({ selected: true })).toBe(collection[4])
 
     expect(callFind({ isLeaf: true })).toBe(collection[0])
     expect(callFind({ isLeaf: false })).toBe(collection[3])
 
     expect(callFind( { $not: { disabled: false } } )).toBe(collection[6])
-    // expect(callFind( { $not: { expanded: true } } )).toBe(collection[3])
+    expect(callFind( { $not: { expanded: true } } )).toBe(collection[3])
     expect(callFind( { $not: { text: /^Item \d/ } } )).toHaveProperty('text', 'SubItem 1')
+    expect(callFind( { $not: { selected: false } } )).toBe(collection[4])
   })
 
   it('chain keys', () => {
     expect(callFind( { 'data.weight' : 100, selected: true } )).toBe(collection[4])
     expect(callFind( { 'someProperty.o.a' : 10, checked: true } )).toBe(collection[8])
     expect(callFind( { 'data.bebebe' : 100 } )).toBeNull()
-    // expect(callFind( { 'child.1.text' : 'SubItem 61' } )).toHaveProperty('text', 'SubItem 61')
+    expect(callFind( { 'child.1.text' : 'SubItem 62' } )).toHaveProperty('text', 'Item 6')
+    expect(callFind( { 'child.length' : 2 } )).toBe(collection[5])
   })
 
   it('"or" value', () => {
-
+    expect(callFind( { 'data.weight' : [400, 500] } )).toBe(collection[6])
   })
 
   it('multiple', () => {
-
+    expect(callFind( { 'data.weight' : [100, 400] }, true )).toHaveLength(3)
   })
 })
