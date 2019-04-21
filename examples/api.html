@@ -40,6 +40,24 @@
     </div>
 
     <script>
+      data = [
+        { text: 'Item 1', id: 'sg23-d3hs' },
+        { text: 'Item 2', someProperty: false, data: { weight: 100 } },
+        { text: 'Item 3', someProperty: 'AWESOMEProperty' },
+        { text: 'Item 4', checked: true, expanded: true, child: [
+          'SubItem 1', 'SubItem 2', 'SubItem 3', 'SubItem 4'
+        ]},
+        { text: 'Item 5', selected: true, className: 'class1 class2', data: { weight: 100 } },
+        { text: 'Item 6', expanded: true, child: [
+          'SubItem 61', 'SubItem 62'
+        ]},
+        { text: 'Item 7', disabled: true, data: { weight: 400 }  },
+        { text: 'Item 8', checked: true, child: [
+          'SubItem 1', 'SubItem 2', 'SubItem 3', 'SubItem 4'
+        ]},
+        { text: 'Item 9', checked: true, someProperty: { text: 'a', num: 2, o: { a: 10 } } },
+      ]
+
       class TreeWrapper extends React.Component {
         constructor() {
           super()

@@ -127,10 +127,12 @@ describe('Find', () => {
     expect(callFind( { 'data.bebebe' : 100 } )).toBeNull()
     expect(callFind( { 'child.1.text' : 'SubItem 62' } )).toHaveProperty('text', 'Item 6')
     expect(callFind( { 'child.length' : 2 } )).toBe(collection[5])
+    expect(callFind( { 'parent.text' : /8/, text: /4/ } )).toHaveProperty('text', 'SubItem 4')
   })
 
   it('"or" value', () => {
     expect(callFind( { 'data.weight' : [400, 500] } )).toBe(collection[6])
+    expect(callFind( { 'selected' : [true, false] } )).toBe(collection[0])
   })
 
   it('multiple', () => {

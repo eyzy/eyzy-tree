@@ -73,13 +73,19 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     this._state = new State(data)
     this.core = new CoreTree(this, this._state)
 
-    this.checked.forEach((id: string) => {
-      const node = this._state.byId(id)
+    if (this.props.noCascade !== true) {
+      this.checked.forEach((id: string) => {
+        const node = this._state.byId(id)
 
-      if (node && isLeaf(node) && this.props.noCascade !== true) {
-        this.refreshDefinite(id, true, false)
-      }
-    })
+        if (!node) {
+          return
+        }
+
+        if (isLeaf(node) || !node.parent) {
+          this.refreshDefinite(id, true, false)
+        }
+      })
+    }
 
     this.state = {
       nodes: this._state.get(),

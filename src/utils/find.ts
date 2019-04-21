@@ -71,11 +71,12 @@ function parseQuery(query: any): Query {
 
     return keys.every((key: string): boolean => {
       if (key in specials) {
-        return testSpecial(
-          specials[key],
-          matches[key],
-          node
-        )
+        return toArray(matches[key])
+          .some((value: any) => testSpecial(
+            specials[key],
+            value,
+            node
+          ))
       }
 
       return toArray(matches[key])
