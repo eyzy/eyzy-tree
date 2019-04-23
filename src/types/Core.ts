@@ -24,4 +24,5 @@ export interface Core {
   removeClass(targetNode: TreeNode, classNames: string | string[]): TreeNode
   addClass(targetNode: TreeNode, classNames: string | string[]): TreeNode
   uncheckAll(): void
+  unselectAll(): void
 }

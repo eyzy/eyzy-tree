@@ -29,74 +29,12 @@ export class TreeAPI implements ITreeAPI {
     return operator(node)
   }
 
-  after(query: any, source: any): TreeNode[] | PromiseNodes | null {
-    return this._operate<TreeNode[] | PromiseNodes>(query, (node: TreeNode) => {
-      return this.core.beside(node, source, 1)
-    })
+  find(query: any): TreeNode | null {
+    return find(this.state.get(), walkBreadth, false, query)
   }
 
-  before(query: any, source: any): TreeNode[] | PromiseNodes | null {
-    return this._operate<TreeNode[] | PromiseNodes>(query, (node: TreeNode) => {
-      return this.core.beside(node, source, 0)
-    })
-  }
-
-  append(query: any, source: any, opts?: InsertOptions): PromiseNodes | null {
-    return this._operate<PromiseNodes>(query, (node: TreeNode) => {
-      return this.core.insert(node, source, opts)
-    })
-  }
-
-  prepend(query: any, source: any, opts?: InsertOptions): PromiseNodes | null {
-    return this._operate<PromiseNodes>(query, (node: TreeNode) => {
-      return this.core.insert(node, source, Object.assign({}, opts, {index: 0}))
-    })
-  }
-
-  addClass(query: any, classNames: string | string[]): TreeNode | null {
-    return this._operate<TreeNode>(query, (node: TreeNode) => {
-      return this.core.addClass(node, classNames)
-    })
-  }
-
-  removeClass(query: any, classNames: string | string[]): TreeNode | null {
-    return this._operate<TreeNode>(query, (node: TreeNode) => {
-      return this.core.removeClass(node, classNames)
-    })
-  }
-
-  hasClass(query: any, className: string): boolean | null {
-    return this._operate<boolean>(query, (node: TreeNode) => {
-      return this.core.hasClass(node, className)
-    })
-  }
-
-  data(query: any, key: any, value?: any): any {
-    return this._operate<TreeNode>(query, (node: TreeNode) => {
-      return this.core.data(node, key, value)
-    })
-  }
-
-  set(query: any, key: string, value: any): boolean {
-    const node: TreeNode | null = this.find(query)
-
-    if (!node) {
-      return false
-    }
-
-    // TODO: selected, checked should be dublicated in the tree state
-    this.state.set(node.id, key, value)
-    this.tree.updateState()
-
-    return true
-  }
-
-  find(criteria: any): TreeNode | null {
-    return find(this.state.get(), walkBreadth, false, criteria)
-  }
-
-  findAll(criteria: any): TreeNode[] {
-    return find(this.state.get(), walkBreadth, true, criteria)
+  findAll(query: any): TreeNode[] {
+    return find(this.state.get(), walkBreadth, true, query)
   }
 
   selected(): TreeNode[] | TreeNode | null {
@@ -152,6 +90,68 @@ export class TreeAPI implements ITreeAPI {
     return checked
   }
 
+  set(query: any, key: string, value: any): boolean {
+    const node: TreeNode | null = this.find(query)
+
+    if (!node) {
+      return false
+    }
+
+    // TODO: selected, checked should be dublicated in the tree state
+    this.state.set(node.id, key, value)
+    this.tree.updateState()
+
+    return true
+  }
+
+  data(query: any, key: any, value?: any): any {
+    return this._operate<TreeNode>(query, (node: TreeNode) => {
+      return this.core.data(node, key, value)
+    })
+  }
+
+  addClass(query: any, classNames: string | string[]): TreeNode | null {
+    return this._operate<TreeNode>(query, (node: TreeNode) => {
+      return this.core.addClass(node, classNames)
+    })
+  }
+
+  removeClass(query: any, classNames: string | string[]): TreeNode | null {
+    return this._operate<TreeNode>(query, (node: TreeNode) => {
+      return this.core.removeClass(node, classNames)
+    })
+  }
+
+  hasClass(query: any, className: string): boolean | null {
+    return this._operate<boolean>(query, (node: TreeNode) => {
+      return this.core.hasClass(node, className)
+    })
+  }
+
+  append(query: any, source: any, opts?: InsertOptions): PromiseNodes | null {
+    return this._operate<PromiseNodes>(query, (node: TreeNode) => {
+      return this.core.insert(node, source, opts)
+    })
+  }
+
+  prepend(query: any, source: any, opts?: InsertOptions): PromiseNodes | null {
+    return this._operate<PromiseNodes>(query, (node: TreeNode) => {
+      return this.core.insert(node, source, Object.assign({}, opts, {index: 0}))
+    })
+  }
+
+  before(query: any, source: any): TreeNode[] | PromiseNodes | null {
+    return this._operate<TreeNode[] | PromiseNodes>(query, (node: TreeNode) => {
+      return this.core.beside(node, source, 0)
+    })
+  }
+
+  after(query: any, source: any): TreeNode[] | PromiseNodes | null {
+    return this._operate<TreeNode[] | PromiseNodes>(query, (node: TreeNode) => {
+      return this.core.beside(node, source, 1)
+    })
+  }
+
   remove(query: any): TreeNode | null {
     return this._operate<TreeNode>(query, (node: TreeNode) => {
       return this.core.remove(node)
@@ -160,6 +160,10 @@ export class TreeAPI implements ITreeAPI {
 
   uncheckAll() {
     return this.core.uncheckAll()
+  }
+
+  unselectAll() {
+    return this.core.unselectAll()
   }
 
   toArray(): TreeNode[] {

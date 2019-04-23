@@ -30,8 +30,8 @@ export default class CoreTree implements Core {
     return flatMap(collection, ignoreCollapsed)
   }
 
-  find<T>(target: TreeNode[], multiple: boolean, criterias: any): T | null {
-    return find(target, walkBreadth, multiple, criterias)
+  find<T>(target: TreeNode[], multiple: boolean, query: any): T | null {
+    return find(target, walkBreadth, multiple, query)
   }
 
   set = (node: TreeNode, key: string, value: any): void => {
@@ -287,17 +287,41 @@ export default class CoreTree implements Core {
     }
 
     const state = tree.getState()
+    const nodes: TreeNode[] | null = this.find(
+      state.get(), 
+      true, 
+      [{ checked: true }, { indeterminate: true }]
+    )
 
-    tree.checked = tree.checked.filter((id: string) => {
-      state.set(id, 'checked', false)
-      return false
-    })
-
-    tree.indeterminate = tree.indeterminate.filter((id: string) => {
-      state.set(id, 'indeterminate', false)
-      return false
-    })
+    if (nodes) {
+      nodes.forEach((node: TreeNode) => {
+        this.tree.$emit('UnCheck', state.set(node.id, {
+          checked: false,
+          indeterminate: false
+        }))
+      })
+    }
 
     tree.updateState()
+    tree.checked = []
+    tree.indeterminate = []
+  }
+
+  unselectAll = () => {
+    const tree = this.tree
+    const state = tree.getState()
+
+    const nodes: TreeNode[] | null = this.find(state.get(), true, { selected: true })
+
+    if (nodes) {
+      nodes.forEach((node: TreeNode) => {
+        this.tree.$emit('UnSelect', state.set(node.id, {
+          selected: false
+        }))
+      })
+    }
+
+    tree.updateState()
+    tree.selected = []
   }
 }

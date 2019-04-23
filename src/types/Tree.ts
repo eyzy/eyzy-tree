@@ -29,6 +29,7 @@ export interface TreeProps {
   onDoubleClick?: (node: TreeNode) => void
   onRemove?: (node: TreeNode) => void
   onAdd?: (node: TreeNode) => void
+  onChange?: (tree: TreeNode[]) => void
 }
 
 export interface TreeComponent {
@@ -48,7 +49,6 @@ export interface TreeComponent {
   check: (node: TreeNode) => void
   select: (node: TreeNode, ignoreEvent?: boolean, extendSelection?: boolean, ignoreUpdating?: boolean) => void
   unselect: (node: TreeNode) => void
-  unselectAll: () => void
   expand: (node: TreeNode, includingDisabled?: boolean) => void
 }
 
@@ -74,4 +74,6 @@ export interface TreeAPI {
   checked: (valueConsistsOf?: CheckboxValueConsistency, ignoreDisabled?: boolean) => TreeNode[]
   remove: (query: any) => TreeNode | null  
   toArray: () => TreeNode[]
+  unselectAll: () => void
+  uncheckAll: () => void
 }

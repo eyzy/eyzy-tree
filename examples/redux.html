@@ -3,6 +3,7 @@
     <title>Basic</title>
     <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/redux@4.0.1/dist/redux.js"></script>
     <script src="/eyzy-tree.js"></script>
     <script src="/data/api.js"></script>
 
@@ -28,10 +29,22 @@
   </head>
   <body>
     <div id="example0"></div>
-    <div id="example1"></div>
+    <div id="example1">
+      <button>Lalal</button>
+    </div>
 
     <script>
       const copy = JSON.parse(JSON.stringify(data))
+      const reducer = (state = data, action) => {
+        switch(action.type) {
+          case 'UPDATE_TREE': {
+            return action.tree
+          }
+
+          default: return state
+        }
+      }
+      const store = Redux.createStore(reducer)
 
       class TreeWrapper extends React.Component {
         constructor(props) {
@@ -40,49 +53,32 @@
           this.api = null
         }
 
+        handleTreeChange = (tree) => {
+          store.dispatch({ type: 'UPDATE_TREE', tree })
+        }
+
+        componentDidMount() {
+          document.getElementsByTagName('button')[0].addEventListener('click', this.handleClick)
+        }
+
         render() {
           return React.createElement(EyzyTree, {
-            data,
+            data: store.getState(),
             theme: 'eyzy-theme-red',
             checkable: true,
-            expandOnSelect: true,
-            selectOnExpand: true,
-            preventParentSelect: true,
-            multiple: false,
-            onReady: (api) => {this.api = api},
-            onDoubleClick: (node) => {console.log('dbl', node.text)},
-            onCheck: (node, isChecked) => {
-              console.log(this.api.checked())  
-            },
-            onExpand: (node, isExpanded) => {console.log('expand', node.text, node.expanded, isExpanded)},
-            onSelect: (node) => {console.log('select', node.text)},
-            onUnSelect: (node) => {console.log('unselect', node.text)},
-            textRenderer: ({node}) => {
-              // return React.createElement('div', null, `${node.text} - ${node.id}`)
-              return React.createElement('div', null, `${node.text} - (${node.depth})`)
-            },
-            fetchData: (node) => {
-              return new Promise(resolve => {
-                setTimeout(() => {
-                  resolve([
-                    { text: node.text + ' Child-1', checked: 0 },
-                    { text: node.text + ' Child-2', checked: true },
-                    { text: node.text + ' Child-3', checked: 1, child: [node.text + ' Child-3-1', node.text + ' Child-3-2']},
-                    { text: node.text + ' Child-4', checked: 1 },
-                  ])
-                }, 400)
-              })
-            }
+            onChange: this.handleTreeChange
           })
         }
       }
 
-      const element = React.createElement(TreeWrapper)
-
-      ReactDOM.render(
-        element,
-        document.getElementById('example0')
-      )
+      const render = () => {
+        ReactDOM.render(
+          React.createElement(TreeWrapper),
+          document.getElementById('example0')
+        )
+      }
+      render()
+      store.subscribe(render)
 
     </script>
   </body>

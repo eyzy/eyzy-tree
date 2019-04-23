@@ -5,8 +5,8 @@ import { IEyzyTreeAPI, IEyzyNodeAPI, APIOpts } from '../types/Api'
 
 import EyzyNodeAPI from './EyzyNodeAPI'
 
-const call = (api: IEyzyTreeAPI, name: string, query: any, args?: any[]): boolean => {
-  return api._operate(query, (node: IEyzyNodeAPI) => {
+const call = (api: IEyzyTreeAPI, name: string, query: any, multiple?: boolean, args?: any[]): boolean => {
+  return api._operate(query, !!multiple, (node: IEyzyNodeAPI) => {
     return args ? node[name].apply(node, args) : node[name]()
   })
 }
@@ -26,13 +26,8 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     this.opts = opts || {}
   }
 
-  useMultiple(isMultiple: boolean): EyzyTreeAPI {
-    this.opts.multiple = isMultiple
-    return this
-  }
-
-  _operate(query: any, operator: (node: IEyzyNodeAPI) => any): boolean {
-    const nodes: TreeNode[] | (TreeNode | null) = this.opts.multiple
+  _operate(query: any, multiple: boolean, operator: (node: IEyzyNodeAPI) => any): boolean {
+    const nodes: TreeNode[] | (TreeNode | null) = multiple
       ? this._api.findAll(query)
       : this._api.find(query)
 
@@ -51,64 +46,44 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     return new EyzyNodeAPI(this._api.findAll(query), this._api, this.opts)
   }
 
-  remove(query: any): boolean {
-    return call(this, 'remove', query)
+  remove(query: any, multiple?: boolean): boolean {
+    return call(this, 'remove', query, multiple)
   }
 
-  empty(query: any): boolean {
-    return call(this, 'empty', query)
+  empty(query: any, multiple?: boolean): boolean {
+    return call(this, 'empty', query, multiple)
   }
 
-  selected(): TreeNode | TreeNode[] | null {
-    return this._api.selected()
+  selected(): IEyzyNodeAPI {
+    return new EyzyNodeAPI(this._api.selected(), this._api, this.opts)
   }
 
   select(query: any, extendSelection?: boolean): boolean {
-    return call(this, 'select', query, [extendSelection])
+    return call(this, 'select', query, false, [extendSelection])
   }
 
-  unselectAll(): boolean {
-    this._tree.unselectAll()
-    return true
+  unselectAll() {
+    this._api.unselectAll()
   }
 
-  unselect(query: any): boolean {
-    return call(this, 'unselect', query)
+  unselect(query: any, multiple?: boolean): boolean {
+    return call(this, 'unselect', query, multiple)
   }
 
   checked(valueConsistsOf?: CheckboxValueConsistency, ignoreDisabled?: boolean): TreeNode[] {
     return this._api.checked(valueConsistsOf, ignoreDisabled)
   }
 
-  check(query: any): boolean {
-    return call(this, 'check', query)
+  check(query: any, multiple?: boolean): boolean {
+    return call(this, 'check', query, multiple)
   }
 
-  uncheck(query: any): boolean {
-    return call(this, 'uncheck', query)
+  uncheck(query: any, multiple?: boolean): boolean {
+    return call(this, 'uncheck', query, multiple)
   }
 
-  uncheckAll(): boolean {
-    if (!this._tree.props.checkable) {
-      return false
-    }
-
-    const tree = this._tree
-    const state = tree.getState()
-
-    tree.checked = tree.checked.filter((id: string) => {
-      state.set(id, 'checked', false)
-      return false
-    })
-
-    tree.indeterminate = tree.indeterminate.filter((id: string) => {
-      state.set(id, 'indeterminate', false)
-      return false
-    })
-
-    tree.updateState(state)
-
-    return true
+  uncheckAll() {
+    this._api.uncheckAll()
   }
 
   disable(query: any): boolean {

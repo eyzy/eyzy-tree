@@ -12,18 +12,17 @@ export interface IEyzyTreeAPI {
   readonly _tree: TreeComponent
   readonly _state: State
   readonly _api: TreeAPI
-  readonly _operate: (query: any, operator: (node: IEyzyNodeAPI) => any) => boolean
+  readonly _operate: (query: any, multiple: boolean, operator: (node: IEyzyNodeAPI) => any) => boolean
 
   opts: APIOpts
-  useMultiple: (isMultiple: boolean) => EyzyTreeAPI
 
-  remove: (query: any) => boolean
-  empty: (query: any) => boolean
+  remove: (query: any, multiple?: boolean) => boolean
+  empty: (query: any, multiple?: boolean) => boolean
   select: (extendSelection?: boolean) => boolean
-  unselect: (query: any) => boolean
-  unselectAll: () => boolean
-  check: (query: any) => boolean
-  uncheck: (query: any) => boolean
+  unselect: (query: any, multiple?: boolean) => boolean
+  unselectAll: () => void
+  check: (query: any, multiple?: boolean) => boolean
+  uncheck: (query: any, multiple?: boolean) => boolean
   disable: (query: any) => boolean
   enable: (query: any) => boolean
   disableCheckbox: (query: any) => boolean

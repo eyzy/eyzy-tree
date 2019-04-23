@@ -246,18 +246,13 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
   }
 
   updateState = (state: StateType = this._state) => {
-    this.setState({ nodes: state.get() })
-  }
+    const nodes: TreeNode[] = state.get()
 
-  unselectAll = () => {
-    const state = this.getState()
+    if (this.props.onChange) {
+      this.props.onChange(state.toArray())
+    }
 
-    this.selected = this.selected.filter((id: string) => {
-      state.set(id, 'selected', false)
-      return false
-    })
-
-    this.updateState()
+    this.setState({ nodes })
   }
 
   unselect = (node: TreeNode) => {
@@ -480,7 +475,7 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
   
         case 27: // esc
           if (this.props.multiple) {
-            this.unselectAll()
+            this.core.unselectAll()
           } else {
             this.unselect(selectedNode)
           }
