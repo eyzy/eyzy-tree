@@ -86,43 +86,43 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     this._api.uncheckAll()
   }
 
-  disable(query: any): boolean {
-    return call(this, 'disable', query)
+  disable(query: any, multiple?: boolean): boolean {
+    return call(this, 'disable', query, multiple)
   }
 
-  enable(query: any): boolean {
-    return call(this, 'enable', query)
+  enable(query: any, multiple?: boolean): boolean {
+    return call(this, 'enable', query, multiple)
   }
 
-  disableCheckbox(query: any): boolean {
-    return call(this, 'disableCheckbox', query)
+  disableCheckbox(query: any, multiple?: boolean): boolean {
+    return call(this, 'disableCheckbox', query, multiple)
   }
 
-  enableCheckbox(query: any): boolean {
-    return call(this, 'enableCheckbox', query)
+  enableCheckbox(query: any, multiple?: boolean): boolean {
+    return call(this, 'enableCheckbox', query, multiple)
   }
 
-  expand(query: any, includingDisabled?: boolean): boolean {
-    return call(this, 'expand', query, [includingDisabled])
+  expand(query: any, includingDisabled?: boolean, multiple?: boolean): boolean {
+    return call(this, 'expand', query, multiple, [includingDisabled])
   }
 
-  collapse(query: any, includingDisabled?: boolean): boolean {
-    return call(this, 'collapse', query, [includingDisabled])
+  collapse(query: any, includingDisabled?: boolean, multiple?: boolean): boolean {
+    return call(this, 'collapse', query, multiple, [includingDisabled])
   }
 
   data(query: any, key: any, value?: any): any {
-    return call(this, 'data', query, [key, value])
+    return call(this, 'data', query, false, [key, value])
   }
 
   hasClass(query: any, className: string): boolean {
-    return call(this, 'hasClass', query, [className])
+    return call(this, 'hasClass', query, false, [className])
   }
 
-  addClass(query: any, classNames: string | string[]): any {
-    return call(this, 'addClass', query, [classNames])
+  addClass(query: any, classNames: string | string[], multiple?: boolean): any {
+    return call(this, 'addClass', query, multiple, [classNames])
   }
 
-  removeClass(query: any, classNames: string | string[]): any {
-    return call(this, 'removeClass', query, [classNames])
+  removeClass(query: any, classNames: string | string[], multiple?: boolean): any {
+    return call(this, 'removeClass', query, multiple, [classNames])
   }
 }
