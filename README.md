@@ -1,6 +1,6 @@
 ## One more React Tree component
 
-> Most expected React tree component.
+> Most expected tree ui component for React.
 
 [![NPM version](https://img.shields.io/npm/v/eyzy-tree.svg?style=flat)](https://npmjs.com/package/eyzy-tree)
 ![NPM license](https://img.shields.io/npm/l/eyzy-tree.svg?style=flat)
