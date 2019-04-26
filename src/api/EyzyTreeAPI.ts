@@ -2,6 +2,7 @@ import { TreeComponent, TreeAPI, CheckboxValueConsistency } from '../types/Tree'
 import { State } from '../types/State'
 import { TreeNode } from '../types/Node'
 import { IEyzyTreeAPI, IEyzyNodeAPI, APIOpts } from '../types/Api'
+import { InsertOptions } from '../types/Core'
 
 import EyzyNodeAPI from './EyzyNodeAPI'
 
@@ -70,8 +71,8 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     return call(this, 'unselect', query, multiple)
   }
 
-  checked(valueConsistsOf?: CheckboxValueConsistency, ignoreDisabled?: boolean): TreeNode[] {
-    return this._api.checked(valueConsistsOf, ignoreDisabled)
+  checked(valueConsistsOf?: CheckboxValueConsistency, ignoreDisabled?: boolean): IEyzyNodeAPI {
+    return new EyzyNodeAPI(this._api.checked(valueConsistsOf, ignoreDisabled), this._api, this.opts)
   }
 
   check(query: any, multiple?: boolean): boolean {
@@ -124,5 +125,21 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
 
   removeClass(query: any, classNames: string | string[], multiple?: boolean): any {
     return call(this, 'removeClass', query, multiple, [classNames])
+  }
+
+  append(query: any, source: any, opts?: InsertOptions): any {
+    return call(this, 'append', query, false, [source, opts])
+  }
+
+  prepend(query: any, source: any, opts?: InsertOptions): any {
+    return call(this, 'prepend', query, false, [source, opts])
+  }
+
+  before(query: any, source: any): any {
+    return call(this, 'before', query, false, [source])
+  }
+
+  after(query: any, source: any): any {
+    return call(this, 'after', query, false, [source])
   }
 }

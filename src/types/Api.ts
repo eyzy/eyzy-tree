@@ -1,7 +1,7 @@
 import { State } from './State'
 import { TreeComponent, TreeAPI } from './Tree'
 import { TreeNode } from './Node'
-import EyzyTreeAPI from '../api/EyzyTreeAPI'
+import { InsertOptions } from './Core'
 
 export interface APIOpts {
   multiple?: boolean
@@ -36,6 +36,10 @@ export interface IEyzyTreeAPI {
   hasClass: (query: any, className: string) => boolean
   addClass: (query: any, classNames: string | string[], multiple?: boolean) => boolean
   removeClass: (query: any, classNames: string | string[], multiple?: boolean) => boolean
+  after: (query: any, source: any) => any
+  before: (query: any, source: any) => any
+  append: (query: any, source: any, opts?: InsertOptions) => any
+  prepend: (query: any, source: any, opts?: InsertOptions) => any
 }
 
 export interface IEyzyNodeAPI {
@@ -65,4 +69,8 @@ export interface IEyzyNodeAPI {
   removeClass: (classNames: string | string[]) => boolean
   find: (query: any) => IEyzyNodeAPI
   findAll: (query: any) => IEyzyNodeAPI
+  after: (source: any) => any
+  before: (source: any) => any
+  append: (source: any, opts?: InsertOptions) => any
+  prepend: (source: any, opts?: InsertOptions) => any
 }

@@ -4,6 +4,7 @@ import { TreeNode } from '../types/Node'
 import { State } from '../types/State'
 
 import { hasChild } from './utils'
+import { InsertOptions } from 'src/types/Core';
 
 export default class EyzyNode implements IEyzyNodeAPI {
   _tree: TreeComponent
@@ -240,6 +241,30 @@ export default class EyzyNode implements IEyzyNodeAPI {
       const updatedNode = this._api.core.removeClass(node, classNames)
 
       return oldClassNames !== updatedNode.className
+    })
+  }
+
+  append(source: any, opts?: InsertOptions): any {
+    return this._operate(false, (node: TreeNode) => {
+      return this._api.core.insert(node, source, opts)
+    })
+  }
+  
+  prepend(source: any, opts?: InsertOptions): any {
+    return this._operate(false, (node: TreeNode) => {
+      return this._api.core.insert(node, source, Object.assign({}, opts, {index: 0}))
+    })
+  }
+  
+  before(source: any): any {
+    return this._operate(false, (node: TreeNode) => {
+      return this._api.core.beside(node, source, 0)
+    })
+  }
+
+  after(source: any): any {
+    return this._operate(false, (node: TreeNode) => {
+      return this._api.core.beside(node, source, 1)
     })
   }
 
