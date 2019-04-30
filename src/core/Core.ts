@@ -61,7 +61,7 @@ export default class CoreTree implements Core {
 
       recurseDown(parentNode, (obj: TreeNode, depth: number) => {
         if (obj.id !== parentNode.id) {
-          obj.depth = parentDepth + depth + 1 
+          obj.depth = parentDepth + depth
         }
   
         if (cascadeCheck && obj.parent && obj.parent.checked) {

@@ -6,7 +6,7 @@ import React from 'react'
 export interface Node {
   id?: string
   text: string
-  child?: Node[]
+  child?: Array<Node | string>
   data?: any
   isBatch?: boolean
   className?: string

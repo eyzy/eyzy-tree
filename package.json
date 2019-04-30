@@ -6,10 +6,31 @@
   "homepage": "https://eyzy.gitbook.io/tree/",
   "license": "MIT",
   "dependencies": {
-    "cross-env": "^5.2.0",
-    "jest": "^24.7.1",
-    "npm": "^6.9.0",
     "react": "^16.6.3",
+    "react-dom": "^16.8.6"
+  },
+  "library": "EyzyTree",
+  "module": "es/eyzy-tree.js",
+  "main": "lib/eyzy-tree.js",
+  "scripts": {
+    "build": "cross-env NODE_ENV=production rollup -c",
+    "start": "cross-env NODE_ENV=development rollup -cw",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "react": "^16.6.3",
+    "react-dom": "^16.8.6",
+    "@types/enzyme": "^3.9.1",
+    "@types/jest": "^23.3.1",
+    "@types/node": "^10.9.2",
+    "@types/react": "^16.4.12",
+    "@types/react-dom": "^16.0.7",
+    "@types/enzyme-adapter-react-16": "^1.0.5",
+    "cross-env": "^5.2.0",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.12.1",
+    "jest": "^24.7.1",
+    "typescript": "^3.0.1",
     "rollup": "^0.67.1",
     "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-scss": "^0.4.0",
@@ -21,21 +42,6 @@
     "tslib": "^1.9.3",
     "tslint-config-prettier": "^1.17.0",
     "tslint-react": "^3.6.0"
-  },
-  "library": "EyzyTree",
-  "module": "es/eyzy-tree.js",
-  "main": "lib/eyzy-tree.js",
-  "scripts": {
-    "build": "cross-env NODE_ENV=production rollup -c",
-    "start": "cross-env NODE_ENV=development rollup -cw",
-    "test": "jest"
-  },
-  "devDependencies": {
-    "@types/jest": "^23.3.1",
-    "@types/node": "^10.9.2",
-    "@types/react": "^16.4.12",
-    "@types/react-dom": "^16.0.7",
-    "typescript": "^3.0.1"
   },
   "repository": {
     "type": "git",
@@ -65,16 +71,21 @@
     ]
   },
   "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "ts",
-      "tsx"
+    "moduleDirectories": [
+      "node_modules",
+      "src"
     ],
     "moduleNameMapper": {
+      "\\.(scss)$": "<rootDir>/tests/__mocks__/styleMock.js",
       "^@/(.*)$": "<rootDir>/src/$1"
     },
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
+    },
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "tsconfig.test.json"
+      }
     }
   }
 }
