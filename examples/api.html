@@ -131,7 +131,7 @@
           console.log(`checked: ${current.checked}`)
           console.log(`indeterminate: ${current.indeterminate}`)
 
-          this.api.empty(this.state.multiple ? selected[0] : selected)
+          selected.empty()
 
           console.log('AFTER')
           console.log(`selected: ${current.selected}`)

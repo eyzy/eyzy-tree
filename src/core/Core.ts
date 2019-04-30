@@ -213,14 +213,25 @@ export default class CoreTree implements Core {
   }
 
   remove = (node: TreeNode): TreeNode | null => {
-    const removedNode: TreeNode | null = this.state.remove(node.id)
+    const tree = this.tree
+    const id = node.id
+
+    if (tree.props.checkable && node.checked) {
+
+      this.state.set(id, 'checked', false)
+      tree.checked = tree.checked.filter((checkedId: string) => id !== checkedId)
+      tree.refreshDefinite(id, false, false)
+    }
+
+    const removedNode: TreeNode | null = this.state.remove(id)
 
     if (removedNode) {
       removedNode.parent = null
 
       this.clearKeys(removedNode)
-      this.tree.updateState()
-      this.tree.$emit('Remove', removedNode)
+
+      tree.updateState()
+      tree.$emit('Remove', removedNode)
     }
 
     return removedNode
