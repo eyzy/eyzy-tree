@@ -217,8 +217,8 @@ export default class CoreTree implements Core {
     const id = node.id
 
     if (tree.props.checkable && node.checked) {
-
       this.state.set(id, 'checked', false)
+
       tree.checked = tree.checked.filter((checkedId: string) => id !== checkedId)
       tree.refreshDefinite(id, false, false)
     }

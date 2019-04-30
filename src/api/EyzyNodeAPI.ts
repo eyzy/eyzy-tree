@@ -2,9 +2,9 @@ import { IEyzyNodeAPI, APIOpts } from '../types/Api'
 import { TreeComponent, TreeProps, TreeAPI } from '../types/Tree'
 import { TreeNode } from '../types/Node'
 import { State } from '../types/State'
+import { InsertOptions } from '../types/Core'
 
 import { hasChild } from './utils'
-import { InsertOptions } from 'src/types/Core';
 
 export default class EyzyNode implements IEyzyNodeAPI {
   _tree: TreeComponent
