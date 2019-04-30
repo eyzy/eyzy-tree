@@ -6,7 +6,7 @@
     <script src="/eyzy-tree.js"></script>
     <script src="/api.js"></script>
     <script src="/data/example0.js"></script>
-    
+
     <link rel="stylesheet" href="/style.css">
 
     <style>
@@ -40,40 +40,6 @@
     </div>
 
     <script>
-      data = [
-  {
-    text: 'JavaScript Fundamentals', child: [
-      'Hello, world!', 
-      { text: 'Code structure', checked: true }, 
-      { text: 'The modern mode, "use strict"', checked: true }, 
-      'Variables',
-    ]
-  },
-  {
-    text: 'Code quality', child: [
-      'Debugging in Chrome', 
-      'Polyfills', 
-      { text: 'Automated testing with mocha', selected: true },
-      { text: 'Ninja code', checked: true, disabled: true }
-    ]
-  },
-  {
-    text: 'Objects: the basics', child: [
-      'Objects', 'Garbage collection', 'Symbol type', 'Object methods, "this"'
-    ]
-  },
-  {
-    text: 'Data types', child: [
-      'Methods of primitives', 'Numbers', 'Strings', { text: 'Arrays', selected: true }, 'JSON methods, toJSON'
-    ]
-  },
-  {
-    text: 'Classes', checked: true, child: [
-      'Class basic syntax', 'Class inheritance'
-    ]
-  }
-]
-
       class TreeWrapper extends React.Component {
         constructor() {
           super()
