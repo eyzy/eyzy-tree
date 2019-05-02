@@ -54,7 +54,7 @@ shallow(<EyzyTree
 
 shallow(<EyzyTree 
   data={data}
-  multiple={true}
+  multiple
   onReady={(treeApi) => apiMultiple = treeApi}
 />)
 
@@ -132,45 +132,179 @@ describe('TreeAPI', () => {
     expect(api.removeClass(/Ninja/, 'b')).toHaveProperty('className', 'a')
   })
 
-  it('Insertion: append', async () => {
+  describe('Insertion', () => {
+    describe('Append', () => {
+      it('null', async () => {
+        const newNode = await api.append('lalalal', 'Item 0')
+        expect(newNode).toBe(null)
+      })
 
-    {
-      // null
-      const newNode = await api.append('lalalal', 'Item 0')
-      expect(newNode).toBe(null)
-    }
+      it('simple obj', async () => {
+        // result is ALWAYS an array
+        const [newNode] = await api.append('Classes', { text: 'Item 1' })
+        const parent = newNode.parent
+        expect(parent).toHaveProperty('text', 'Classes')
+        expect(newNode.depth).toBe(parent.depth + 1)
+        expect(newNode.checked).toBe(true)
+        expect(parent.child).toHaveLength(3)
+        expect(parent.child[2]).toHaveProperty('text', 'Item 1')
+      })
 
-    {
-      // result is ALWAYS an array
-      const [newNode] = await api.append('Classes', 'Item 1')
-      const parent = newNode.parent
+      it('multiple obj', async () => {
+        // multiple insertion
+        const newNodes = await api.append('Classes', ['Item 2', 'Item 3'])
+        const parent = newNodes[0].parent
+    
+        expect(parent.child).toHaveLength(5)
+        expect(newNodes).toHaveLength(2)
+        expect(newNodes[0].parent).toHaveProperty('text', 'Classes')
+        expect(parent.child[0]).toHaveProperty('text', 'Class basic syntax')
+        expect(parent.child[4]).toHaveProperty('text', 'Item 3')
+      })
 
-      expect(parent).toHaveProperty('text', 'Classes')
-      expect(newNode.depth).toBe(parent.depth + 1)
-      expect(parent.child).toHaveLength(3)
-      expect(parent.child[2]).toHaveProperty('text', 'Item 1')
-    }
+      it('opts', async () => {
+        const [newNode] = await api.append('Classes', { text: 'Item 4', checked: true }, { expand: true })
+        const parentNode = newNode.parent
 
-    {
-      // multiple insertion
-      const newNodes = await api.append('Classes', ['Item 2', 'Item 3'])
-      const parent = newNodes[0].parent
+        expect(parentNode).toHaveProperty('text', 'Classes')
+        expect(parentNode.expanded).toBe(true)
+
+        expect(parentNode.child).toHaveLength(6)
+        expect(parentNode.child[5].text).toBe('Item 4')
+        
+        expect(api.tree.checked).toContain(newNode.id)
+      })
+
+      it('function test', async () => {
+        const [newNode] = await api.append('Classes', () => {
+          return Promise.resolve([{ text: 'Item 5', disabled: true }])
+        })
+        const parentNode = newNode.parent
+
+        expect(parentNode).toHaveProperty('text', 'Classes')
+        expect(parentNode.child).toHaveLength(7)
+        expect(parentNode.child[6].disabled).toBe(true)
+      })
+
+      it('promise test', async () => {
+        const [newNode] = await api.append('Classes', Promise.resolve([{ text: 'Item 6' }]))
+        const parentNode = newNode.parent
+
+        expect(parentNode).toHaveProperty('text', 'Classes')
+        expect(parentNode.child).toHaveLength(8)
+        expect(parentNode.child[7].text).toBe('Item 6')
+      })
+    })
+
+    describe('Prepend', () => {
+      it('order test', async () => {
+        const [newNode] = await api.prepend('Classes', Promise.resolve([{ text: 'Item 7' }]))
+        const parentNode = newNode.parent
+
+        expect(parentNode).toHaveProperty('text', 'Classes')
+        expect(parentNode.child).toHaveLength(9)
+        expect(parentNode.child[0].text).toBe('Item 7')
+      })
+
+      it('tree selected property', async () => {
+        const [newNode] = await api.prepend('Classes', Promise.resolve([{ text: 'Item 8', selected: true }]))
+        const parentNode = newNode.parent
+
+        expect(parentNode).toHaveProperty('text', 'Classes')
+        expect(parentNode.child).toHaveLength(10)
+        expect(parentNode.child[0].text).toBe('Item 8')
+        
+        expect(api.tree.selected[0]).toBe(newNode.id)
+      })
+    })
+
+    describe('Before', () => {
+      it('n position', async () => {
+        const [newNode] = await api.before('Item 6', Promise.resolve([{ text: 'Item Before 1' }]))
+        const parentNode = newNode.parent
   
-      expect(parent.child).toHaveLength(5)
-      expect(newNodes).toHaveLength(2)
-      expect(newNodes[0].parent).toHaveProperty('text', 'Classes')
-      expect(parent.child[0]).toHaveProperty('text', 'Class basic syntax')
-      expect(parent.child[4]).toHaveProperty('text', 'Item 3')
-    }
+        expect(parentNode).toHaveProperty('text', 'Classes')
+        expect(parentNode.child).toHaveLength(11)
+        expect(parentNode.child[9].text).toBe('Item Before 1')
+      })
 
-    // Как вставить в самое начало?? Без поиска
-  })
+      it('first position', async () => {
+        const [newNode] = await api.before('Item 8', Promise.resolve([{ text: 'Item Before 2' }]))
+        const parentNode = newNode.parent
+  
+        expect(parentNode).toHaveProperty('text', 'Classes')
+        expect(parentNode.child).toHaveLength(12)
+        expect(parentNode.child[0].text).toBe('Item Before 2')
+      })
+    })
 
-  it('Removing', () => {
+    describe('After', () => {
+      it('n position', async () => {
+        const [newNode] = await api.after('Item Before 1', Promise.resolve([{ text: 'Item After 1' }]))
+        const parentNode = newNode.parent
+  
+        expect(parentNode).toHaveProperty('text', 'Classes')
+        expect(parentNode.child).toHaveLength(13)
+        expect(parentNode.child[11].text).toBe('Item After 1')
+      })
 
+      it('indeterminate parent', async () => {
+        expect(api.find('Data types').indeterminate).toBeFalsy()
+        const [newNode] = await api.after('JSON methods, toJSON', { text: 'Child', checked: true })
+        expect(newNode.parent.indeterminate).toBe(true)
+        expect(newNode.parent.text).toBe('Data types')
+      })
+    })
   })
 
   it('uncheck/unselect ALL nodes', () => {
+    api.unselectAll()
+    expect(api.find({ selected: true })).toBeNull()
+    expect(api.findAll({ checked: true }).length).toBeGreaterThan(1)
 
+    api.uncheckAll()
+
+    expect(api.findAll({ checked: true })).toHaveLength(0)
+
+    expect(api.tree.selected).toEqual([])
+    expect(api.tree.checked).toEqual([])
+    expect(api.tree.indeterminate).toEqual([])
+  })
+  
+  it('Removing', async () => {
+    expect(api.find('Data types').child[2].text).toBe('Strings')
+    expect(api.remove('Strings')).toBeTruthy()
+    expect(api.remove('lalalalbebebebe')).toBeNull()
+    expect(api.find('Data types').child[2].text).toBe('Arrays')
+
+    await api.append('Data types', { text: 'Selected Node', selected: true })
+
+    const selected = api.find({ selected: true })
+
+    expect(selected.text).toBe('Selected Node')
+    expect(api.tree.selected[0]).toBe(selected.id)
+
+    api.remove('Selected Node')
+
+    expect(api.tree.selected[0]).toBeFalsy()
+    expect(api.find({ selected: true })).toBeNull()
+
+    api.uncheckAll()
+
+    await api.append('Data types', [{ text: 'Checked0', checked: true }, { text: 'Checked1', checked: true }])
+
+    let checked = api.findAll({ checked: true })
+
+    expect(checked).toHaveLength(2)
+    expect(checked[0].text).toBe('Checked0')
+    expect(api.tree.checked).toHaveLength(2)
+
+    api.remove({ checked: true })
+
+    checked = api.findAll({ checked: true })
+
+    expect(checked).toHaveLength(1)
+    expect(checked[0].text).toBe('Checked1')
+    expect(api.tree.checked).toHaveLength(1)
   })
 })

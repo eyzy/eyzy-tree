@@ -201,6 +201,8 @@ export default class CoreTree implements Core {
       tree.updateState()
 
       return nodes
+        .map((node: TreeNode) => state.byId(node.id))
+        .filter(Boolean) as TreeNode[]
     }
 
     if (parent && isCallable(resource)) {
