@@ -9,6 +9,9 @@
 
 [Documentation](https://eyzy.gitbook.io/tree/) | [Examples](https://eyzy.gitbook.io/tree/examples)
 
+![assets_-LIk7qYrBMivIw5dM3CP_-LXrbHDPWExqQURbPB5D_-LXrfVI_P7Wt8GJVXrVe_red](https://user-images.githubusercontent.com/1006120/57123062-0f878e80-6d89-11e9-8dac-d0b60e7710fb.png)
+
+
 ### Features
 - flexible configuration
 - rich options
@@ -41,7 +44,7 @@ yarn add eyzy-tree
 Connect in browser.
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/eyzy-tree/dist/eyzy-tree.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/eyzy-tree/dist/eyzy-tree.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/eyzy-tree/dist/style.css" rel="stylesheet" />
 ```
 
