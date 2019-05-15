@@ -18,6 +18,7 @@ export interface TreeProps {
   expandOnSelect?: boolean
   checkOnSelect?: boolean
   selectOnCheck?: boolean
+  // TODO: not implemented
   selectOnNavigate?: boolean
   theme?: string
   multiple?: boolean
@@ -59,19 +60,19 @@ export interface TreeAPI {
   tree: TreeComponent
   core: Core
 
-  after: (query: any, source: any) => TreeNode[] | PromiseNodes | null
-  before: (query: any, source: any) => TreeNode[] | PromiseNodes | null
-  append: (query: any, source: any, opts?: InsertOptions) => PromiseNodes | null
-  prepend: (query: any, source: any, opts?: InsertOptions) => PromiseNodes | null
-  addClass: (criteria: any, classNames: string | string[]) => TreeNode | null
-  removeClass: (criteria: any, classNames: string | string[]) => TreeNode | null
-  hasClass: (criteria: any, className: string) => boolean | null
-  data: (criteria: any, key?: any, value?: any) => any
-  set: (query: any, key: string, value: any) => boolean  
   find: (criteria: any) => TreeNode | null
   findAll: (criteria: any) => TreeNode[]
   selected: () => TreeNode[] | TreeNode | null
   checked: (valueConsistsOf?: CheckboxValueConsistency, ignoreDisabled?: boolean) => TreeNode[]
+  data: (criteria: any, key?: any, value?: any) => any
+  set: (query: any, key: string, value: any) => boolean
+  addClass: (criteria: any, classNames: string | string[]) => TreeNode | null
+  removeClass: (criteria: any, classNames: string | string[]) => TreeNode | null
+  hasClass: (criteria: any, className: string) => boolean | null
+  append: (query: any, source: any, opts?: InsertOptions) => PromiseNodes | null
+  prepend: (query: any, source: any, opts?: InsertOptions) => PromiseNodes | null
+  after: (query: any, source: any) => PromiseNodes | null
+  before: (query: any, source: any) => PromiseNodes | null
   remove: (query: any) => TreeNode | null  
   toArray: () => TreeNode[]
   unselectAll: () => void

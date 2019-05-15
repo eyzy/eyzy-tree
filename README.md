@@ -27,6 +27,7 @@
 - [Usage](#usage)
 - [Customization](#customization)
 - [Tree Props](#tree-props)
+- [Tree Events](#tree-events)
 - [Node Props](#node-props)
 
 ### Getting Started
@@ -89,32 +90,54 @@ export default class Tree extends Component {
 | Property | Type | Description | Default |
 |:---------|:--------|:-----------------|:-----|
 | `data` (required) | array | Specifies the tree nodes ||
-| `theme` | string | Additional class for tree container. | eyzy-theme |
+| `fetchData` | function | Fetch child node if it has `isBatch` property ||
+| `textRenderer` | ReactNode | Overrides `text container`. Gets the `Node` by argument || 
+| `arrowRenderer` | ReactNode | Overrides `arrow container`. Gets the `Node` by argument || 
+| `checkboxRenderer` | ReactNode | Overrides `checkbox container`. Gets the `Node` by argument || 
 | `checkable` | boolean | Adds a **checkbox** before the tree nodes | false |
-| `checkOnSelect` | boolean | Selects a node and changes the state of the checkbox. | false |
-| `autoCheckChildren` | boolean | Whether to apply checkbox state to child nodes recursively. | true |
-| `expandOnSelect` | boolean | Whether to expand a node if it has children | false |
+| `noCascade` | boolean | Whether to apply checkbox state to child nodes recursively | true |
+| `useIndeterminateState` | boolean | Whether to show `indeterminate` state for node | true |
+| `preventSelectParent` | boolean | Whether to allow to select node which has child (it will expand if `true`) | false |
+| `keyboardNavigation` | boolean | Whether to allow navigate via keyboard | true |
 | `selectOnExpand` | boolean | Whether to select a node if it has children | false | 
-| `textRenderer` | ReactNode | Overrides `text container`. Gets the `Node` by argument. || 
-| `arrowRenderer` | ReactNode | Overrides `arrow container`. Gets the `Node` by argument. || 
-| `checkboxRenderer` | ReactNode | Overrides `checkbox container`. Gets the `Node` by argument. || 
-| `onSelect` | function | Calls every time when node is selected. | 
-| `onCheck` | function | Calls every time when node is checked. | 
-| `onExpand` | function | Calls every time when node is expanded. | 
-| `onDoubleClick` | function | Calls every time when user do double click on the node. Works only when `expandOnSelect` is not defined or false | 
+| `expandOnSelect` | boolean | Whether to expand a node if it has children | false |
+| `checkOnSelect` | boolean | Selects a node and changes the state of the checkbox. | false |
+| `selectOnCheck` | boolean | Whether to select a node if it checked (during the click) | false |
+| `theme` | string | Additional class for tree container. | eyzy-theme |
+
+
+### Tree Events
+
+| Property | Arguments | Description |
+|:---------|:--------|:-----------------|
+| `onReady` | [API](https://eyzy.gitbook.io/tree/api/basic) | Call once when tree is ready (componentDidMount). | 
+| `onSelect` | `TreeNode` | Calls every time when node is selected. | 
+| `onUnSelect` | `TreeNode` | Calls every time when node is unselected. | 
+| `onCheck` | `TreeNode` | Calls every time when node is checked. | 
+| `onExpand` | `TreeNode` | Calls every time when node is expanded. | 
+| `onRemove` | `TreeNode` | Calls every time when node is removed. | 
+| `onAdd` | `TreeNode` | Calls every time when node is added. | 
+| `onDoubleClick` | `TreeNode` | Calls every time when user do double click on the node. Works only when `expandOnSelect` is not defined or false | 
+
 
 ### Node Props
 
 | Property | Type |    Description     |
 |:---------|:--------|:-----------------------------------------|
+| `id` | string | Node id. If not transmitted, automatically generated. |
 | `text` (required) | string | Node text |
-| `child` | array | List of child nodes |
+| `child` | Array<TreeNode> | List of child nodes |
+| `data` | object | Any type of data |
+| `isBatch` | boolean | Check the [API](https://app.gitbook.com/@eyzy/s/tree/guides/async) |
+| `className` | string | Node class name |
+| `checkable` | boolean | Whether to possible to check a node (checkbox will be hidden) |
+| `loading` | boolean | Will be added `loading` class (indicator is added via CSS) |
 | `selected` | boolean | Whether to select a node |
 | `expanded` | boolean | Whether to expand a node |
 | `checked` | boolean | Whether to check a node (if tree is checkable) |
 | `disabled` | boolean | Whether to disable a node |
 | `disabledCheckbox` | boolean | Whether to disable a node's checkbox |
-| `hidenCheckbox` | boolean | Whether to hide a node's checkbox |
+
 
 ### Licence
 [MIT](https://opensource.org/licenses/MIT)

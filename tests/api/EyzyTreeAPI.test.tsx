@@ -319,18 +319,138 @@ describe('EyzyTreeAPI', () => {
       })
 
       it('simple obj', async () => {
-        const insertedNode = await api.append('Insertion', { text: 'Insertion 1', checked: true })
+        const insertedNode = await api.append('Insertion', { text: 'Insertion 3', checked: true })
         const newNode = insertedNode.result[0]
         const parent = newNode.parent
 
         expect(parent).toHaveProperty('text', 'Insertion')
+        expect(parent.expanded).toBeFalsy()
         expect(newNode.depth).toBe(parent.depth + 1)
         expect(newNode.checked).toBe(true)
         expect(parent.child).toHaveLength(1)
-        expect(parent.child[0]).toHaveProperty('text', 'Insertion 1')
+        expect(parent.child[0]).toHaveProperty('text', 'Insertion 3')
+      })
+
+      it('multiple obj', async () => {
+        // multiple insertion
+        const insertedNodes = await api.append('Insertion', ['Insertion 4', 'Insertion 5'])
+        const nodes = insertedNodes.result
+        const parent = nodes[0].parent
+    
+        expect(parent.child).toHaveLength(3)
+        expect(insertedNodes).toHaveLength(2)
+        expect(parent).toHaveProperty('text', 'Insertion')
+        expect(parent.child[0]).toHaveProperty('text', 'Insertion 3')
+        expect(parent.child[2]).toHaveProperty('text', 'Insertion 5')
+      })
+
+      it('opts', async () => {
+        const insertedNodes = await api.append('Insertion', { text: 'Insertion 6', checked: true }, { expand: true })
+        const nodes = insertedNodes.result
+        const parent = nodes[0].parent
+
+        expect(parent).toHaveProperty('text', 'Insertion')
+        expect(parent.expanded).toBe(true)
+
+        expect(parent.child).toHaveLength(4)
+        expect(parent.child[3].text).toBe('Insertion 6')
+
+        expect(api._tree.checked).toContain(nodes[0].id)
+      })
+
+      it('function test', async () => {
+        const insertedNodes = await api.append('Insertion', () => {
+          return Promise.resolve([{ text: 'Insertion 7', disabled: true }])
+        })
+
+        const nodes = insertedNodes.result
+        const parent = nodes[0].parent
+
+        expect(parent).toHaveProperty('text', 'Insertion')
+        expect(parent.child).toHaveLength(5)
+        expect(parent.child[4].disabled).toBe(true)
+      })
+
+      it('promise test', async () => {
+        const insertedNodes = await api.append('Insertion', Promise.resolve([{ text: 'Insertion 8' }]))
+        const nodes = insertedNodes.result
+        const parent = nodes[0].parent
+
+        expect(parent).toHaveProperty('text', 'Insertion')
+        expect(parent.child).toHaveLength(6)
+        expect(parent.child[5].text).toBe('Insertion 8')
+      })
+    })
+
+    describe('Prepend', () => {
+      it('order test', async () => {
+        const insertedNode = await api.prepend('Insertion', { text: 'Insertion 2', checked: true })
+        const newNode = insertedNode.result[0]
+        const parent = newNode.parent
+
+        expect(parent).toHaveProperty('text', 'Insertion')
+        expect(parent.child).toHaveLength(7)
+        expect(parent.child[0].text).toBe('Insertion 2')
+      })
+
+      it('tree selected property', async () => {
+        const insertedNode = await api.prepend('Insertion', { text: 'Insertion 1', selected: true })
+        const newNode = insertedNode.result[0]
+        const parent = newNode.parent
+
+        expect(parent).toHaveProperty('text', 'Insertion')
+        expect(parent.child).toHaveLength(8)
+        expect(parent.child[0].text).toBe('Insertion 1')
+
+        expect(api._tree.selected[0]).toBe(newNode.id)
+      })
+    })
+
+    describe('Before', () => {
+      it('n position', async () => {
+        const insertedNode = await api.before('Insertion 2', { text: 'Insertion 2.2', selected: true })
+        const newNode = insertedNode.result[0]
+        const parent = newNode.parent
+  
+        expect(parent).toHaveProperty('text', 'Insertion')
+        expect(parent.child).toHaveLength(9)
+        expect(parent.child[1].text).toBe('Insertion 2.2')
+      })
+
+      it('first position', async () => {
+        const insertedNode = await api.before('Insertion 1', { text: 'Insertion 1.0', selected: true })
+        const newNode = insertedNode.result[0]
+        const parent = newNode.parent
+  
+        expect(parent).toHaveProperty('text', 'Insertion')
+        expect(parent.child).toHaveLength(10)
+        expect(parent.child[0].text).toBe('Insertion 1.0')
+      })
+    })
+    
+    describe('After', () => {
+      it('n position', async () => {
+        const insertedNode = await api.after('Insertion 8', { text: 'Insertion 8.0', selected: true })
+        const newNode = insertedNode.result[0]
+        const parent = newNode.parent
+  
+        expect(parent).toHaveProperty('text', 'Insertion')
+        expect(parent.child).toHaveLength(11)
+        expect(parent.child[10].text).toBe('Insertion 8.0')
+      })
+
+      it('indeterminate parent', async () => {
+        expect(api.find('Insertion').indeterminate).toBeFalsy()
+        const insertedNode = await api.after('Insertion 8.0', { text: 'Insertion 8.1', checked: true })
+        const newNode = insertedNode.result[0]
+        const parentNode = newNode.parent
+
+        expect(parentNode.text).toBe('Insertion')
+        expect(parentNode.child[11].text).toBe('Insertion 8.1')
+
+        // TODO: works in a browser...
+        // expect(parentNode.indeterminate).toBe(true)
       })
     })
   })
-
-  // TODO: add setText method...
 })

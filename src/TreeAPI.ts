@@ -140,14 +140,14 @@ export class TreeAPI implements ITreeAPI {
     })
   }
 
-  before(query: any, source: any): TreeNode[] | PromiseNodes | null {
-    return this._operate<TreeNode[] | PromiseNodes>(query, (node: TreeNode) => {
+  before(query: any, source: any): PromiseNodes | null {
+    return this._operate<PromiseNodes>(query, (node: TreeNode) => {
       return this.core.beside(node, source, 0)
     })
   }
 
-  after(query: any, source: any): TreeNode[] | PromiseNodes | null {
-    return this._operate<TreeNode[] | PromiseNodes>(query, (node: TreeNode) => {
+  after(query: any, source: any): PromiseNodes | null {
+    return this._operate<PromiseNodes>(query, (node: TreeNode) => {
       return this.core.beside(node, source, 1)
     })
   }

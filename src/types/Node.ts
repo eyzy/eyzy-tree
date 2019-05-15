@@ -20,7 +20,6 @@ export interface Node {
   checked?: boolean
   disabled?: boolean
   disabledCheckbox?: boolean
-  hidenCheckbox?: boolean
   onSelect?: (node: TreeNode, event: React.MouseEvent) => void
   onCheck?: (node: TreeNode) => void
   onExpand?: (node: TreeNode) => void
