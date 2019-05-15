@@ -39,6 +39,20 @@ export default class EyzyNode implements IEyzyNodeAPI {
     return this._opts && this._opts.silence
   }
 
+  private _insert(operator: (node: TreeNode, state: State) => any): PromiseLike<IEyzyNodeAPI> {
+    if (!this._nodes) {
+      return Promise.resolve(this)
+    }
+
+    return operator(this._nodes as TreeNode, this._state).then((node: TreeNode) => {
+      return new EyzyNode(
+        node,
+        this._api, 
+        this._opts
+      )
+    })
+  }
+
   private _operate(updateState: boolean, operator: (node: TreeNode, state: State) => any): boolean {
     if (!this._nodes) {
       return false
@@ -262,26 +276,26 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  append(source: any, opts?: InsertOptions): any {
-    return this._operate(false, (node: TreeNode) => {
+  append(source: any, opts?: InsertOptions): PromiseLike<IEyzyNodeAPI> {
+    return this._insert((node: TreeNode) => {
       return this._api.core.insert(node, source, opts)
     })
   }
-  
-  prepend(source: any, opts?: InsertOptions): any {
-    return this._operate(false, (node: TreeNode) => {
+
+  prepend(source: any, opts?: InsertOptions): PromiseLike<IEyzyNodeAPI> {
+    return this._insert((node: TreeNode) => {
       return this._api.core.insert(node, source, Object.assign({}, opts, {index: 0}))
     })
   }
   
-  before(source: any): any {
-    return this._operate(false, (node: TreeNode) => {
+  before(source: any): PromiseLike<IEyzyNodeAPI> {
+    return this._insert((node: TreeNode) => {
       return this._api.core.beside(node, source, 0)
     })
   }
 
-  after(source: any): any {
-    return this._operate(false, (node: TreeNode) => {
+  after(source: any): PromiseLike<IEyzyNodeAPI> {
+    return this._insert((node: TreeNode) => {
       return this._api.core.beside(node, source, 1)
     })
   }

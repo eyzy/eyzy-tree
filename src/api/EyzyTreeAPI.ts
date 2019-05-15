@@ -136,19 +136,19 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     return call(this, 'removeClass', query, multiple, [classNames])
   }
 
-  append(query: any, source: any, opts?: InsertOptions): any {
-    return call(this, 'append', query, false, [source, opts])
+  append(query: any, source: any, opts?: InsertOptions): PromiseLike<IEyzyNodeAPI> {
+    return this.find(query).append(source, opts)
   }
 
-  prepend(query: any, source: any, opts?: InsertOptions): any {
-    return call(this, 'prepend', query, false, [source, opts])
+  prepend(query: any, source: any, opts?: InsertOptions): PromiseLike<IEyzyNodeAPI> {
+    return this.find(query).prepend(source, opts)
   }
 
-  before(query: any, source: any): any {
-    return call(this, 'before', query, false, [source])
+  before(query: any, source: any): PromiseLike<IEyzyNodeAPI> {
+    return this.find(query).before(source)
   }
 
-  after(query: any, source: any): any {
-    return call(this, 'after', query, false, [source])
+  after(query: any, source: any): PromiseLike<IEyzyNodeAPI> {
+    return this.find(query).after(source)
   }
 }

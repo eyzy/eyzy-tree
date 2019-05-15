@@ -54,7 +54,8 @@ const data = [
     text: 'Classes', checked: true, child: [
       'Class basic syntax', 'Class inheritance'
     ]
-  }
+  },
+  'Insertion'
 ]
 
 const data2 = JSON.stringify(data)
@@ -309,7 +310,27 @@ describe('EyzyTreeAPI', () => {
     expect(api.find('Classes').result.className).toBe('a c')
   })
 
-  // TODO
-  // add/has/remove class
-  // append, prepend
+  describe('Insertion', () => {
+    describe('Append', () => {
+      it('node doen not found', async () => {
+        const newNode = await api.append('lalalal', 'Item 0')
+        expect(newNode).toBeInstanceOf(EyzyNodeAPI)
+        expect(newNode.result).toBeNull()
+      })
+
+      it('simple obj', async () => {
+        const insertedNode = await api.append('Insertion', { text: 'Insertion 1', checked: true })
+        const newNode = insertedNode.result[0]
+        const parent = newNode.parent
+
+        expect(parent).toHaveProperty('text', 'Insertion')
+        expect(newNode.depth).toBe(parent.depth + 1)
+        expect(newNode.checked).toBe(true)
+        expect(parent.child).toHaveLength(1)
+        expect(parent.child[0]).toHaveProperty('text', 'Insertion 1')
+      })
+    })
+  })
+
+  // TODO: add setText method...
 })
