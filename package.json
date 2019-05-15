@@ -1,6 +1,6 @@
 {
   "name": "eyzy-tree",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "author": "Kostiantyn <phlyze@gmail.com>",
   "description": "React tree component",
   "homepage": "https://eyzy.gitbook.io/tree/",
@@ -16,7 +16,7 @@
     "build": "cross-env NODE_ENV=production rollup -c",
     "start": "cross-env NODE_ENV=development rollup -cw",
     "test": "jest",
-    "publish": "npm test && npm run build && npm publish"
+    "npm_publish": "npm test && npm run build && npm publish"
   },
   "devDependencies": {
     "react": "^16.6.3",

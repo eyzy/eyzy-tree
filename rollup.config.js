@@ -93,6 +93,18 @@ const config = {
 }
 
 if ('production' === process.env.NODE_ENV) {
+  if (!fs.existsSync('./es')) {
+    fs.mkdirSync('./es')
+  }
+
+  if (!fs.existsSync('./dist')) {
+    fs.mkdirSync('./dist')
+  }
+
+  if (!fs.existsSync('./lib')) {
+    fs.mkdirSync('./lib')
+  }
+
   config.plugins.push(uglify({
     output: {
       comments: function(node, comment) {
