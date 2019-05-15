@@ -51,7 +51,7 @@ var data = [
         "text": "Apache Pig 0.15", "expanded": true, "child": [
           "Apache Pig 0.15.1", 
           "Apache Pig 0.15.2",
-          { "text": "Apache Pig 0.15.3", "checked": true}
+          { "text": "Apache Pig 0.15.3", "checked": false}
         ]
       },
       {

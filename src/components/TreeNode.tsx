@@ -50,7 +50,7 @@ export default class Node extends React.Component<TreeNodeProps> {
   }
 
   renderCheckbox = () => {
-    if (!this.props.checkable || this.props.hidenCheckbox) {
+    if (!this.props.checkable) {
       return null
     }
 
