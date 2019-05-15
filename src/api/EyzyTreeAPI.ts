@@ -3,6 +3,7 @@ import { State } from '../types/State'
 import { TreeNode } from '../types/Node'
 import { IEyzyTreeAPI, IEyzyNodeAPI, APIOpts } from '../types/Api'
 import { InsertOptions } from '../types/Core'
+import { isArray } from './utils'
 
 import EyzyNodeAPI from './EyzyNodeAPI'
 
@@ -32,7 +33,7 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
       ? this._api.findAll(query)
       : this._api.find(query)
 
-    if (!nodes || Array.isArray(nodes) && !nodes.length) {
+    if (!nodes || isArray(nodes) && !(nodes as TreeNode[]).length) {
       return false
     }
 
@@ -40,11 +41,19 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
   }
 
   find(query: any): IEyzyNodeAPI {
-    return new EyzyNodeAPI(this._api.find(query), this._api, this.opts)
+    return new EyzyNodeAPI(
+      this._api.find(query), 
+      this._api, 
+      this.opts
+    )
   }
 
   findAll(query: any): IEyzyNodeAPI {
-    return new EyzyNodeAPI(this._api.findAll(query), this._api, this.opts)
+    return new EyzyNodeAPI(
+      this._api.findAll(query), 
+      this._api, 
+      this.opts
+    )
   }
 
   remove(query: any, multiple?: boolean): boolean {
@@ -59,8 +68,8 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     return new EyzyNodeAPI(this._api.selected(), this._api, this.opts)
   }
 
-  select(query: any, extendSelection?: boolean): boolean {
-    return call(this, 'select', query, false, [extendSelection])
+  select(query: any, extendSelection?: boolean, expandOnSelect?: boolean): boolean {
+    return call(this, 'select', query, false, [extendSelection, expandOnSelect])
   }
 
   unselectAll() {
@@ -103,11 +112,11 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     return call(this, 'enableCheckbox', query, multiple)
   }
 
-  expand(query: any, includingDisabled?: boolean, multiple?: boolean): boolean {
+  expand(query: any, multiple?: boolean, includingDisabled?: boolean): boolean {
     return call(this, 'expand', query, multiple, [includingDisabled])
   }
 
-  collapse(query: any, includingDisabled?: boolean, multiple?: boolean): boolean {
+  collapse(query: any, multiple?: boolean, includingDisabled?: boolean): boolean {
     return call(this, 'collapse', query, multiple, [includingDisabled])
   }
 

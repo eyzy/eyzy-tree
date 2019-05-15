@@ -4,14 +4,14 @@ import { TreeNode } from '../types/Node'
 import { State } from '../types/State'
 import { InsertOptions } from '../types/Core'
 
-import { hasChild } from './utils'
+import { hasChild, isArray, toArray } from './utils'
 
 export default class EyzyNode implements IEyzyNodeAPI {
   _tree: TreeComponent
   _props: TreeProps
   _state: State
   _api: TreeAPI
-  _nodes: TreeNode[]
+  _nodes: TreeNode[] | TreeNode | null
   _opts: APIOpts
 
   constructor(nodes: TreeNode[] | TreeNode | null, api: TreeAPI, opts: APIOpts) {
@@ -19,18 +19,20 @@ export default class EyzyNode implements IEyzyNodeAPI {
     this._state = api.state
     this._tree = api.tree
     this._props = api.tree.props
-    this._nodes = Array.isArray(nodes) 
-      ? nodes 
-      : (nodes ? [nodes] : [])
+    this._nodes = nodes
     this._opts = opts
   }
 
   get length(): number {
-    return this._nodes.length
+    const nodes = this._nodes
+
+    return isArray(nodes)
+      ? (nodes as TreeNode[]).length
+      : nodes ? 1 : 0
   }
 
-  get result(): TreeNode[] | null {
-    return this._nodes.length ? this._nodes : null
+  get result(): TreeNode | TreeNode[] | null {
+    return this._nodes
   }
 
   private isSilence() {
@@ -38,11 +40,15 @@ export default class EyzyNode implements IEyzyNodeAPI {
   }
 
   private _operate(updateState: boolean, operator: (node: TreeNode, state: State) => any): boolean {
+    if (!this._nodes) {
+      return false
+    }
+
     if (this.isSilence()) {
       this._tree.silence = true
     }
 
-    const result: boolean = this._nodes
+    const result: boolean = toArray(this._nodes)
       .map((node: TreeNode) => operator(node, this._state))
       .every(res => false !== res)
 
@@ -54,7 +60,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
       this._tree.silence = false
     }
 
-    return this._nodes.length == 0 ? false : result
+    return result
   }
 
   remove(): boolean {
@@ -83,7 +89,11 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  select(extendSelection?: boolean): boolean {
+  select(extendSelection?: boolean, expandOnSelect?: boolean): boolean {
+    if (undefined === expandOnSelect) {
+      expandOnSelect = this._props.expandOnSelect
+    }
+
     return this._operate(false, (node: TreeNode): any => {
       if (node.selected) {
         return false
@@ -93,6 +103,10 @@ export default class EyzyNode implements IEyzyNodeAPI {
         this._tree.select(node, false, extendSelection)
       } else {
         this._tree.select(node)
+      }
+
+      if (expandOnSelect && !node.expanded) {
+        this._tree.expand(node)
       }
     })
   }
@@ -212,8 +226,12 @@ export default class EyzyNode implements IEyzyNodeAPI {
   }
 
   data(key: any, value?: any): any {
-    const nodes = this._nodes
-    
+    if (!this._nodes) {
+      return
+    }
+
+    const nodes = toArray(this._nodes)
+
     if (1 === nodes.length) {
       return this._api.core.data(nodes[0], key, value)
     }
@@ -222,11 +240,11 @@ export default class EyzyNode implements IEyzyNodeAPI {
   }
 
   hasClass(className: string): boolean {
-    return this._nodes.some((node: TreeNode) => this._api.core.hasClass(node, className))
+    return toArray(this._nodes).some((node: TreeNode) => this._api.core.hasClass(node, className))
   }
 
   addClass(classNames: string | string[]): boolean {
-    this._nodes.forEach((node: TreeNode) => this._api.core.addClass(node, classNames))
+    toArray(this._nodes).forEach((node: TreeNode) => this._api.core.addClass(node, classNames))
 
     return true
   }
@@ -270,10 +288,11 @@ export default class EyzyNode implements IEyzyNodeAPI {
 
   _find<T>(query: any, multiple: boolean): T | null {
     const core = this._api.core
+    const aNodes = toArray(this._nodes)
     const nodes = core
-      .flatMap(this._nodes)
+      .flatMap(aNodes)
       .nodes
-      .filter((node: TreeNode) => !~this._nodes.indexOf(node))
+      .filter((node: TreeNode) => !~aNodes.indexOf(node))
 
     return core.find<T>(nodes, multiple, query)
   }

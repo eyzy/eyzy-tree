@@ -4,7 +4,6 @@ import { TreeNode } from './Node'
 import { InsertOptions } from './Core'
 
 export interface APIOpts {
-  multiple?: boolean
   silence?: boolean
 }
 
@@ -20,7 +19,7 @@ export interface IEyzyTreeAPI {
   findAll: (query: any) => IEyzyNodeAPI
   remove: (query: any, multiple?: boolean) => boolean
   empty: (query: any, multiple?: boolean) => boolean
-  select: (extendSelection?: boolean) => boolean
+  select: (extendSelection?: boolean, expandOnSelect?: boolean) => boolean
   unselect: (query: any, multiple?: boolean) => boolean
   unselectAll: () => void
   check: (query: any, multiple?: boolean) => boolean
@@ -30,8 +29,8 @@ export interface IEyzyTreeAPI {
   enable: (query: any, multiple?: boolean) => boolean
   disableCheckbox: (query: any, multiple?: boolean) => boolean
   enableCheckbox: (query: any, multiple?: boolean) => boolean
-  expand: (query: any, includingDisabled?: boolean, multiple?: boolean) => boolean
-  collapse: (query: any, includingDisabled?: boolean, multiple?: boolean) => boolean
+  expand: (query: any, multiple?: boolean, includingDisabled?: boolean) => boolean
+  collapse: (query: any, multiple?: boolean, includingDisabled?: boolean) => boolean
   data: (query: any, key?: any, value?: any) => any
   hasClass: (query: any, className: string) => boolean
   addClass: (query: any, classNames: string | string[], multiple?: boolean) => boolean
@@ -46,12 +45,12 @@ export interface IEyzyNodeAPI {
   readonly _tree: TreeComponent
   readonly _state: State
   readonly _api: TreeAPI
-  readonly _nodes: TreeNode[]
+  readonly _nodes: TreeNode[] | TreeNode | null
 
   length: number
-  result: TreeNode[] | null
+  result: TreeNode | TreeNode[] | null
 
-  select: (extendSelection?: boolean) => boolean
+  select: (extendSelection?: boolean, expandOnSelect?: boolean) => boolean
   unselect: () => boolean
   check: () => boolean
   uncheck: () => boolean
