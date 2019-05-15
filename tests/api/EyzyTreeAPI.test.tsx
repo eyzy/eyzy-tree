@@ -285,4 +285,31 @@ describe('EyzyTreeAPI', () => {
     // expect(set).toBeInstanceOf(EyzyNodeAPI)
     expect(set).toHaveProperty('text', 'JavaScript Fundamentals')
   })
+
+  it('Add/remove/has classNames', () => {
+    expect(api.hasClass('Classes')).toBe(false)
+    expect(api.hasClass('Classes', null)).toBe(false)
+    expect(api.hasClass('Classes', 'a')).toBe(false)
+    expect(api.hasClass('Classessese')).toBe(false)
+
+    expect(api.addClass('Classes', ['a', 'b', 'c'])).toBe(true)
+    expect(api.addClass('Classes', 'd')).toBe(true)
+
+    expect(api.addClass('Classessese', ['a', 'b', 'c'])).toBe(false)
+
+    expect(api.hasClass('Classes', 'a')).toBe(true)
+    expect(api.hasClass('Classes', 'd')).toBe(true)
+    expect(api.hasClass('Classes', 'b c')).toBe(true)
+    expect(api.hasClass('Classes', 'ac')).toBe(false)
+    expect(api.find('Classes').result.className).toBe('a b c d')
+
+    expect(api.removeClass('Classessese', 'a')).toBe(false)
+    expect(api.removeClass('Classes', 'aaaa')).toBe(false)
+    expect(api.removeClass('Classes', ['b', 'd'])).toBe(true)
+    expect(api.find('Classes').result.className).toBe('a c')
+  })
+
+  // TODO
+  // add/has/remove class
+  // append, prepend
 })
