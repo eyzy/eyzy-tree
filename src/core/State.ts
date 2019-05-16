@@ -6,7 +6,8 @@ import {
   isRoot,
   copyObject,
   copyArray,
-  hasOwnProp
+  hasOwnProp,
+  copy
 } from '../utils/index'
 
 function iterable(key: any, value: any): IterableValue[] {
@@ -61,8 +62,8 @@ function updateChild(parentNode: TreeNode) {
 export default class State implements StateType {
   nodes: TreeNode[]
 
-  constructor(state: TreeNode[]) {
-    this.nodes = state
+  constructor(nodes: TreeNode[]) {
+    this.nodes = nodes
   }
 
   updateRoot(node: TreeNode, iterableValue?: IterableValue[]): TreeNode | void {
@@ -206,15 +207,6 @@ export default class State implements StateType {
   }
 
   toArray(): TreeNode[] {
-    const result: TreeNode[] = []
-    const state = this.nodes
-
-    for (const i in state) {
-      if (hasOwnProp.call(state, i)) {
-        result.push(state[i])
-      }
-    }
-
-    return result
+    return copy(this.nodes)
   }
 }

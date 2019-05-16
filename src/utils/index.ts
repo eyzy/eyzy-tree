@@ -97,6 +97,19 @@ export function copyArray<T>(arr: T[]): T[] {
   return arr.concat([])
 }
 
+export function copy(obj: any): any {
+  const result = isArray(obj) ? [] : {}
+
+  for (const key in obj) {
+    if (hasOwnProp.call(obj, key)) {
+      const value: any = obj[key]
+      result[key] = (typeof value === "object") ? copy(value) : value
+    }
+  }
+
+  return result
+}
+
 export function copyObject(obj: any) {
   const newObj = {}
 

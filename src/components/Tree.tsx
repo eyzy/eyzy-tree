@@ -16,7 +16,7 @@ import State from '../core/State'
 import CoreTree from '../core/Core'
 
 import uuid from '../utils/uuid'
-import { grapObjProps, isString } from '../utils/index'
+import { grapObjProps, isString, copy } from '../utils/index'
 import { parseNode } from '../utils/parser'
 import { shallowEqual } from '../utils/shallowEqual'
 import { recurseDown, traverseUp, getFirstChild, flatMap } from '../utils/traveler'
@@ -56,7 +56,9 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
   constructor(props: TreeProps) {
     super(props)
 
-    const data = parseNode(props.data || [])
+    const data = parseNode(
+      copy(props.data || [])
+    )
 
     recurseDown(data, (obj: TreeNode, depth: number) => {
       obj.depth = depth
@@ -95,6 +97,13 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
   }
 
   static getDerivedStateFromProps(nextProps: TreeProps, state: TreeState) {
+    if (nextProps.onChange) {
+      return {
+        hash: uuid(),
+        nodes: parseNode(copy(nextProps.data || []))
+      }
+    }
+
     if (!shallowEqual(nextProps, state.mutatingFields, mutatingFields)) {
       return {
         hash: uuid(),
@@ -103,6 +112,10 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     }
 
     return null
+  }
+
+  isControlled(): boolean {
+    return !!this.props.onChange
   }
 
   componentDidMount() {
@@ -250,9 +263,9 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
 
     if (this.props.onChange) {
       this.props.onChange(state.toArray())
+    } else {
+      this.setState({ nodes })
     }
-
-    this.setState({ nodes })
   }
 
   unselect = (node: TreeNode) => {
@@ -573,6 +586,10 @@ export default class EyzyTree extends React.Component<TreeProps, TreeState> impl
     const treeClass = 'theme' in props 
       ? 'eyzy-tree ' + props.theme
       : 'eyzy-tree eyzy-theme'
+
+    if (this.isControlled()) {
+      this._state.nodes = this.state.nodes
+    }
 
     return (
       <ul 

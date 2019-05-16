@@ -5,7 +5,6 @@
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/redux@4.0.1/dist/redux.js"></script>
     <script src="/eyzy-tree.js"></script>
-    <script src="/data/api.js"></script>
 
     <link rel="stylesheet" href="/style.css">
 
@@ -34,7 +33,9 @@
     </div>
 
     <script>
-      const copy = JSON.parse(JSON.stringify(data))
+      const data = [
+        'Company A', 'Company B', 'Company C'
+      ]
       const reducer = (state = data, action) => {
         switch(action.type) {
           case 'UPDATE_TREE': {
@@ -44,6 +45,7 @@
           default: return state
         }
       }
+
       const store = Redux.createStore(reducer)
 
       class TreeWrapper extends React.Component {
@@ -51,10 +53,19 @@
           super(props)
 
           this.api = null
+          this.state = {
+            tick: 1
+          }
         }
 
         handleTreeChange = (tree) => {
-          store.dispatch({ type: 'UPDATE_TREE', tree })
+          if (!tree[2].checked) {
+            store.dispatch({ type: 'UPDATE_TREE', tree })
+          }
+
+          this.setState((prevState) => ({
+            tick: prevState.tick + 1
+          }))
         }
 
         componentDidMount() {
@@ -62,8 +73,10 @@
         }
 
         render() {
+          const data = store.getState()
+          console.log(data)
           return React.createElement(EyzyTree, {
-            data: store.getState(),
+            data,
             theme: 'eyzy-theme-red',
             checkable: true,
             onChange: this.handleTreeChange
