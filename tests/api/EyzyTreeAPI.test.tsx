@@ -282,9 +282,18 @@ describe('EyzyTreeAPI', () => {
 
     const set = api.data('JavaScript Fundamentals', 'prop3', 'value3') 
 
-    // TODO
-    // expect(set).toBeInstanceOf(EyzyNodeAPI)
-    expect(set).toHaveProperty('text', 'JavaScript Fundamentals')
+    expect(set).toBeInstanceOf(EyzyNodeAPI)
+    expect(set.result).toHaveProperty('text', 'JavaScript Fundamentals')
+
+    const set2 = api.data('JavaScript Fundamentals', { prop4: 'value4' })
+    expect(set2).toBeInstanceOf(EyzyNodeAPI)
+    expect(set2.result).toHaveProperty('text', 'JavaScript Fundamentals')
+    expect(set2.result.data).toEqual({
+      prop1: 'value1',
+      prop2: 'value2',
+      prop3: 'value3',
+      prop4: 'value4'
+    })
   })
 
   it('Add/remove/has classNames', () => {

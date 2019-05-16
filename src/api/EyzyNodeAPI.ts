@@ -247,7 +247,13 @@ export default class EyzyNode implements IEyzyNodeAPI {
     const nodes = toArray(this._nodes)
 
     if (1 === nodes.length) {
-      return this._api.core.data(nodes[0], key, value)
+      const result: any = this._api.core.data(nodes[0], key, value)
+
+      if (nodes[0] === result) {
+        return new EyzyNode(nodes[0], this._api, this._opts)
+      }
+
+      return result
     }
 
     return nodes.map((node: TreeNode) => this._api.core.data(node, key, value))
