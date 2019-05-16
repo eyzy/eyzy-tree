@@ -251,7 +251,7 @@ export default class CoreTree implements Core {
     let data
 
     if (!isString(key)) {
-      data = key
+      data = Object.assign({}, node.data, key)
     } else {
       node.data[key] = value
       data = node.data
