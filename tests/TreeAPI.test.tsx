@@ -114,9 +114,14 @@ describe('TreeAPI', () => {
     expect(api.data('JavaScript Fundamentals', 'prop1')).toBe('value1')
     expect(api.data('JavaScript Fundamentals', 'prop3')).toBe(undefined)
     
-    expect(updatedNode1.data).toBe(myData)
+    expect(updatedNode1.data).toEqual(myData)
     expect(updatedNode2.data.prop4).toBe(myDataItem)
     expect(api.data(/Ninja/, 'prop4')).toBe(myDataItem)
+
+    const updatedNode3 = api.data({ checked: true }, myDataItem)
+
+    // merging
+    expect(updatedNode3.data).toEqual(Object.assign({}, myData, myDataItem))
   })
   
   it('Add/remove/has classNames', () => {
