@@ -5,6 +5,7 @@ es
 lib
 style.css
 api.js
+api.js.map
 
 package-lock.json
 

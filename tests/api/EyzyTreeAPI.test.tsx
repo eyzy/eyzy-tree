@@ -10,7 +10,7 @@ Enzyme.configure({ adapter: new Adapter() })
 const data = [
   {
     text: 'For Remove', child: [
-      'For Remove 1', 'For remove 2', 'For remove 3th'
+      'For Remove 1', 'For Remove 2', 'For Remove 3th'
     ]
   },
   {
@@ -107,24 +107,29 @@ describe('EyzyTreeAPI', () => {
   })
 
   it('Remove', () => {
-    expect(api.remove(/for remove \dth/)).toBe(false) // case sensitive
-    expect(api.remove(/for remove \dth/i)).toBe(true)
+    expect(api.remove(/for remove \dth/)).toBe(null) // case sensitive
+    expect(api.remove(/for remove \dth/i)).toHaveProperty('text', 'For Remove 3th')
     expect(api.find('For Remove').result.child).toHaveLength(2)
 
-    expect(api.remove(/for remove \d/i, true)).toBe(true) // multiple
+    const multipleRemoving = api.remove(/for remove \d/i, true)
+
+    expect(multipleRemoving).toHaveLength(2)
+    expect(multipleRemoving[0].text).toBe('For Remove 1')
+    expect(multipleRemoving[1].text).toBe('For Remove 2')
     expect(api.find('For Remove').result.child).toHaveLength(0)
-    expect(api.remove(/for remove/i)).toBe(true)
+    expect(api.remove(/for remove/i).text).toBe('For Remove')
   })
 
   it('Empty', () => {
-    expect(api.empty(/lalalla/)).toBe(false)
+    expect(api.empty(/lalalla/)).toBe(null)
     expect(api.find('For Empty 1').result.child).toHaveLength(3)
     expect(api.find('For Empty 2').result.child).toHaveLength(3)
     expect(api.empty(/for empty \d/i, true)).toBe(true)
     expect(api.find('For Empty 1').result.child).toHaveLength(0)
     expect(api.find('For Empty 2').result.child).toHaveLength(0)
     expect(api.empty(/for empty/i)).toBe(true)
-    expect(api.remove(/for empty/i)).toBe(true)
+    expect(api.empty(/for empty/i)).toBe(false)
+    expect(api.remove(/for empty/i)).toBeTruthy()
   })
 
   it('Selected', () => {
@@ -141,7 +146,7 @@ describe('EyzyTreeAPI', () => {
 
   it('Selecting', () => {
     expect(api.findAll({ selected: true})).toHaveLength(2)
-    expect(api.select('lalalala')).toBe(false)
+    expect(api.select('lalalala')).toBe(null)
     expect(api.select('Classes', false, false)).toBe(true)
 
     let selected = api.findAll({ selected: true})
@@ -166,7 +171,7 @@ describe('EyzyTreeAPI', () => {
     expect(mApi.select(/^Class inheritance/)).toBe(true)
     expect(mApi.findAll({ selected: true})).toHaveLength(1)
     expect(mApi.select('Class basic syntax', true)).toBe(true)
-    expect(mApi.select('lalalal', true)).toBe(false)
+    expect(mApi.select('lalalal', true)).toBe(null)
 
     let selected = mApi.findAll({ selected: true})
 
@@ -174,8 +179,8 @@ describe('EyzyTreeAPI', () => {
     expect(mApi._tree.selected).toContain(selected.result[0].id)
     expect(mApi._tree.selected).toContain(selected.result[1].id)
 
-    expect(mApi.unselect()).toBe(false)
-    expect(mApi.unselect('lalalala')).toBe(false)
+    expect(mApi.unselect()).toBe(null)
+    expect(mApi.unselect('lalalala')).toBe(null)
     expect(mApi.findAll({ selected: true})).toHaveLength(2)
     expect(mApi.unselect(/^Class inheritance/)).toBe(true)
     expect(mApi.findAll({ selected: true})).toHaveLength(1)
@@ -195,7 +200,7 @@ describe('EyzyTreeAPI', () => {
   it('Check', () => {
     api.uncheckAll()
 
-    expect(api.check('lalalal')).toBe(false)
+    expect(api.check('lalalal')).toBe(null)
 
     expect(api.check('JSON methods, toJSON')).toBe(true)
     expect(api.check('JSON methods, toJSON')).toBe(false)
@@ -218,14 +223,14 @@ describe('EyzyTreeAPI', () => {
 
   it('Disable/Enable', () => {
     expect(api.findAll({ disabled: true })).toHaveLength(1)
-    expect(api.disable('lalalal')).toBe(false)
+    expect(api.disable('lalalal')).toBe(null)
     expect(api.disable({ disabled: true })).toBe(false)
     expect(api.disable('Automated testing with mocha')).toBe(true)
 
     expect(api.disable(/Objects/, true)).toBe(true)
     expect(api.findAll({ disabled: true })).toHaveLength(4)
 
-    expect(api.enable('lalalal')).toBe(false)
+    expect(api.enable('lalalal')).toBe(null)
     expect(api.enable('Automated testing with mocha')).toBe(true)
     expect(api.enable({ disabled: true }, true)).toBe(true)
     expect(api.findAll({ disabled: true })).toHaveLength(0)
@@ -233,14 +238,14 @@ describe('EyzyTreeAPI', () => {
 
   it('Disable/Enable Checkbox', () => {
     expect(api.findAll({ disabledCheckbox: true })).toHaveLength(0)
-    expect(api.disableCheckbox('lalalal')).toBe(false)
+    expect(api.disableCheckbox('lalalal')).toBe(null)
     expect(api.disableCheckbox('Automated testing with mocha')).toBe(true)
     expect(api.disableCheckbox({ disabledCheckbox: true })).toBe(false)
 
     expect(api.disableCheckbox(/Objects/, true)).toBe(true)
     expect(api.findAll({ disabledCheckbox: true })).toHaveLength(3)
 
-    expect(api.enableCheckbox('lalalal')).toBe(false)
+    expect(api.enableCheckbox('lalalal')).toBe(null)
     expect(api.enableCheckbox('Automated testing with mocha')).toBe(true)
     expect(api.findAll({ disabledCheckbox: true })).toHaveLength(2)
     expect(api.enableCheckbox({ disabledCheckbox: true }, true)).toBe(true)
@@ -248,13 +253,13 @@ describe('EyzyTreeAPI', () => {
   })
 
   it('Expand/Collapse', () => {
-    expect(api.expand('lalalal')).toBe(false)
+    expect(api.expand('lalalal')).toBe(null)
     expect(api.expand('JavaScript Fundamentals')).toBe(false)
     expect(api.expand('Classes')).toBe(true)
     expect(api.find('Classes').result.expanded).toBe(true)
 
     expect(api.expand(['Objects: the basics', 'Data types'], true)).toBe(true)
-    expect(api.findAll({ expanded: true })).toHaveLength(4)
+    expect(api.findAll({ expanded: true }).result).toHaveLength(4)
 
     expect(api.collapse('Classes')).toBe(true)
 
@@ -270,10 +275,10 @@ describe('EyzyTreeAPI', () => {
 
     expect(api.collapse('JavaScript Fundamentals')).toBe(true)
     expect(api.collapse('Code quality')).toBe(true)
-    expect(api.findAll({ expanded: true })).toHaveLength(2)
+    expect(api.findAll({ expanded: true }).result).toHaveLength(2)
     
     expect(api.collapse(['Objects: the basics', 'Data types'], true)).toBe(true)
-    expect(api.findAll({ expanded: true })).toHaveLength(0)
+    expect(api.findAll({ expanded: true }).result).toHaveLength(0)
   })
 
   it('Data', () => {
@@ -300,12 +305,12 @@ describe('EyzyTreeAPI', () => {
     expect(api.hasClass('Classes')).toBe(false)
     expect(api.hasClass('Classes', null)).toBe(false)
     expect(api.hasClass('Classes', 'a')).toBe(false)
-    expect(api.hasClass('Classessese')).toBe(false)
+    expect(api.hasClass('Classessese')).toBe(null)
 
     expect(api.addClass('Classes', ['a', 'b', 'c'])).toBe(true)
     expect(api.addClass('Classes', 'd')).toBe(true)
 
-    expect(api.addClass('Classessese', ['a', 'b', 'c'])).toBe(false)
+    expect(api.addClass('Classessese', ['a', 'b', 'c'])).toBe(null)
 
     expect(api.hasClass('Classes', 'a')).toBe(true)
     expect(api.hasClass('Classes', 'd')).toBe(true)
@@ -313,7 +318,7 @@ describe('EyzyTreeAPI', () => {
     expect(api.hasClass('Classes', 'ac')).toBe(false)
     expect(api.find('Classes').result.className).toBe('a b c d')
 
-    expect(api.removeClass('Classessese', 'a')).toBe(false)
+    expect(api.removeClass('Classessese', 'a')).toBe(null)
     expect(api.removeClass('Classes', 'aaaa')).toBe(false)
     expect(api.removeClass('Classes', ['b', 'd'])).toBe(true)
     expect(api.find('Classes').result.className).toBe('a c')

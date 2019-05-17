@@ -1,4 +1,4 @@
-import { IEyzyNodeAPI, APIOpts } from '../types/Api'
+import { IEyzyNodeAPI, APIOpts, APIResult, APIBooleanResult } from '../types/Api'
 import { TreeComponent, TreeProps, TreeAPI } from '../types/Tree'
 import { TreeNode } from '../types/Node'
 import { State } from '../types/State'
@@ -53,38 +53,53 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  private _operate(updateState: boolean, operator: (node: TreeNode, state: State) => any): boolean {
-    if (!this._nodes) {
-      return false
+  private _operate<T>(updateState: boolean, operator: (node: TreeNode, state: State) => any): T | null {
+    const nodes = this._nodes
+
+    if (!nodes || isArray(nodes) && !(nodes as TreeNode[]).length) {
+      return null
     }
+
+    const tree = this._tree
+    const state = this._state
 
     if (this.isSilence()) {
-      this._tree.silence = true
+      tree.silence = true
     }
 
-    const result: boolean = toArray(this._nodes)
-      .map((node: TreeNode) => operator(node, this._state))
-      .every(res => false !== res)
+    let result
+
+    if (isArray(nodes)) {
+      result = (nodes as Array<TreeNode>).map((node: TreeNode) => operator(node, state))
+    } else {
+      result = operator(nodes as TreeNode, state)
+    }
+
+    const arrResult = toArray(result)
+
+    if ('boolean' === typeof arrResult[0] || undefined === arrResult[0]) {
+      result = arrResult.every(res => false !== res)
+    }
 
     if (updateState) {
-      this._tree.updateState(this._state)
+      tree.updateState(state)
     }
 
     if (this.isSilence()) {
-      this._tree.silence = false
+      tree.silence = false
     }
 
     return result
   }
 
-  remove(): boolean {
-    return this._operate(false, (node: TreeNode, state: State): any => {
+  remove(): APIResult {
+    return this._operate<APIResult>(false, (node: TreeNode): APIResult => {
       return this._api.remove(node.id)
     })
   }
 
-  empty(): boolean {
-    return this._operate(true, (node: TreeNode, state: State): any => {
+  empty(): APIBooleanResult {
+    return this._operate<APIBooleanResult>(true, (node: TreeNode, state: State): any => {
       if (!hasChild(node)) {
         return false
       }
@@ -103,12 +118,12 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  select(extendSelection?: boolean, expandOnSelect?: boolean): boolean {
+  select(extendSelection?: boolean, expandOnSelect?: boolean): APIBooleanResult {
     if (undefined === expandOnSelect) {
       expandOnSelect = this._props.expandOnSelect
     }
 
-    return this._operate(false, (node: TreeNode): any => {
+    return this._operate<APIBooleanResult>(false, (node: TreeNode): any => {
       if (node.selected) {
         return false
       }
@@ -126,7 +141,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
   }
 
   unselect(): boolean {
-    return this._operate(false, (node: TreeNode): any => {
+    return this._operate<any>(false, (node: TreeNode): any => {
       if (!node.selected) {
         return false
       }
@@ -140,7 +155,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
       return false
     }
 
-    return this._operate(false, (node: TreeNode): any => {
+    return this._operate<any>(false, (node: TreeNode): any => {
       if (node.checked) {
         return false
       }
@@ -154,7 +169,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
       return false
     }
 
-    return this._operate(false, (node: TreeNode, state: State): any => {
+    return this._operate<any>(false, (node: TreeNode, state: State): any => {
       if (!node.checked) {
         return false
       }
@@ -164,7 +179,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
   }
 
   disable(): boolean {
-    return this._operate(true, (node: TreeNode, state: State): any => {
+    return this._operate<any>(true, (node: TreeNode, state: State): any => {
       if (node.disabled) {
         return false
       }
@@ -174,7 +189,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
   }
 
   enable(): boolean {
-    return this._operate(true, (node: TreeNode, state: State): any => {
+    return this._operate<any>(true, (node: TreeNode, state: State): any => {
       if (!node.disabled) {
         return false
       }
@@ -188,7 +203,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
       return false
     }
 
-    return this._operate(true, (node: TreeNode, state: State): any => {
+    return this._operate<any>(true, (node: TreeNode, state: State): any => {
       if (node.disabledCheckbox) {
         return false
       }
@@ -202,7 +217,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
       return false
     }
 
-    return this._operate(true, (node: TreeNode, state: State): any => {
+    return this._operate<any>(true, (node: TreeNode, state: State): any => {
       if (!node.disabledCheckbox) {
         return false
       }
@@ -220,7 +235,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
   }
 
   expand(includingDisabled?: boolean): boolean {
-    return this._operate(false, (node: TreeNode): any => {
+    return this._operate<any>(false, (node: TreeNode): any => {
       if (!hasChild(node) || node.expanded) {
         return false
       }
@@ -230,7 +245,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
   }
 
   collapse(includingDisabled?: boolean): boolean {
-    return this._operate(false, (node: TreeNode): any => {
+    return this._operate<any>(false, (node: TreeNode): any => {
       if (!hasChild(node) || !node.expanded) {
         return false
       }
@@ -270,7 +285,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
   }
 
   removeClass(classNames: string | string[]): boolean {
-    return this._operate(false, (node: TreeNode) => {
+    return this._operate<any>(false, (node: TreeNode) => {
       if (!node.className) {
         return
       }

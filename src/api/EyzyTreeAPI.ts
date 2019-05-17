@@ -1,15 +1,15 @@
 import { TreeComponent, TreeAPI, CheckboxValueConsistency } from '../types/Tree'
 import { State } from '../types/State'
 import { TreeNode } from '../types/Node'
-import { IEyzyTreeAPI, IEyzyNodeAPI, APIOpts } from '../types/Api'
+import { APIResult, APIBooleanResult, IEyzyTreeAPI, IEyzyNodeAPI, APIOpts } from '../types/Api'
 import { InsertOptions } from '../types/Core'
 import { isArray } from './utils'
 
 import EyzyNodeAPI from './EyzyNodeAPI'
 
-const call = (api: IEyzyTreeAPI, name: string, query: any, multiple?: boolean, args?: any[]): boolean => {
-  return api._operate(query, !!multiple, (node: IEyzyNodeAPI) => {
-    return args ? node[name].apply(node, args) : node[name]()
+const call = <T>(api: IEyzyTreeAPI, name: string, query: any, multiple?: boolean, args?: any[]): T | null => {
+  return api._operate<T>(query, !!multiple, (node: IEyzyNodeAPI) => {
+    return node[name].apply(node, args || [])
   })
 }
 
@@ -28,13 +28,13 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     this.opts = opts || {}
   }
 
-  _operate(query: any, multiple: boolean, operator: (node: IEyzyNodeAPI) => any): boolean {
+  _operate<T>(query: any, multiple: boolean, operator: (node: IEyzyNodeAPI) => any): T | null {
     const nodes: TreeNode[] | (TreeNode | null) = multiple
       ? this._api.findAll(query)
       : this._api.find(query)
 
     if (!nodes || isArray(nodes) && !(nodes as TreeNode[]).length) {
-      return false
+      return null
     }
 
     return operator(new EyzyNodeAPI(nodes, this._api, this.opts))
@@ -56,20 +56,20 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
     )
   }
 
-  remove(query: any, multiple?: boolean): boolean {
-    return call(this, 'remove', query, multiple)
+  remove(query: any, multiple?: boolean): APIResult {
+    return call<TreeNode | TreeNode[]>(this, 'remove', query, multiple)
   }
 
-  empty(query: any, multiple?: boolean): boolean {
-    return call(this, 'empty', query, multiple)
+  empty(query: any, multiple?: boolean): APIBooleanResult {
+    return call<APIBooleanResult>(this, 'empty', query, multiple)
   }
 
   selected(): IEyzyNodeAPI {
     return new EyzyNodeAPI(this._api.selected(), this._api, this.opts)
   }
 
-  select(query: any, extendSelection?: boolean, expandOnSelect?: boolean): boolean {
-    return call(this, 'select', query, false, [extendSelection, expandOnSelect])
+  select(query: any, extendSelection?: boolean, expandOnSelect?: boolean): APIBooleanResult {
+    return call<APIBooleanResult>(this, 'select', query, false, [extendSelection, expandOnSelect])
   }
 
   unselectAll() {
@@ -77,7 +77,7 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
   }
 
   unselect(query: any, multiple?: boolean): boolean {
-    return call(this, 'unselect', query, multiple)
+    return call<any>(this, 'unselect', query, multiple)
   }
 
   checked(valueConsistsOf?: CheckboxValueConsistency, ignoreDisabled?: boolean): IEyzyNodeAPI {
@@ -85,11 +85,11 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
   }
 
   check(query: any, multiple?: boolean): boolean {
-    return call(this, 'check', query, multiple)
+    return call<any>(this, 'check', query, multiple)
   }
 
   uncheck(query: any, multiple?: boolean): boolean {
-    return call(this, 'uncheck', query, multiple)
+    return call<any>(this, 'uncheck', query, multiple)
   }
 
   uncheckAll() {
@@ -97,27 +97,27 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
   }
 
   disable(query: any, multiple?: boolean): boolean {
-    return call(this, 'disable', query, multiple)
+    return call<any>(this, 'disable', query, multiple)
   }
 
   enable(query: any, multiple?: boolean): boolean {
-    return call(this, 'enable', query, multiple)
+    return call<any>(this, 'enable', query, multiple)
   }
 
   disableCheckbox(query: any, multiple?: boolean): boolean {
-    return call(this, 'disableCheckbox', query, multiple)
+    return call<any>(this, 'disableCheckbox', query, multiple)
   }
 
   enableCheckbox(query: any, multiple?: boolean): boolean {
-    return call(this, 'enableCheckbox', query, multiple)
+    return call<any>(this, 'enableCheckbox', query, multiple)
   }
 
   expand(query: any, multiple?: boolean, includingDisabled?: boolean): boolean {
-    return call(this, 'expand', query, multiple, [includingDisabled])
+    return call<any>(this, 'expand', query, multiple, [includingDisabled])
   }
 
   collapse(query: any, multiple?: boolean, includingDisabled?: boolean): boolean {
-    return call(this, 'collapse', query, multiple, [includingDisabled])
+    return call<any>(this, 'collapse', query, multiple, [includingDisabled])
   }
 
   data(query: any, key: any, value?: any): any {
@@ -125,7 +125,7 @@ export default class EyzyTreeAPI implements IEyzyTreeAPI {
   }
 
   hasClass(query: any, className: string): boolean {
-    return call(this, 'hasClass', query, false, [className])
+    return call<any>(this, 'hasClass', query, false, [className])
   }
 
   addClass(query: any, classNames: string | string[], multiple?: boolean): any {

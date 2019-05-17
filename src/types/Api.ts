@@ -7,19 +7,22 @@ export interface APIOpts {
   silence?: boolean
 }
 
+export type APIResult = TreeNode[] | TreeNode | null
+export type APIBooleanResult = boolean | null
+
 export interface IEyzyTreeAPI {
   readonly _tree: TreeComponent
   readonly _state: State
   readonly _api: TreeAPI
-  readonly _operate: (query: any, multiple: boolean, operator: (node: IEyzyNodeAPI) => any) => boolean
+  readonly _operate: <T>(query: any, multiple: boolean, operator: (node: IEyzyNodeAPI) => any) => T | null
 
   opts: APIOpts
 
   find: (query: any) => IEyzyNodeAPI
   findAll: (query: any) => IEyzyNodeAPI
-  remove: (query: any, multiple?: boolean) => boolean
-  empty: (query: any, multiple?: boolean) => boolean
-  select: (extendSelection?: boolean, expandOnSelect?: boolean) => boolean
+  remove: (query: any, multiple?: boolean) => APIResult
+  empty: (query: any, multiple?: boolean) => APIBooleanResult
+  select: (extendSelection?: boolean, expandOnSelect?: boolean) => APIBooleanResult
   unselect: (query: any, multiple?: boolean) => boolean
   unselectAll: () => void
   check: (query: any, multiple?: boolean) => boolean
@@ -50,12 +53,14 @@ export interface IEyzyNodeAPI {
   length: number
   result: TreeNode | TreeNode[] | null
 
-  select: (extendSelection?: boolean, expandOnSelect?: boolean) => boolean
+  find: (query: any) => IEyzyNodeAPI
+  findAll: (query: any) => IEyzyNodeAPI
+  remove: () => APIResult
+  empty: () => APIBooleanResult
+  select: (extendSelection?: boolean, expandOnSelect?: boolean) => APIBooleanResult
   unselect: () => boolean
   check: () => boolean
   uncheck: () => boolean
-  empty: () => boolean
-  remove: () => boolean
   disable: () => boolean
   enable: () => boolean
   disableCheckbox: () => boolean
@@ -66,8 +71,6 @@ export interface IEyzyNodeAPI {
   hasClass: (className: string) => any
   addClass: (classNames: string | string[]) => boolean
   removeClass: (classNames: string | string[]) => boolean
-  find: (query: any) => IEyzyNodeAPI
-  findAll: (query: any) => IEyzyNodeAPI
   after: (source: any) => PromiseLike<IEyzyNodeAPI>
   before: (source: any) => PromiseLike<IEyzyNodeAPI>
   append: (source: any, opts?: InsertOptions) => PromiseLike<IEyzyNodeAPI>

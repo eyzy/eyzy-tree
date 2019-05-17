@@ -32,20 +32,24 @@ const externalApiConfig = {
     {
       file: 'es/api.js',
       format: 'es',
+      sourcemap,
       banner: apiBanner
     }, {
       file: 'lib/api.js',
       format: 'umd',
+      sourcemap,
       name: pkg.library,
       banner: apiBanner
     }, {
       file: `dist/api.js`,
       format: 'umd',
+      sourcemap,
       name: 'EyzyTreeAPI',
       banner: apiBanner
     }, {
       file: `api.js`,
       format: 'umd',
+      sourcemap,
       name: 'EyzyTreeAPI',
       banner: apiBanner
     }
