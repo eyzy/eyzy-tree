@@ -140,8 +140,8 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  unselect(): boolean {
-    return this._operate<any>(false, (node: TreeNode): any => {
+  unselect(): APIBooleanResult {
+    return this._operate<APIBooleanResult>(false, (node: TreeNode): any => {
       if (!node.selected) {
         return false
       }
@@ -150,12 +150,12 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  check(): boolean {
+  check(): APIBooleanResult {
     if (!this._props.checkable) {
       return false
     }
 
-    return this._operate<any>(false, (node: TreeNode): any => {
+    return this._operate<APIBooleanResult>(false, (node: TreeNode): any => {
       if (node.checked) {
         return false
       }
@@ -164,12 +164,12 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  uncheck(): boolean {
+  uncheck(): APIBooleanResult {
     if (!this._props.checkable) {
       return false
     }
 
-    return this._operate<any>(false, (node: TreeNode, state: State): any => {
+    return this._operate<APIBooleanResult>(false, (node: TreeNode, state: State): any => {
       if (!node.checked) {
         return false
       }
@@ -178,8 +178,8 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  disable(): boolean {
-    return this._operate<any>(true, (node: TreeNode, state: State): any => {
+  disable(): APIBooleanResult {
+    return this._operate<APIBooleanResult>(true, (node: TreeNode, state: State): any => {
       if (node.disabled) {
         return false
       }
@@ -188,8 +188,8 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  enable(): boolean {
-    return this._operate<any>(true, (node: TreeNode, state: State): any => {
+  enable(): APIBooleanResult {
+    return this._operate<APIBooleanResult>(true, (node: TreeNode, state: State): any => {
       if (!node.disabled) {
         return false
       }
@@ -198,12 +198,12 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  disableCheckbox(): boolean {
+  disableCheckbox(): APIBooleanResult {
     if (!this._props.checkable) {
       return false
     }
 
-    return this._operate<any>(true, (node: TreeNode, state: State): any => {
+    return this._operate<APIBooleanResult>(true, (node: TreeNode, state: State): any => {
       if (node.disabledCheckbox) {
         return false
       }
@@ -212,12 +212,12 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  enableCheckbox(): boolean {
+  enableCheckbox(): APIBooleanResult {
     if (!this._props.checkable) {
       return false
     }
 
-    return this._operate<any>(true, (node: TreeNode, state: State): any => {
+    return this._operate<APIBooleanResult>(true, (node: TreeNode, state: State): any => {
       if (!node.disabledCheckbox) {
         return false
       }
@@ -234,9 +234,13 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  expand(includingDisabled?: boolean): boolean {
-    return this._operate<any>(false, (node: TreeNode): any => {
+  expand(includingDisabled?: boolean): APIBooleanResult {
+    return this._operate<APIBooleanResult>(false, (node: TreeNode): any => {
       if (!hasChild(node) || node.expanded) {
+        return false
+      }
+
+      if (node.disabled && !includingDisabled) {
         return false
       }
 
@@ -244,9 +248,13 @@ export default class EyzyNode implements IEyzyNodeAPI {
     })
   }
 
-  collapse(includingDisabled?: boolean): boolean {
-    return this._operate<any>(false, (node: TreeNode): any => {
+  collapse(includingDisabled?: boolean): APIBooleanResult {
+    return this._operate<APIBooleanResult>(false, (node: TreeNode): any => {
       if (!hasChild(node) || !node.expanded) {
+        return false
+      }
+
+      if (node.disabled && !includingDisabled) {
         return false
       }
 
@@ -256,7 +264,7 @@ export default class EyzyNode implements IEyzyNodeAPI {
 
   data(key: any, value?: any): any {
     if (!this._nodes) {
-      return
+      return null
     }
 
     const nodes = toArray(this._nodes)
@@ -274,18 +282,26 @@ export default class EyzyNode implements IEyzyNodeAPI {
     return nodes.map((node: TreeNode) => this._api.core.data(node, key, value))
   }
 
-  hasClass(className: string): boolean {
-    return toArray(this._nodes).some((node: TreeNode) => this._api.core.hasClass(node, className))
+  hasClass(className: string): APIBooleanResult {
+    if (!this._nodes) {
+      return null
+    }
+
+    return toArray(this._nodes).every((node: TreeNode) => this._api.core.hasClass(node, className))
   }
 
-  addClass(classNames: string | string[]): boolean {
+  addClass(classNames: string | string[]): APIBooleanResult {
+    if (!this._nodes) {
+      return null
+    }
+
     toArray(this._nodes).forEach((node: TreeNode) => this._api.core.addClass(node, classNames))
 
     return true
   }
 
-  removeClass(classNames: string | string[]): boolean {
-    return this._operate<any>(false, (node: TreeNode) => {
+  removeClass(classNames: string | string[]): APIBooleanResult {
+    return this._operate<APIBooleanResult>(false, (node: TreeNode) => {
       if (!node.className) {
         return
       }
@@ -322,23 +338,23 @@ export default class EyzyNode implements IEyzyNodeAPI {
   }
 
   _find<T>(query: any, multiple: boolean): T | null {
-    const core = this._api.core
-    const aNodes = toArray(this._nodes)
-    const nodes = core
-      .flatMap(aNodes)
-      .nodes
-      .filter((node: TreeNode) => !~aNodes.indexOf(node))
+    const nodes = toArray(this._nodes)
+      .reduce((result: TreeNode[], node: TreeNode) => {
+        if (hasChild(node)) {
+          result.push(...node.child)
+        }
 
-    return core.find<T>(nodes, multiple, query)
+        return result
+      }, [])
+
+    return this._api.core.find<T>(nodes, multiple, query)
   }
 
   find(query: any): IEyzyNodeAPI {
-    const node: TreeNode | null = this._find<TreeNode>(query, false)
-    return new EyzyNode(node ? [node] : [], this._api, this._opts)
+    return new EyzyNode(this._find<TreeNode>(query, false), this._api, this._opts)
   }
 
   findAll(query: any): IEyzyNodeAPI {
-    const nodes: TreeNode[] | null = this._find<TreeNode[]>(query, true)
-    return new EyzyNode(nodes && nodes.length ? nodes : [], this._api, this._opts)
+    return new EyzyNode(this._find<TreeNode[]>(query, true), this._api, this._opts)
   }
 }
