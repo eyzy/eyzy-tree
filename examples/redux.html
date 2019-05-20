@@ -34,7 +34,7 @@
 
     <script>
       const data = [
-        'Company A', 'Company B', 'Company C'
+        'Company A', 'Company B', 'Company C', { text: 'Company D', child: ['Subcompany 1', 'Subcompany 2'] }
       ]
       const reducer = (state = data, action) => {
         switch(action.type) {
