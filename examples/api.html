@@ -140,12 +140,8 @@
         }
 
         handleReadyTree = (api) => {
-          this.api = new EyzyTreeAPI(api)
-          this.multipleApi = new EyzyTreeAPI(api, {multiple: true, silence: true})
+          this.api = new EyzyTreeAPI(api, { silence: true })
           this._simpleAPI = api
-          const superNode = this.api.find({'data.isSuperNode': true})
-
-          console.log(superNode)
         }
 
         render() {
@@ -157,6 +153,13 @@
             expandOnSelect: true,
             multiple: this.state.multiple,
             onReady: this.handleReadyTree,
+            onExpand: (node) => {
+              this.api.collapse({
+                depth: node.depth,
+                expanded: true,
+                $not: node.id
+              }, true, true)
+            },
             onAdd: (parent, child) => {
               console.log('add:', parent, child)
             },  

@@ -1,5 +1,15 @@
 import { TreeNode } from '../types/Node'
-import { isString, isRegExp, isFunction, get, isExpandable, isCheckable, isEmpty, toArray } from './index'
+import { 
+  isObject, 
+  isString, 
+  isRegExp, 
+  isFunction, 
+  isExpandable, 
+  isCheckable, 
+  isEmpty, 
+  toArray,
+  get
+} from './index'
 
 type Traveler = (source: TreeNode[], cb: (node: TreeNode) => boolean) => boolean
 type Query = (node: TreeNode) => boolean
@@ -33,7 +43,7 @@ const specials = {
   $not: (node: TreeNode, value: any) => {
     const searchQuery: Query[] = toArray(value).map(parseQuery)
 
-    if ('expanded' in value) {
+    if (isObject(value) && 'expanded' in value) {
       searchQuery.push(parseQuery({expandable: false}))
     }
 

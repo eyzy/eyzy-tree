@@ -30,6 +30,10 @@ export function grapObjProps(obj: any, props: string[]) {
   }, {});
 }
 
+export function isObject(obj: any) {
+  return obj != null && typeof obj === 'object' && !Array.isArray(obj)
+}
+
 export function isString(obj: any): boolean {
   return 'string' === typeof obj
 }
